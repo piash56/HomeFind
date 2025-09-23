@@ -131,9 +131,11 @@ class Setting extends Model
         "working_days_from_to",
         "is_show_category",
         "is_mail_verify",
+        // GTM fields
+        'is_gtm',
+        'gtm_head_code',
+        'gtm_body_code',
     ];
 
     public $timestamps = false;
-
-
 }

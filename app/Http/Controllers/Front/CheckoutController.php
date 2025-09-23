@@ -29,7 +29,8 @@ class CheckoutController extends Controller
     {
         $setting = Setting::first();
         if ($setting->is_guest_checkout != 1) {
-            $this->middleware('auth');
+            // Require auth for traditional checkout pages but allow direct order endpoint for guests
+            $this->middleware('auth')->except(['placeDirectOrder', 'paymentSuccess']);
         }
         $this->middleware('localize');
         // Removed gateway initializers
@@ -626,6 +627,77 @@ class CheckoutController extends Controller
             \Log::info('Order found: ' . $order->id);
 
             $cart = json_decode($order->cart, true);
+
+            // Server-side tracking: Facebook CAPI and GA4 purchase
+            try {
+                $totalAmount = \App\Helpers\PriceHelper::OrderTotal($order, 'trns');
+
+                // Facebook CAPI
+                $fb = new \App\Services\FacebookCapiService();
+                if ($fb->isEnabled()) {
+                    $billing = json_decode($order->billing_info, true) ?: [];
+                    $phone = $billing['bill_phone'] ?? '';
+                    $email = $billing['bill_email'] ?? '';
+                    $name = trim(($billing['bill_first_name'] ?? '') . ' ' . ($billing['bill_last_name'] ?? ''));
+
+                    $userData = [];
+                    if (!empty($email)) {
+                        $userData['em'] = [hash('sha256', strtolower(trim($email)))];
+                    }
+                    if (!empty($phone)) {
+                        $userData['ph'] = [hash('sha256', preg_replace('/[^0-9]/', '', $phone))];
+                    }
+                    if (!empty($name)) {
+                        $userData['fn'] = [hash('sha256', strtolower(trim($billing['bill_first_name'] ?? '')))];
+                        $userData['ln'] = [hash('sha256', strtolower(trim($billing['bill_last_name'] ?? '')))];
+                    }
+
+                    $items = [];
+                    foreach ($cart as $row) {
+                        $items[] = [
+                            'id' => (string)($row['item']['id'] ?? ''),
+                            'quantity' => (int)($row['qty'] ?? 1),
+                            'item_price' => (float)($row['item']['discount_price'] ?? $row['item']['price'] ?? 0),
+                        ];
+                    }
+
+                    $fb->sendPurchaseEvent([
+                        'user_data' => $userData,
+                        'custom_data' => [
+                            'currency' => env('CURRENCY_ISO', 'BDT'),
+                            'value' => (float)$totalAmount,
+                            'contents' => $items,
+                            'content_type' => 'product',
+                            'order_id' => (string)$order->id,
+                            'transaction_id' => (string)$order->transaction_number,
+                        ],
+                    ]);
+                }
+
+                // GA4 Measurement API
+                $ga4 = new \App\Services\Ga4MeasurementService();
+                if ($ga4->isEnabled()) {
+                    $items = [];
+                    foreach ($cart as $row) {
+                        $items[] = [
+                            'item_id' => (string)($row['item']['id'] ?? ''),
+                            'item_name' => (string)($row['item']['name'] ?? ''),
+                            'quantity' => (int)($row['qty'] ?? 1),
+                            'price' => (float)($row['item']['discount_price'] ?? $row['item']['price'] ?? 0),
+                        ];
+                    }
+
+                    $ga4->sendPurchaseEvent([
+                        'transaction_id' => (string)$order->transaction_number,
+                        'value' => (float)$totalAmount,
+                        'currency' => env('CURRENCY_ISO', 'BDT'),
+                        'items' => $items,
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                \Log::error('Server-side tracking failed', ['error' => $e->getMessage()]);
+            }
+
             // Twilio/SMS notification on success removed in simplified flow
             return view('front.checkout.success', compact('order', 'cart'));
         }

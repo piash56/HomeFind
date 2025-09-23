@@ -26,6 +26,119 @@
         $currentRoute = Route::currentRouteName();
         $hideBreadcrumbs = in_array($currentRoute, ['front.product', 'front.checkout.billing', 'front.checkout.success', 'front.order.track']);
     @endphp
+
+    {{-- Comprehensive Ecommerce dataLayer for GTM --}}
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        
+        @php
+            $user = Auth::user();
+            $cart = session('cart', []);
+            $cartTotal = 0;
+            $cartItems = [];
+            $cartItemCount = 0;
+            
+            foreach($cart as $key => $row) {
+                $itemTotal = ($row['item']['discount_price'] ?? $row['item']['price']) * $row['qty'];
+                $cartTotal += $itemTotal;
+                $cartItemCount += $row['qty'];
+                $cartItems[] = [
+                    'id' => $row['item']['id'],
+                    'name' => $row['item']['name'],
+                    'category' => $row['item']['category']['name'] ?? '',
+                    'quantity' => $row['qty'],
+                    'price' => $row['item']['discount_price'] ?? $row['item']['price']
+                ];
+            }
+            
+            // Customer data
+            $customerData = [];
+            if($user) {
+                $billing = json_decode($user->billing_info ?? '{}', true) ?: [];
+                $customerData = [
+                    'customerTotalOrders' => $user->orders()->count(),
+                    'customerTotalOrderValue' => $user->orders()->sum('total'),
+                    'customerFirstName' => $user->first_name ?? '',
+                    'customerLastName' => $user->last_name ?? '',
+                    'customerBillingFirstName' => $billing['bill_first_name'] ?? $user->first_name ?? '',
+                    'customerBillingLastName' => $billing['bill_last_name'] ?? $user->last_name ?? '',
+                    'customerBillingCompany' => $billing['bill_company'] ?? '',
+                    'customerBillingAddress1' => $billing['bill_address1'] ?? '',
+                    'customerBillingAddress2' => $billing['bill_address2'] ?? '',
+                    'customerBillingCity' => $billing['bill_city'] ?? '',
+                    'customerBillingState' => $billing['bill_state'] ?? '',
+                    'customerBillingPostcode' => $billing['bill_zip'] ?? '',
+                    'customerBillingCountry' => $billing['bill_country'] ?? '',
+                    'customerBillingEmail' => $billing['bill_email'] ?? $user->email ?? '',
+                    'customerBillingEmailHash' => $billing['bill_email'] ? hash('sha256', strtolower(trim($billing['bill_email']))) : '',
+                    'customerBillingPhone' => $billing['bill_phone'] ?? '',
+                    'customerShippingFirstName' => $billing['ship_first_name'] ?? '',
+                    'customerShippingLastName' => $billing['ship_last_name'] ?? '',
+                    'customerShippingCompany' => $billing['ship_company'] ?? '',
+                    'customerShippingAddress1' => $billing['ship_address1'] ?? '',
+                    'customerShippingAddress2' => $billing['ship_address2'] ?? '',
+                    'customerShippingCity' => $billing['ship_city'] ?? '',
+                    'customerShippingState' => $billing['ship_state'] ?? '',
+                    'customerShippingPostcode' => $billing['ship_zip'] ?? '',
+                    'customerShippingCountry' => $billing['ship_country'] ?? ''
+                ];
+            }
+            
+            // Product ratings
+            $reviewsQuery = $item->reviews();
+            $avgRating = $reviewsQuery->avg('rating') ?? 0;
+            $reviewCount = $reviewsQuery->count();
+        @endphp
+        
+        window.dataLayer.push({
+            // Page information
+            'pagePostType': 'product',
+            'pagePostType2': 'single-product',
+            'pagePostAuthor': 'admin',
+            
+            // Customer data
+            @if($user)
+            @foreach($customerData as $key => $value)
+            '{{ $key }}': {!! is_numeric($value) ? $value : "'" . addslashes($value) . "'" !!},
+            @endforeach
+            @endif
+            
+            // Cart information
+            'cartContent': {
+                'totals': {
+                    'applied_coupons': [],
+                    'discount_total': 0,
+                    'subtotal': {{ $cartTotal }},
+                    'total': {{ $cartTotal }}
+                },
+                'items': {!! json_encode($cartItems) !!}
+            },
+            
+            // Product ratings and reviews
+            'productRatingCounts': [],
+            'productAverageRating': {{ $avgRating }},
+            'productReviewCount': {{ $reviewCount }},
+            'productType': '{{ $item->is_type ?? 'simple' }}',
+            'productisVeriable': {{ $item->attributes->count() > 0 ? 1 : 0 }},
+            
+            // Ecommerce tracking
+            'ecommerce': {
+                'detail': {
+                    'products': [{
+                        'id': '{{ $item->id }}',
+                        'name': '{{ addslashes($item->name) }}',
+                        'category': '{{ addslashes($item->category->name ?? '') }}',
+                        'price': {{ $item->discount_price ?? $item->price }},
+                        'currency': '{{ env('CURRENCY_ISO', 'BDT') }}',
+                        'brand': '{{ addslashes($item->brand->name ?? '') }}',
+                        'variant': '{{ addslashes($item->is_type ?? '') }}',
+                        'quantity': 1
+                    }]
+                }
+            },
+            'event': 'view_item'
+        });
+    </script>
     
     @if (!$hideBreadcrumbs)
     <div class="page-title">
@@ -774,6 +887,25 @@ $(document).ready(function() {
         return false;
     });
 
+    // Track form field changes for GTM
+    $(document).on('input change', '#checkoutBilling input, #checkoutBilling textarea', function() {
+        let formData = {
+            'event': 'form_field_change',
+            'form_id': 'checkoutBilling',
+            'field_name': $(this).attr('name'),
+            'field_value': $(this).val(),
+            'form_data': {
+                'bill_first_name': $('input[name="bill_first_name"]').val(),
+                'bill_phone': $('input[name="bill_phone"]').val(),
+                'bill_address1': $('textarea[name="bill_address1"]').val(),
+                'bill_email': $('input[name="bill_email"]').val()
+            }
+        };
+        
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push(formData);
+    });
+
     // Handle Order Now button click (place order directly)
     $(document).on("click", "#order_now_btn", function(e) {
         e.preventDefault();
@@ -812,6 +944,31 @@ $(document).ready(function() {
             }, 500);
             return;
         }
+        
+        // Push form submission data to GTM
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+            'event': 'form_submit',
+            'form_id': 'checkoutBilling',
+            'form_data': {
+                'bill_first_name': name,
+                'bill_phone': phone,
+                'bill_address1': address,
+                'bill_email': $('input[name="bill_email"]').val()
+            },
+            'ecommerce': {
+                'add_to_cart': {
+                    'products': [{
+                        'id': $('#item_id').val(),
+                        'name': '{{ addslashes($item->name) }}',
+                        'category': '{{ addslashes($item->category->name ?? '') }}',
+                        'price': {{ $item->discount_price ?? $item->price }},
+                        'currency': '{{ env('CURRENCY_ISO', 'BDT') }}',
+                        'quantity': parseInt($('.cart-amount').val()) || 1
+                    }]
+                }
+            }
+        });
         
         // Get product details
         var itemId = $('#item_id').val();

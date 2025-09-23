@@ -119,10 +119,16 @@
     {{-- Google AnalyTics End --}}
 
     {{-- Facebook pixel  Start --}}
-    @if ($setting->is_facebook_pixel == '1')
+    @if ($setting->is_facebook_pixel == '1' || !empty($setting->facebook_pixel))
         {!! $setting->facebook_pixel !!}
     @endif
     {{-- Facebook pixel End --}}
+
+    {{-- Google Tag Manager (Head) Start --}}
+    @if ($setting->is_gtm == '1' || !empty($setting->gtm_head_code))
+        {!! $setting->gtm_head_code !!}
+    @endif
+    {{-- Google Tag Manager (Head) End --}}
 
 </head>
 <!-- Body-->
@@ -137,6 +143,12 @@ body_theme3
 @elseif($setting->theme == 'theme4')
 body_theme4 @endif
 ">
+
+    {{-- Google Tag Manager (Body) Start --}}
+    @if ($setting->is_gtm == '1' || !empty($setting->gtm_body_code))
+        {!! $setting->gtm_body_code !!}
+    @endif
+    {{-- Google Tag Manager (Body) End --}}
 
     @if ($setting->is_loader == 1)
         <!-- Preloader Start -->
@@ -425,6 +437,22 @@ body_theme4 @endif
         var mainbs = {!! $mainbs !!};
         var decimal_separator = '{!! $setting->decimal_separator !!}';
         var thousand_separator = '{!! $setting->thousand_separator !!}';
+        
+        // Enhanced dataLayer for user behavior tracking
+        window.dataLayer = window.dataLayer || [];
+        
+        // Session and user behavior data
+        window.dataLayer.push({
+            'userLoginStatus': '{{ Auth::check() ? "logged_in" : "logged_out" }}',
+            'userType': '{{ Auth::check() ? "registered" : "guest" }}',
+            'sessionId': '{{ session()->getId() }}',
+            'pageLoadTime': new Date().getTime(),
+            'userAgent': navigator.userAgent,
+            'screenResolution': screen.width + 'x' + screen.height,
+            'language': navigator.language,
+            'referrer': document.referrer || 'direct',
+            'event': 'page_view'
+        });
     </script>
 
     <script>
