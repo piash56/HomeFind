@@ -10,128 +10,131 @@
         $hideBreadcrumbs = in_array($currentRoute, ['front.product', 'front.checkout.billing', 'front.checkout.success', 'front.order.track']);
     @endphp
 
-    {{-- Comprehensive Ecommerce dataLayer for GTM Purchase Event --}}
+    {{-- Simple Purchase Tracking Test --}}
     <script>
+        // Test 1: Basic logging
+        console.log('🚀 SUCCESS PAGE LOADED - BASIC TEST');
+        
+        // Test 2: Check if we have data
+        console.log('Order ID:', @json($order->transaction_number ?? 'NO_ORDER'));
+        console.log('Order Total:', @json($order->total ?? 0));
+        console.log('Cart Items Count:', @json(count($cart ?? [])));
+        console.log('Raw Order Data:', @json($order ?? null));
+        console.log('Raw Cart Data:', @json($cart ?? null));
+        
+        // Test 3: Initialize dataLayer
         window.dataLayer = window.dataLayer || [];
+        console.log('✅ DataLayer initialized');
         
-        @php
-            $user = Auth::user();
-            $billing = json_decode($order->billing_info ?? '{}', true) ?: [];
-            $shipping = json_decode($order->shipping_info ?? '{}', true) ?: [];
+        // Test 4: Complete GA4 purchase event with ecommerce structure
+        try {
+            // Clear any existing ecommerce data first
+            window.dataLayer.push({
+                'ecommerce': null
+            });
             
-            // Calculate totals
-            $subtotal = 0;
-            $tax = 0;
-            $shippingCost = $order->shipping_cost ?? 0;
-            $discount = $order->discount ?? 0;
+            // Prepare cart items based on actual cart structure
+            var cartItems = [];
+            @if(isset($cart) && is_array($cart) && count($cart) > 0)
+                @foreach($cart as $key => $row)
+                // Debug each cart item
+                console.log('Cart item @json($key):', @json($row));
+                
+                cartItems.push({
+                    'item_id': @json($key ?? $row['id'] ?? $row['item_id'] ?? ''),
+                    'item_name': @json($row['name'] ?? $row['item_name'] ?? 'Unknown Product'),
+                    'item_category': @json($row['category'] ?? $row['item_category'] ?? $row['cat'] ?? $row['category_name'] ?? 'Unknown'),
+                    'item_brand': @json($row['brand'] ?? $row['item_brand'] ?? $row['brand_name'] ?? ''),
+                    'item_variant': @json($row['variant'] ?? $row['item_variant'] ?? $row['size'] ?? $row['color'] ?? ''),
+                    'quantity': @json($row['qty'] ?? $row['quantity'] ?? 1),
+                    'price': @json(floatval($row['price'] ?? $row['item_price'] ?? $row['main_price'] ?? $row['discount_price'] ?? 0))
+                });
+                @endforeach
+            @endif
             
-            foreach($cart as $row) {
-                $itemPrice = $row['item']['discount_price'] ?? $row['item']['price'] ?? $row['discount_price'] ?? $row['price'] ?? 0;
-                $quantity = $row['qty'] ?? 1;
-                $subtotal += $itemPrice * $quantity;
-            }
+            console.log('🛍️ Cart items prepared:', cartItems);
             
-            $customerData = [];
-            if($user) {
-                $customerData = [
-                    'customerTotalOrders' => $user->orders()->count(),
-                    'customerTotalOrderValue' => $user->orders()->sum('total'),
-                    'customerFirstName' => $user->first_name ?? '',
-                    'customerLastName' => $user->last_name ?? '',
-                    'customerBillingFirstName' => $billing['bill_first_name'] ?? $user->first_name ?? '',
-                    'customerBillingLastName' => $billing['bill_last_name'] ?? $user->last_name ?? '',
-                    'customerBillingCompany' => $billing['bill_company'] ?? '',
-                    'customerBillingAddress1' => $billing['bill_address1'] ?? '',
-                    'customerBillingAddress2' => $billing['bill_address2'] ?? '',
-                    'customerBillingCity' => $billing['bill_city'] ?? '',
-                    'customerBillingState' => $billing['bill_state'] ?? '',
-                    'customerBillingPostcode' => $billing['bill_zip'] ?? '',
-                    'customerBillingCountry' => $billing['bill_country'] ?? '',
-                    'customerBillingEmail' => $billing['bill_email'] ?? $user->email ?? '',
-                    'customerBillingEmailHash' => $billing['bill_email'] ? hash('sha256', strtolower(trim($billing['bill_email']))) : '',
-                    'customerBillingPhone' => $billing['bill_phone'] ?? '',
-                    'customerShippingFirstName' => $shipping['ship_first_name'] ?? '',
-                    'customerShippingLastName' => $shipping['ship_last_name'] ?? '',
-                    'customerShippingCompany' => $shipping['ship_company'] ?? '',
-                    'customerShippingAddress1' => $shipping['ship_address1'] ?? '',
-                    'customerShippingAddress2' => $shipping['ship_address2'] ?? '',
-                    'customerShippingCity' => $shipping['ship_city'] ?? '',
-                    'customerShippingState' => $shipping['ship_state'] ?? '',
-                    'customerShippingPostcode' => $shipping['ship_zip'] ?? '',
-                    'customerShippingCountry' => $shipping['ship_country'] ?? ''
-                ];
-            }
-        @endphp
-        
-        window.dataLayer.push({
-            // Page information
-            'pagePostType': 'purchase',
-            'pagePostType2': 'checkout-success',
-            'pagePostAuthor': 'admin',
+            // Debug order values - check different possible field names
+            console.log('🔍 Debugging Order Total:');
+            console.log('Order object keys:', @json($order ? array_keys($order->toArray()) : []));
+            console.log('Order total raw:', @json($order->total ?? 'NOT_FOUND'));
+            console.log('Order totalAmount:', @json($order->totalAmount ?? 'NOT_FOUND'));
+            console.log('Order pay_amount:', @json($order->pay_amount ?? 'NOT_FOUND'));
+            console.log('Order final_amount:', @json($order->final_amount ?? 'NOT_FOUND'));
             
-            // Customer data
-            @if($user)
-            @foreach($customerData as $key => $value)
-            '{{ $key }}': {!! is_numeric($value) ? $value : "'" . addslashes($value) . "'" !!},
+            // Calculate total from cart if order total is missing
+            var calculatedTotal = 0;
+            @if(isset($cart) && is_array($cart) && count($cart) > 0)
+                @foreach($cart as $key => $row)
+                calculatedTotal += parseFloat(@json($row['price'] ?? $row['main_price'] ?? 0)) * parseInt(@json($row['qty'] ?? 1));
+                @endforeach
+            @endif
+            console.log('Calculated total from cart:', calculatedTotal);
+            
+            // Determine the best value for order total
+            var orderValue = parseFloat(@json($order->total ?? $order->totalAmount ?? $order->pay_amount ?? $order->final_amount ?? 0)) || calculatedTotal;
+            
+            console.log('🏷️ Final order value used:', orderValue);
+            
+            // Complete GA4 purchase event
+            var purchaseEvent = {
+                'event': 'purchase',
+                'ecommerce': {
+                    'transaction_id': @json($order->transaction_number ?? ''),
+                    'value': orderValue,
+                    'currency': @json(env('CURRENCY_ISO', 'BDT')),
+                    'tax': parseFloat(@json($order->tax ?? 0)),
+                    'shipping': parseFloat(@json($order->shipping_cost ?? $order->shipping ?? 0)),
+                    'coupon': @json($order->coupon ?? ''),
+                    'items': cartItems
+                }
+            };
+            
+            console.log('📦 Complete purchase event data:', purchaseEvent);
+            
+            // Push to dataLayer
+            window.dataLayer.push(purchaseEvent);
+            
+            console.log('✅ GA4 purchase event pushed to dataLayer successfully!');
+            
+            // Facebook Pixel Purchase Event
+            if (typeof fbq !== 'undefined') {
+                console.log('📘 Firing Facebook Pixel Purchase Event');
+                
+                var contentIds = [];
+                var contents = [];
+                
+                @if(isset($cart) && is_array($cart) && count($cart) > 0)
+                    @foreach($cart as $key => $row)
+                    contentIds.push(@json($key ?? $row['id'] ?? $row['item_id'] ?? ''));
+                    contents.push({
+                        'id': @json($key ?? $row['id'] ?? $row['item_id'] ?? ''),
+                        'quantity': @json($row['qty'] ?? $row['quantity'] ?? 1),
+                        'item_price': parseFloat(@json($row['price'] ?? $row['item_price'] ?? $row['main_price'] ?? $row['discount_price'] ?? 0))
+                    });
             @endforeach
             @endif
             
-            // Order information
-            'orderId': '{{ $order->transaction_number }}',
-            'orderDate': '{{ $order->created_at->format('Y-m-d H:i:s') }}',
-            'orderStatus': '{{ $order->order_status }}',
-            'paymentMethod': '{{ $order->payment_method }}',
-            'shippingMethod': '{{ $order->shipping_method }}',
+                fbq('track', 'Purchase', {
+                    value: orderValue,
+                    currency: @json(env('CURRENCY_ISO', 'BDT')),
+                    content_type: 'product',
+                    content_ids: contentIds,
+                    contents: contents
+                });
+                
+                console.log('✅ Facebook Pixel Purchase event sent');
+            } else {
+                console.log('⚠️ Facebook Pixel (fbq) not found');
+            }
             
-            // Cart information
-            'cartContent': {
-                'totals': {
-                    'applied_coupons': [],
-                    'discount_total': {{ $discount }},
-                    'subtotal': {{ $subtotal }},
-                    'tax': {{ $tax }},
-                    'shipping': {{ $shippingCost }},
-                    'total': {{ $order->total }}
-                },
-                'items': {!! json_encode(array_map(function($row) {
-                    return [
-                        'id' => $row['item']['id'] ?? $row['id'] ?? '',
-                        'name' => $row['item']['name'] ?? $row['name'] ?? '',
-                        'category' => $row['item']['category']['name'] ?? $row['category']['name'] ?? '',
-                        'quantity' => $row['qty'] ?? 1,
-                        'price' => $row['item']['discount_price'] ?? $row['item']['price'] ?? $row['price'] ?? 0
-                    ];
-                }, $cart)) !!}
-            },
+            console.log('📊 Final dataLayer:', window.dataLayer);
             
-            // Enhanced ecommerce tracking
-            'ecommerce': {
-                'purchase': {
-                    'actionField': {
-                        'id': '{{ $order->transaction_number }}',
-                        'revenue': {{ $order->total }},
-                        'currency': '{{ env('CURRENCY_ISO', 'BDT') }}',
-                        'tax': {{ $tax }},
-                        'shipping': {{ $shippingCost }},
-                        'coupon': ''
-                    },
-                    'products': [
-                        @foreach($cart as $row)
-                        {
-                            'id': '{{ $row['item']['id'] ?? $row['id'] ?? '' }}',
-                            'name': '{{ addslashes($row['item']['name'] ?? $row['name'] ?? '') }}',
-                            'category': '{{ addslashes($row['item']['category']['name'] ?? $row['category']['name'] ?? '') }}',
-                            'brand': '{{ addslashes($row['item']['brand']['name'] ?? $row['brand']['name'] ?? '') }}',
-                            'variant': '{{ addslashes($row['item']['is_type'] ?? $row['is_type'] ?? '') }}',
-                            'quantity': {{ $row['qty'] ?? 1 }},
-                            'price': {{ $row['item']['discount_price'] ?? $row['item']['price'] ?? $row['price'] ?? 0 }}
-                        }{{ !$loop->last ? ',' : '' }}
-                        @endforeach
-                    ]
-                }
-            },
-            'event': 'purchase'
-        });
+        } catch (error) {
+            console.error('❌ Error in purchase event:', error);
+        }
+        
+        console.log('🎯 Script completed - check if Custom Event trigger fires now!');
     </script>
     
     @if (!$hideBreadcrumbs)
