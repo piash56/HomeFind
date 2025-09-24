@@ -26,7 +26,9 @@
             $discount = $order->discount ?? 0;
             
             foreach($cart as $row) {
-                $subtotal += ($row['item']['discount_price'] ?? $row['item']['price']) * $row['qty'];
+                $itemPrice = $row['item']['discount_price'] ?? $row['item']['price'] ?? $row['discount_price'] ?? $row['price'] ?? 0;
+                $quantity = $row['qty'] ?? 1;
+                $subtotal += $itemPrice * $quantity;
             }
             
             $customerData = [];
@@ -93,11 +95,11 @@
                 },
                 'items': {!! json_encode(array_map(function($row) {
                     return [
-                        'id' => $row['item']['id'],
-                        'name' => $row['item']['name'],
-                        'category' => $row['item']['category']['name'] ?? '',
-                        'quantity' => $row['qty'],
-                        'price' => $row['item']['discount_price'] ?? $row['item']['price']
+                        'id' => $row['item']['id'] ?? $row['id'] ?? '',
+                        'name' => $row['item']['name'] ?? $row['name'] ?? '',
+                        'category' => $row['item']['category']['name'] ?? $row['category']['name'] ?? '',
+                        'quantity' => $row['qty'] ?? 1,
+                        'price' => $row['item']['discount_price'] ?? $row['item']['price'] ?? $row['price'] ?? 0
                     ];
                 }, $cart)) !!}
             },
@@ -116,13 +118,13 @@
                     'products': [
                         @foreach($cart as $row)
                         {
-                            'id': '{{ $row['item']['id'] }}',
-                            'name': '{{ addslashes($row['item']['name']) }}',
-                            'category': '{{ addslashes($row['item']['category']['name'] ?? '') }}',
-                            'brand': '{{ addslashes($row['item']['brand']['name'] ?? '') }}',
-                            'variant': '{{ addslashes($row['item']['is_type'] ?? '') }}',
-                            'quantity': {{ $row['qty'] }},
-                            'price': {{ $row['item']['discount_price'] ?? $row['item']['price'] }}
+                            'id': '{{ $row['item']['id'] ?? $row['id'] ?? '' }}',
+                            'name': '{{ addslashes($row['item']['name'] ?? $row['name'] ?? '') }}',
+                            'category': '{{ addslashes($row['item']['category']['name'] ?? $row['category']['name'] ?? '') }}',
+                            'brand': '{{ addslashes($row['item']['brand']['name'] ?? $row['brand']['name'] ?? '') }}',
+                            'variant': '{{ addslashes($row['item']['is_type'] ?? $row['is_type'] ?? '') }}',
+                            'quantity': {{ $row['qty'] ?? 1 }},
+                            'price': {{ $row['item']['discount_price'] ?? $row['item']['price'] ?? $row['price'] ?? 0 }}
                         }{{ !$loop->last ? ',' : '' }}
                         @endforeach
                     ]
