@@ -873,39 +873,17 @@ $(document).ready(function() {
         $(this).removeClass('is-invalid').css('border-color', '');
     });
     
-    // Handle Buy Now button click (fire begin_checkout + scroll to checkout section)
+    // Handle Buy Now button click (scroll to checkout section)
     $(document).on("click", "#but_to_cart", function(e) {
         e.preventDefault();
-
-        // Guard to avoid duplicate begin_checkout events
-        if (!window.__beginCheckoutFired) {
-            window.__beginCheckoutFired = true;
-
-            var quantity = parseInt($('.cart-amount').val()) || 1;
-            var price = parseFloat($('#base-price').val());
-
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-                'event': 'begin_checkout',
-                'ecommerce': {
-                    'currency': '{{ env('CURRENCY_ISO', 'BDT') }}',
-                    'value': price * quantity,
-                    'items': [{
-                        'item_id': $('#item_id').val(),
-                        'item_name': '{{ addslashes($item->name) }}',
-                        'item_category': '{{ addslashes($item->category->name ?? '') }}',
-                        'price': price,
-                        'quantity': quantity
-                    }]
-                }
-            });
-        }
-
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
         // Scroll to checkout section
         $('html, body').animate({
             scrollTop: $('#checkout-section').offset().top - 100
         }, 1000);
-
+        
         return false;
     });
 

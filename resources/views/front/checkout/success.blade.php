@@ -25,30 +25,10 @@
             $shippingCost = $order->shipping_cost ?? 0;
             $discount = $order->discount ?? 0;
             
-            $contentIds = [];
-            $contentsArr = [];
-            $itemsGa4 = [];
-            $numItems = 0;
             foreach($cart as $row) {
                 $itemPrice = $row['item']['discount_price'] ?? $row['item']['price'] ?? $row['discount_price'] ?? $row['price'] ?? 0;
                 $quantity = $row['qty'] ?? 1;
                 $subtotal += $itemPrice * $quantity;
-                $numItems += (int) $quantity;
-                $contentIds[] = $row['item']['id'] ?? $row['id'] ?? '';
-                $contentsArr[] = [
-                    'id' => $row['item']['id'] ?? $row['id'] ?? '',
-                    'quantity' => $quantity,
-                    'item_price' => $itemPrice
-                ];
-                $itemsGa4[] = [
-                    'item_id' => $row['item']['id'] ?? $row['id'] ?? '',
-                    'item_name' => addslashes($row['item']['name'] ?? $row['name'] ?? ''),
-                    'item_category' => addslashes($row['item']['category']['name'] ?? $row['category']['name'] ?? ''),
-                    'item_brand' => addslashes($row['item']['brand']['name'] ?? $row['brand']['name'] ?? ''),
-                    'item_variant' => addslashes($row['item']['is_type'] ?? $row['is_type'] ?? ''),
-                    'price' => $itemPrice,
-                    'quantity' => $quantity
-                ];
             }
             
             $customerData = [];
@@ -124,20 +104,6 @@
                 }, $cart)) !!}
             },
             
-            // GA4-friendly root params for Purchase
-            'transaction_id': '{{ $order->transaction_number }}',
-            'value': {{ $order->total }},
-            'currency': '{{ env('CURRENCY_ISO', 'BDT') }}',
-            'tax': {{ $tax }},
-            'shipping': {{ $shippingCost }},
-            'items': {!! json_encode($itemsGa4) !!},
-
-            // Facebook Pixel friendly params to avoid Custom JS in GTM
-            'content_type': 'product',
-            'content_ids': {!! json_encode($contentIds) !!},
-            'contents': {!! json_encode($contentsArr) !!},
-            'num_items': {{ $numItems }},
-
             // Enhanced ecommerce tracking
             'ecommerce': {
                 'purchase': {
