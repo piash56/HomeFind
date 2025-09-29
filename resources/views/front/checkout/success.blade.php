@@ -146,8 +146,6 @@
                     content_type: 'product',
                     content_ids: contentIds,
                     contents: contents
-                }, {
-                    eventID: @json($order->transaction_number ?? $order->id ?? uniqid('order_'))
                 });
                 
                 console.log('✅ Facebook Pixel Purchase event sent');
