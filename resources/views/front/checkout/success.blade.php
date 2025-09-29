@@ -124,7 +124,7 @@
             
             // Facebook Pixel Purchase Event
             // DISABLED: GTM handles Facebook Purchase event to avoid duplicates
-            // GTM Facebook Purchase tag uses {{ecommerce.transaction_id}} as Event ID
+            // GTM Facebook Purchase tag uses ecommerce.transaction_id as Event ID
             console.log('📘 Facebook Pixel Purchase will be fired by GTM (not directly from this code)');
             
             console.log('📊 Final dataLayer:', window.dataLayer);
