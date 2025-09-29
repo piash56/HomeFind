@@ -123,35 +123,9 @@
             console.log('✅ GA4 purchase event pushed to dataLayer successfully!');
             
             // Facebook Pixel Purchase Event
-            if (typeof fbq !== 'undefined') {
-                console.log('📘 Firing Facebook Pixel Purchase Event');
-                
-                var contentIds = [];
-                var contents = [];
-                
-                @if(isset($cart) && is_array($cart) && count($cart) > 0)
-                    @foreach($cart as $key => $row)
-                    contentIds.push(@json($key ?? $row['id'] ?? $row['item_id'] ?? ''));
-                    contents.push({
-                        'id': @json($key ?? $row['id'] ?? $row['item_id'] ?? ''),
-                        'quantity': @json($row['qty'] ?? $row['quantity'] ?? 1),
-                        'item_price': parseFloat(@json($row['price'] ?? $row['item_price'] ?? $row['main_price'] ?? $row['discount_price'] ?? 0))
-                    });
-            @endforeach
-            @endif
-            
-                fbq('track', 'Purchase', {
-                    value: orderValue,
-                    currency: @json(env('CURRENCY_ISO', 'BDT')),
-                    content_type: 'product',
-                    content_ids: contentIds,
-                    contents: contents
-                });
-                
-                console.log('✅ Facebook Pixel Purchase event sent');
-            } else {
-                console.log('⚠️ Facebook Pixel (fbq) not found');
-            }
+            // DISABLED: GTM handles Facebook Purchase event to avoid duplicates
+            // GTM Facebook Purchase tag uses {{ecommerce.transaction_id}} as Event ID
+            console.log('📘 Facebook Pixel Purchase will be fired by GTM (not directly from this code)');
             
             console.log('📊 Final dataLayer:', window.dataLayer);
             
