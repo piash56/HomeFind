@@ -8,6 +8,31 @@
     @php
         $currentRoute = Route::currentRouteName();
         $hideBreadcrumbs = in_array($currentRoute, ['front.product', 'front.checkout.billing', 'front.checkout.success', 'front.order.track']);
+
+        // Build lookup tables for category/brand from DB when not present in cart rows
+        $categoryByItemId = [];
+        $brandByItemId = [];
+        try {
+            if (isset($cart) && is_array($cart)) {
+                $productIds = collect($cart)->keys()->filter(function ($id) {
+                    return is_numeric($id);
+                })->values();
+
+                if ($productIds->count() > 0) {
+                    // Lazy import to avoid issues if model namespaces differ
+                    if (class_exists('App\\Models\\Item')) {
+                        $items = App\Models\Item::with(['category:id,name', 'brand:id,name'])
+                            ->whereIn('id', $productIds)->get();
+                        foreach ($items as $it) {
+                            $categoryByItemId[$it->id] = optional($it->category)->name ?: '';
+                            $brandByItemId[$it->id] = optional($it->brand)->name ?: '';
+                        }
+                    }
+                }
+            }
+        } catch (Throwable $e) {
+            // Fail silently; we'll fall back to Unknown in JS
+        }
     @endphp
 
     {{-- Simple Purchase Tracking Test --}}
@@ -43,8 +68,8 @@
                 cartItems.push({
                     'item_id': @json($key ?? $row['id'] ?? $row['item_id'] ?? ''),
                     'item_name': @json($row['name'] ?? $row['item_name'] ?? 'Unknown Product'),
-                    'item_category': @json($row['category'] ?? $row['item_category'] ?? $row['cat'] ?? $row['category_name'] ?? 'Unknown'),
-                    'item_brand': @json($row['brand'] ?? $row['item_brand'] ?? $row['brand_name'] ?? ''),
+                    'item_category': @json($row['category'] ?? $row['item_category'] ?? $row['cat'] ?? $row['category_name'] ?? ($categoryByItemId[$key] ?? 'Unknown')),
+                    'item_brand': @json($row['brand'] ?? $row['item_brand'] ?? $row['brand_name'] ?? ($brandByItemId[$key] ?? '')),
                     'item_variant': @json($row['variant'] ?? $row['item_variant'] ?? $row['size'] ?? $row['color'] ?? ''),
                     'quantity': @json($row['qty'] ?? $row['quantity'] ?? 1),
                     'price': @json(floatval($row['price'] ?? $row['item_price'] ?? $row['main_price'] ?? $row['discount_price'] ?? 0))
