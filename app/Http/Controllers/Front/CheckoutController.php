@@ -653,11 +653,11 @@ class CheckoutController extends Controller
                     }
 
                     $items = [];
-                    foreach ($cart as $row) {
+                    foreach ($cart as $item_id => $row) {
                         $items[] = [
-                            'id' => (string)($row['item']['id'] ?? ''),
+                            'id' => (string)$item_id,
                             'quantity' => (int)($row['qty'] ?? 1),
-                            'item_price' => (float)($row['item']['discount_price'] ?? $row['item']['price'] ?? 0),
+                            'item_price' => (float)($row['main_price'] ?? 0),
                         ];
                     }
 
@@ -678,12 +678,12 @@ class CheckoutController extends Controller
                 $ga4 = new \App\Services\Ga4MeasurementService();
                 if ($ga4->isEnabled()) {
                     $items = [];
-                    foreach ($cart as $row) {
+                    foreach ($cart as $item_id => $row) {
                         $items[] = [
-                            'item_id' => (string)($row['item']['id'] ?? ''),
-                            'item_name' => (string)($row['item']['name'] ?? ''),
+                            'item_id' => (string)$item_id,
+                            'item_name' => (string)($row['name'] ?? ''),
                             'quantity' => (int)($row['qty'] ?? 1),
-                            'price' => (float)($row['item']['discount_price'] ?? $row['item']['price'] ?? 0),
+                            'price' => (float)($row['main_price'] ?? 0),
                         ];
                     }
 
