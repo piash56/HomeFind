@@ -43,6 +43,12 @@ class FacebookCapiService
                 'custom_data' => $payload['custom_data'] ?? [],
             ];
 
+            // ✅ ADD EVENT ID FOR DEDUPLICATION
+            // Use transaction_id as event_id to match browser events
+            if (isset($payload['custom_data']['transaction_id'])) {
+                $event['event_id'] = $payload['custom_data']['transaction_id'];
+            }
+
             $body = [
                 'data' => [$event],
                 'access_token' => $this->accessToken,

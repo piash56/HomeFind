@@ -102,20 +102,25 @@
             console.log('🏷️ Final order value used:', orderValue);
             
             // Complete GA4 purchase event
+            var transactionId = @json($order->transaction_number ?? '');
             var purchaseEvent = {
                 'event': 'purchase',
                 'ecommerce': {
-                    'transaction_id': @json($order->transaction_number ?? ''),
+                    'transaction_id': transactionId,
                     'value': orderValue,
                     'currency': @json(env('CURRENCY_ISO', 'BDT')),
                     'tax': parseFloat(@json($order->tax ?? 0)),
                     'shipping': parseFloat(@json($order->shipping_cost ?? $order->shipping ?? 0)),
                     'coupon': @json($order->coupon ?? ''),
                     'items': cartItems
-                }
+                },
+                // ✅ ADD EVENT ID FOR FACEBOOK DEDUPLICATION
+                // GTM will use this eventID for Facebook Pixel events
+                'eventID': transactionId
             };
             
             console.log('📦 Complete purchase event data:', purchaseEvent);
+            console.log('🔑 Event ID for deduplication:', transactionId);
             
             // Push to dataLayer
             window.dataLayer.push(purchaseEvent);
@@ -125,7 +130,8 @@
             // Facebook Pixel Purchase Event
             // DISABLED: GTM handles Facebook Purchase event to avoid duplicates
             // GTM Facebook Purchase tag uses ecommerce.transaction_id as Event ID
-            console.log('📘 Facebook Pixel Purchase will be fired by GTM (not directly from this code)');
+            // The eventID field above ensures browser + server events deduplicate correctly
+            console.log('📘 Facebook Pixel Purchase will be fired by GTM with Event ID:', transactionId);
             
             console.log('📊 Final dataLayer:', window.dataLayer);
             
