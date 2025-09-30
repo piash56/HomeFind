@@ -639,9 +639,10 @@ class CheckoutController extends Controller
                 try {
                     $totalAmount = \App\Helpers\PriceHelper::OrderTotal($order, 'trns');
 
-                    // Facebook CAPI
-                    $fb = new \App\Services\FacebookCapiService();
-                    if ($fb->isEnabled()) {
+                    // Facebook CAPI - DISABLED (Using Stape Server GTM instead)
+                    // $fb = new \App\Services\FacebookCapiService();
+                    // if ($fb->isEnabled()) {
+                    if (false) { // Disabled - Stape handles server events
                         $billing = json_decode($order->billing_info, true) ?: [];
                         $phone = $billing['bill_phone'] ?? '';
                         $email = $billing['bill_email'] ?? '';
