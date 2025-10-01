@@ -46,7 +46,7 @@
                     </a>
                 </li>
                 <li>
-                    <a class="sub-link" href="{{ route('back.review.index') }}">
+                    <a class="sub-link" href="{{ route('admin.review.index') }}">
                       <span class="sub-item">{{ __('Product Reviews') }}</span></a>
                 </li>
             </ul>
@@ -118,6 +118,11 @@
                 <li>
                     <a class="sub-link" href="{{ route('back.setting.sms') }}">
                         <span class="sub-item">{{ __('SMS Settings') }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="sub-link" href="{{ route('back.setting.cta') }}">
+                        <span class="sub-item">{{ __('Call to Action') }}</span>
                     </a>
                 </li>
                 <li>

@@ -215,6 +215,56 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Bulk Pricing Section -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group mb-2">
+                        <label class="switch-primary">
+                            <input type="checkbox" class="switch switch-bootstrap status radio-check" name="enable_bulk_pricing" id="enable_bulk_pricing" value="1">
+                            <span class="switch-body"></span>
+                            <span class="switch-text">{{ __('Enable Bulk Pricing') }}</span>
+                        </label>
+                    </div>
+                    
+                    <div id="bulk-pricing-section" style="display: none;">
+                        <p class="text-muted small mb-3">{{ __('Set different prices for different quantities. Customers will see bulk options instead of quantity selector.') }}</p>
+                        
+                        <div id="bulk-pricing-items">
+                            <div class="bulk-pricing-item border rounded p-3 mb-3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-2">
+                                            <label>{{ __('Quantity') }}</label>
+                                            <input type="number" class="form-control" name="bulk_quantity[]" placeholder="2" min="1" value="">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-2">
+                                            <label>{{ __('Price') }}</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">{{ $curr->sign }}</span>
+                                                </div>
+                                                <input type="text" class="form-control" name="bulk_price[]" placeholder="0.00" min="0" step="0.01" value="" style="max-width: none;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-center">
+                                        <button type="button" class="btn btn-danger btn-sm remove-bulk-pricing mt-3" disabled>
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-success btn-sm" id="add-bulk-pricing">
+                            <i class="fa fa-plus"></i> {{ __('Add Bulk Tier') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div class="card">
                 <div class="card-body">
 
@@ -275,4 +325,73 @@
 
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    // Toggle bulk pricing section
+    $('#enable_bulk_pricing').change(function() {
+        if ($(this).is(':checked')) {
+            $('#bulk-pricing-section').slideDown();
+        } else {
+            $('#bulk-pricing-section').slideUp();
+        }
+    });
+
+    // Add bulk pricing tier
+    $('#add-bulk-pricing').click(function() {
+        var currencySign = '{{ $curr->sign }}';
+        var newItem = `
+            <div class="bulk-pricing-item border rounded p-3 mb-3">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group mb-2">
+                            <label>{{ __('Quantity') }}</label>
+                            <input type="number" class="form-control" name="bulk_quantity[]" placeholder="3" min="1" value="">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-2">
+                            <label>{{ __('Price') }}</label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">${currencySign}</span>
+                                </div>
+                                <input type="text" class="form-control" name="bulk_price[]" placeholder="0.00" min="0" step="0.01" value="" style="max-width: none;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-center">
+                        <button type="button" class="btn btn-danger btn-sm remove-bulk-pricing mt-3">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        $('#bulk-pricing-items').append(newItem);
+        updateRemoveButtons();
+    });
+
+    // Remove bulk pricing tier
+    $(document).on('click', '.remove-bulk-pricing', function() {
+        $(this).closest('.bulk-pricing-item').remove();
+        updateRemoveButtons();
+    });
+
+    // Update remove buttons state
+    function updateRemoveButtons() {
+        var itemCount = $('.bulk-pricing-item').length;
+        if (itemCount === 1) {
+            $('.remove-bulk-pricing').prop('disabled', true);
+        } else {
+            $('.remove-bulk-pricing').prop('disabled', false);
+        }
+    }
+
+    // Initialize
+    updateRemoveButtons();
+});
+</script>
 @endsection

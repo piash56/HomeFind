@@ -93,6 +93,16 @@ class ItemRepository
         }
 
 
+        // Handle bulk pricing
+        if ($request->has('enable_bulk_pricing') && $request->enable_bulk_pricing == 1) {
+            $input['enable_bulk_pricing'] = 1;
+            $bulkPricingData = $this->processBulkPricing($request);
+            $input['bulk_pricing_data'] = json_encode($bulkPricingData);
+        } else {
+            $input['enable_bulk_pricing'] = 0;
+            $input['bulk_pricing_data'] = null;
+        }
+
         $input['is_type'] = 'undefine';
 
         $item_id = Item::create($input)->id;
@@ -194,6 +204,16 @@ class ItemRepository
             }
         }
 
+        // Handle bulk pricing
+        if ($request->has('enable_bulk_pricing') && $request->enable_bulk_pricing == 1) {
+            $input['enable_bulk_pricing'] = 1;
+            $bulkPricingData = $this->processBulkPricing($request);
+            $input['bulk_pricing_data'] = json_encode($bulkPricingData);
+        } else {
+            $input['enable_bulk_pricing'] = 0;
+            $input['bulk_pricing_data'] = null;
+        }
+
         $item->update($input);
         if (isset($input['galleries'])) {
             $this->galleriesUpdate($request, $item->id);
@@ -285,5 +305,37 @@ class ItemRepository
             }
         }
         return $storeData;
+    }
+
+    /**
+     * Process bulk pricing data from request
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    private function processBulkPricing($request)
+    {
+        $bulkPricingData = [];
+
+        if ($request->has('bulk_quantity') && $request->has('bulk_price')) {
+            $quantities = $request->bulk_quantity;
+            $prices = $request->bulk_price;
+
+            for ($i = 0; $i < count($quantities); $i++) {
+                if (!empty($quantities[$i]) && !empty($prices[$i])) {
+                    $bulkPricingData[] = [
+                        'quantity' => (int)$quantities[$i],
+                        'price' => (float)$prices[$i]
+                    ];
+                }
+            }
+
+            // Sort by quantity ascending
+            usort($bulkPricingData, function ($a, $b) {
+                return $a['quantity'] - $b['quantity'];
+            });
+        }
+
+        return $bulkPricingData;
     }
 }

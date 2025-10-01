@@ -61,6 +61,18 @@ Route::group(['middleware' => ['adminlocalize', 'demo']], function () {
             Route::get('item/status/{item}/{status}', 'Back\ItemController@status')->name('back.item.status');
             Route::get('stock/out/product', 'Back\ItemController@stockOut')->name('back.item.stock.out');
             Route::resource('item', 'Back\ItemController', ['as' => 'back', 'except' => 'show', 'getsubCategory']);
+
+            //------------ REVIEW ------------
+            Route::get('reviews', '\App\Http\Controllers\ReviewController@adminIndex')->name('admin.review.index');
+            Route::get('reviews/create', '\App\Http\Controllers\ReviewController@adminCreate')->name('admin.review.create');
+            Route::post('reviews', '\App\Http\Controllers\ReviewController@adminStore')->name('admin.review.store');
+            Route::get('reviews/search-products', '\App\Http\Controllers\ReviewController@searchProducts')->name('admin.review.search-products');
+            Route::get('reviews/{id}', '\App\Http\Controllers\ReviewController@adminShow')->name('admin.review.show');
+            Route::get('reviews/{id}/edit', '\App\Http\Controllers\ReviewController@adminEdit')->name('admin.review.edit');
+            Route::put('reviews/{id}', '\App\Http\Controllers\ReviewController@adminUpdate')->name('admin.review.update');
+            Route::delete('reviews/{id}', '\App\Http\Controllers\ReviewController@adminDestroy')->name('admin.review.destroy');
+            Route::post('reviews/reply', '\App\Http\Controllers\ReviewController@adminReply')->name('admin.review.reply');
+            Route::post('reviews/{id}/remove-image', '\App\Http\Controllers\ReviewController@removeImage')->name('admin.review.remove-image');
             Route::get('item/highlight/{item}', 'Back\ItemController@highlight')->name('back.item.highlight');
             Route::post('item/highlight/update/{item}', 'Back\ItemController@highlight_update')->name('back.item.highlight.update');
             Route::get('item/galleries/{item}', 'Back\ItemController@galleries')->name('back.item.gallery');
@@ -106,9 +118,8 @@ Route::group(['middleware' => ['adminlocalize', 'demo']], function () {
             Route::get('brand/status/{id}/{status}/{type}', 'Back\BrandController@status')->name('back.brand.status');
             Route::resource('brand', 'Back\BrandController', ['as' => 'back', 'except' => 'show']);
 
-            //------------ REVIEW ----------------//
-            Route::get('review/status/{id}/{status}', 'Back\ReviewController@status')->name('back.review.status');
-            Route::resource('review', 'Back\ReviewController', ['as' => 'back', 'except' => ['create', 'store', 'edit', 'update']]);
+            //------------ OLD REVIEW ROUTES REMOVED ----------------//
+            // These routes were moved to the new admin.review routes above
         });
 
         //------------ NOTIFICATIONS ------------
@@ -185,6 +196,8 @@ Route::group(['middleware' => ['adminlocalize', 'demo']], function () {
 
             // ----------- SMS SETTING ---------------//
             Route::get('/setting/configuration/sms', 'Back\SmsSettingController@sms')->name('back.setting.sms');
+            Route::get('/setting/cta', 'Back\CtaController@index')->name('back.setting.cta');
+            Route::post('/setting/cta/update', 'Back\CtaController@update')->name('back.setting.cta.update');
             Route::post('/setting/sms/update', 'Back\SmsSettingController@smsUpdate')->name('back.sms.update');
             // ----------- SMS SETTING ---------------//
 
@@ -286,6 +299,11 @@ Route::group(['middleware' => 'maintainance'], function () {
         //------------ DIRECT ORDER ------------
         Route::post('/order/place-direct', 'Front\CheckoutController@placeDirectOrder')->name('front.order.direct');
         Route::get('/checkout/success', 'Front\CheckoutController@paymentSuccess')->name('front.checkout.success');
+
+        //------------ REVIEW ------------
+        Route::post('/review/verify-order', 'ReviewController@verifyOrder')->name('front.review.verify');
+        Route::post('/review/submit', 'ReviewController@submitReview')->name('front.review.submit');
+        Route::get('/review/get/{item_id}', 'ReviewController@getReviews')->name('front.review.get');
 
         //------------ CATCH-ALL ROUTE ------------
         // Redirect any other URL to the root (shop page)

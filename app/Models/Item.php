@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Item extends Model
 {
 
-    protected $fillable = ['category_id', 'subcategory_id', 'childcategory_id', 'brand_id', 'name', 'slug', 'sku', 'tags', 'video', 'sort_details', 'specification_name', 'specification_description', 'is_specification', 'details', 'photo', 'thumbnail', 'discount_price', 'previous_price', 'stock', 'meta_keywords', 'meta_description', 'status', 'is_type', 'tax_id', 'date', 'item_type', 'file', 'link', 'file_type', 'license_name', 'license_key', 'affiliate_link', "seller_id"];
+    protected $fillable = ['category_id', 'subcategory_id', 'childcategory_id', 'brand_id', 'name', 'slug', 'sku', 'tags', 'video', 'sort_details', 'specification_name', 'specification_description', 'is_specification', 'details', 'photo', 'thumbnail', 'discount_price', 'previous_price', 'stock', 'meta_keywords', 'meta_description', 'status', 'is_type', 'tax_id', 'date', 'item_type', 'file', 'link', 'file_type', 'license_name', 'license_key', 'affiliate_link', "seller_id", 'enable_bulk_pricing', 'bulk_pricing_data'];
 
     public function category()
     {
@@ -97,5 +97,53 @@ class Item extends Model
                 return false;
             }
         }
+    }
+
+    /**
+     * Get bulk pricing data as array
+     *
+     * @return array
+     */
+    public function getBulkPricingData()
+    {
+        if (!$this->enable_bulk_pricing || !$this->bulk_pricing_data) {
+            return [];
+        }
+
+        $data = json_decode($this->bulk_pricing_data, true);
+        return is_array($data) ? $data : [];
+    }
+
+    /**
+     * Get price for specific quantity
+     *
+     * @param int $quantity
+     * @return float
+     */
+    public function getPriceForQuantity($quantity)
+    {
+        if (!$this->enable_bulk_pricing) {
+            return $this->discount_price;
+        }
+
+        $bulkPricing = $this->getBulkPricingData();
+        if (empty($bulkPricing)) {
+            return $this->discount_price;
+        }
+
+        // Sort by quantity in descending order
+        usort($bulkPricing, function ($a, $b) {
+            return $b['quantity'] - $a['quantity'];
+        });
+
+        // Find the appropriate bulk pricing tier
+        foreach ($bulkPricing as $tier) {
+            if ($quantity >= $tier['quantity']) {
+                return $tier['price'];
+            }
+        }
+
+        // Return single price if no bulk tier matches
+        return $this->discount_price;
     }
 }

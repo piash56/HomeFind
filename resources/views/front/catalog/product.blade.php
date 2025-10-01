@@ -19,6 +19,76 @@
     <meta name="og:description" content="{{ $item->meta_description }}">
 @endsection
 
+@section('styles')
+<style>
+.bulk-pricing-section {
+    margin-top: 15px;
+}
+
+.bulk-price-option {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    min-height: 140px;
+}
+
+.bulk-price-option:hover {
+    border-color: #ff6600 !important;
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.bulk-price-option .btn-primary {
+    background-color: #ff6600;
+    border-color: #ff6600;
+    margin-top: auto;
+    color: #fff !important;
+}
+
+.bulk-price-option .btn-primary:hover,
+.bulk-price-option .btn-primary:focus,
+.bulk-price-option .btn-primary:active {
+    background-color: #000 !important;
+    border-color: #000 !important;
+    color: #fff !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+#bulk-selection-message {
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+    color: #0c5460;
+    padding: 12px 15px;
+    border-radius: 5px;
+    font-weight: 500;
+}
+
+#order_now_btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.related-buy-now-btn:hover,
+.related-buy-now-btn:focus,
+.related-buy-now-btn:active {
+    background-color: #000 !important;
+    border-color: #000 !important;
+    color: #fff !important;
+}
+
+@media (max-width: 767px) {
+    .bulk-pricing-section .col-md-6 {
+        margin-bottom: 15px;
+    }
+}
+</style>
+@endsection
+
 
 
 @section('content')
@@ -217,7 +287,7 @@
                         <input type="hidden" value="{{ PriceHelper::setCurrencyValue() }}" id="set_currency_val">
                         <input type="hidden" value="{{ $setting->currency_direction }}" id="currency_direction">
                         <h4 class="mb-2 p-title-main">{{ $item->name }}</h4>
-                        <div class="mb-3">
+                        {{-- <div class="mb-3">
                             <div class="rating-stars d-inline-block gmr-3">
                                 {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
                             </div>
@@ -227,7 +297,7 @@
                             @else
                                 <span class="text-danger  d-inline-block">{{ __('Out of stock') }}</span>
                             @endif
-                        </div>
+                        </div> --}}
 
 
                         @if ($item->is_type == 'flash_deal')
@@ -237,17 +307,24 @@
                             @endif
                         @endif
 
+                        @php
+                            $bulkPricingDataPreview = $item->getBulkPricingData();
+                            $hasBulkPricingPreview = $item->enable_bulk_pricing && !empty($bulkPricingDataPreview);
+                        @endphp
+                        
                         <span class="h3 d-block price-area">
-                            @if ($item->previous_price != 0)
-                                <small
-                                    class="d-inline-block"><del>{{ PriceHelper::setPreviousPrice($item->previous_price) }}</del></small>
+                            @if (!$hasBulkPricingPreview)
+                                @if ($item->previous_price != 0)
+                                    <small
+                                        class="d-inline-block"><del>{{ PriceHelper::setPreviousPrice($item->previous_price) }}</del></small>
+                                @endif
+                                <span id="main_price" class="main-price">{{ PriceHelper::grandCurrencyPrice($item) }}</span>
+                            @else
+                                <span class="text-muted" style="font-size: 1.2rem;">{{ __('দাম শুরু') }}</span>
+                                <span id="main_price" class="main-price">{{ PriceHelper::grandCurrencyPrice($item) }}</span>
+                                <span class="text-muted" style="font-size: 1.2rem;">{{ __('থেকে') }}</span>
                             @endif
-                            <span id="main_price" class="main-price">{{ PriceHelper::grandCurrencyPrice($item) }}</span>
                         </span>
-
-                        <p class="text-muted">{{ $item->sort_details }} <a href="#details"
-                                class="scroll-to">{{ __('Read more') }}</a></p>
-
                         <div class="row margin-top-1x">
                             @foreach ($attributes as $attribute)
                                 @if ($attribute->options->count() != 0)
@@ -267,32 +344,123 @@
                                 @endif
                             @endforeach
                         </div>
+                        <p class="text-muted cta-text">{{ $setting->cta_text ?? 'For order call us or chat on WhatsApp' }}</p>
+                        {{-- Contact Section --}}
+                        @if($setting->cta_enabled ?? true)
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="contact-section d-flex align-items-center gap-3 flex-wrap">
+                                    @php
+                                        $phoneNumber = $setting->cta_phone ?? '01872200587';
+                                        $whatsappNumber = $setting->cta_whatsapp ?? $phoneNumber;
+                                        $whatsappCleanNumber = preg_replace('/[^0-9]/', '', $whatsappNumber);
+                                    @endphp
+                                    
+                                    {{-- Phone Number with Blinking Effect --}}
+                                    <div class="phone-number-section">
+                                        <a href="tel:{{ $phoneNumber }}" class="phone-number-link">
+                                            <span class="phone-icon">📞</span>
+                                            <span class="phone-number-blinking">{{ $phoneNumber }}</span>
+                                        </a>
+                                    </div>
+                                    
+                                    {{-- WhatsApp Image --}}
+                                    <div class="whatsapp-section">
+                                        <a href="https://wa.me/{{ $whatsappCleanNumber }}?text=Hello, I'm interested in {{ $item->name }}" 
+                                           target="_blank" class="whatsapp-image-link">
+                                            <img src="{{ asset('assets/images/whatsapp-click-to-chat.png') }}" 
+                                                 alt="WhatsApp Chat" 
+                                                 class="whatsapp-image">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                        
                         <div class="row align-items-end pb-4">
                             <div class="col-sm-12">
+                                @php
+                                    $bulkPricingData = $item->getBulkPricingData();
+                                    $hasBulkPricing = $item->enable_bulk_pricing && !empty($bulkPricingData);
+                                @endphp
+                                
                                 @if ($item->item_type == 'normal')
-                                    <div class="qtySelector product-quantity">
-                                        <span class="decreaseQty subclick"><i class="fas fa-minus "></i></span>
-                                        <input type="text" class="qtyValue cart-amount" value="1">
-                                        <span class="increaseQty addclick"><i class="fas fa-plus"></i></span>
-                                        <input type="hidden" value="3333" id="current_stock">
+                                    @if (!$hasBulkPricing)
+                                        {{-- Regular quantity selector --}}
+                                        <div class="qtySelector product-quantity">
+                                            <span class="decreaseQty subclick"><i class="fas fa-minus "></i></span>
+                                            <input type="text" class="qtyValue cart-amount" value="1">
+                                            <span class="increaseQty addclick"><i class="fas fa-plus"></i></span>
+                                            <input type="hidden" value="3333" id="current_stock">
+                                        </div>
+                                    @endif
+                                @endif
+                                
+                                @if (!$hasBulkPricing)
+                                    {{-- Regular Buy Now button --}}
+                                    <div class="p-action-button">
+                                        @if ($item->item_type != 'affiliate')
+                                            @if ($item->is_stock())
+                                                <button class="btn btn-primary m-0" id="but_to_cart"><i
+                                                        class="icon-bag"></i><span>{{ __('Buy Now') }}</span></button>
+                                            @else
+                                                <button class="btn btn-primary m-0"><i
+                                                        class="icon-bag"></i><span>{{ __('Out of stock') }}</span></button>
+                                            @endif
+                                        @else
+                                            <a href="{{ $item->affiliate_link }}" target="_blank"
+                                                class="btn btn-primary m-0"><span><i
+                                                        class="icon-bag"></i>{{ __('Buy Now') }}</span></a>
+                                        @endif
+                                    </div>
+                                @else
+                                    {{-- Bulk pricing options in 2 columns --}}
+                                    <div class="bulk-pricing-section">
+                                        <h6 class="mb-3">{{ __('সরাসরি ওর্ডার করতে পরিমাণ নির্বাচন করুন') }}</h6>
+                                        
+                                        <div class="row">
+                                            @php
+                                                $allOptions = [['quantity' => 1, 'price' => $item->discount_price, 'is_single' => true]];
+                                                foreach($bulkPricingData as $tier) {
+                                                    $allOptions[] = ['quantity' => $tier['quantity'], 'price' => $tier['price'], 'is_single' => false];
+                                                }
+                                            @endphp
+                                            
+                                            @foreach ($allOptions as $index => $option)
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="bulk-price-option border rounded p-3 h-100 cursor-pointer" data-quantity="{{ $option['quantity'] }}" data-price="{{ $option['price'] }}">
+                                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                                            <div>
+                                                                <strong style="font-size: 1.1rem;">{{ __('Buy') }} {{ $option['quantity'] }}</strong>
+                                                                @if ($option['is_single'])
+                                                                    <div class="text-muted small">{{ __('Single Price') }}</div>
+                                                                @else
+                                                                    @php
+                                                                        $savings = ($item->discount_price * $option['quantity']) - $option['price'];
+                                                                        $savingsPercent = ($savings / ($item->discount_price * $option['quantity'])) * 100;
+                                                                    @endphp
+                                                                    @if ($savings > 0)
+                                                                        <div class="text-success small">{{ __('Save') }} {{ PriceHelper::setCurrencyPrice($savings) }} ({{ number_format($savingsPercent, 0) }}%)</div>
+                                                                    @endif
+                                                                @endif
+                                                            </div>
+                                                            <div class="text-right">
+                                                                <div class="h5 mb-0 text-primary">{{ PriceHelper::setCurrencyPrice($option['price']) }}</div>
+                                                                @if (!$option['is_single'])
+                                                                    <small class="text-muted">{{ PriceHelper::setCurrencyPrice($option['price'] / $option['quantity']) }} {{ __('each') }}</small>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                        <button class="btn btn-primary btn-block bulk-buy-now mt-2" data-quantity="{{ $option['quantity'] }}" data-price="{{ $option['price'] }}">
+                                                            <i class="icon-bag"></i> {{ __('Buy Now') }}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 @endif
-                                <div class="p-action-button">
-                                    @if ($item->item_type != 'affiliate')
-                                        @if ($item->is_stock())
-                                            <button class="btn btn-primary m-0" id="but_to_cart"><i
-                                                    class="icon-bag"></i><span>{{ __('Buy Now') }}</span></button>
-                                        @else
-                                            <button class="btn btn-primary m-0"><i
-                                                    class="icon-bag"></i><span>{{ __('Out of stock') }}</span></button>
-                                        @endif
-                                    @else
-                                        <a href="{{ $item->affiliate_link }}" target="_blank"
-                                            class="btn btn-primary m-0"><span><i
-                                                    class="icon-bag"></i>{{ __('Buy Now') }}</span></a>
-                                    @endif
-
-                                </div>
 
                             </div>
                         </div>
@@ -415,111 +583,139 @@
         </div>
         <div class="row">
             <div class="col-md-8">
-                @forelse ($reviews as $review)
-                    <div class="single-review">
-                        <div class="comment">
-                            <div class="comment-author-ava"><img class="lazy"
-                                    data-src="{{ asset('storage/images/' . $review->user->photo) }}"
-                                    alt="Comment author">
-                            </div>
-                            <div class="comment-body">
-                                <div class="comment-header d-flex flex-wrap justify-content-between">
-                                    <div>
-                                        <h4 class="comment-title mb-1">{{ $review->subject }}</h4>
-                                        <span>{{ $review->user->first_name }}</span>
-                                        <span class="ml-3">{{ $review->created_at->format('M d, Y') }}</span>
-                                    </div>
-                                    <div class="mb-2">
-                                        <div class="rating-stars">
-                                            @php
-                                                for ($i = 0; $i < $review->rating; $i++) {
-                                                    echo "<i class = 'far fa-star filled'></i>";
-                                                }
-                                            @endphp
+                <div id="reviews-container">
+                    @php
+                        $approvedReviews = \App\Models\Review::where('item_id', $item->id)->where('status', 'approved')->orderBy('created_at', 'desc')->limit(4)->get();
+                    @endphp
+                    @forelse ($approvedReviews as $review)
+                        <div class="single-review mb-4">
+                            <div class="row">
+                                <!-- Left Side: Avatar, Name, Date, Review Text -->
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-start">
+                                        <div class="avatar-circle me-3">
+                                            {{ strtoupper(substr($review->customer_name, 0, 1)) }}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ $review->customer_name }}</h5>
+                                            <small class="text-muted">{{ $review->created_at->format('M d, Y') }}</small>
+                                            @if($review->review_text)
+                                                <p class="comment-text mt-2 mb-0">{{ $review->review_text }}</p>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
-                                <p class="comment-text  mt-2">{{ $review->review }}</p>
-
+                                
+                                <!-- Right Side: Stars and Images -->
+                                <div class="col-md-4">
+                                    <div class="text-right">
+                                        <div class="mb-2">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= $review->rating)
+                                                    <i class="fas fa-star text-warning"></i>
+                                                @else
+                                                    <i class="far fa-star text-muted"></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        @php
+                                            $reviewImages = $review->getReviewImages();
+                                        @endphp
+                                        @if(!empty($reviewImages))
+                                            <div class="review-images-right">
+                                                @foreach($reviewImages as $index => $image)
+                                                    <img src="{{ asset($image) }}" class="img-fluid rounded review-image-thumb d-inline-block" 
+                                                         style="width: 50px; height: 50px; object-fit: cover; border: 2px solid #ddd; margin: 2px;" 
+                                                         alt="Review Image {{ $index + 1 }}">
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
+                            
+                            @if($review->hasAdminReply())
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <div class="admin-reply-compact">
+                                            <div class="d-flex align-items-start">
+                                                <i class="fas fa-user-shield text-primary me-2 mt-1" style="font-size: 12px;"></i>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <strong class="text-primary" style="font-size: 13px;">{{ __('Reply by HomeFindBD.com') }}</strong>
+                                                        <small class="text-muted ms-auto" style="font-size: 11px;">
+                                                            @if($review->admin_reply_date)
+                                                                {{ \Carbon\Carbon::parse($review->admin_reply_date)->format('M d, Y') }}
+                                                            @endif
+                                                        </small>
+                                                    </div>
+                                                    <p class="mb-0 text-dark" style="font-size: 13px; line-height: 1.3;">{{ $review->admin_reply }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
-                    </div>
-                @empty
-                    <div class="card p-5">
-                        {{ __('No Review') }}
-                    </div>
-                @endforelse
-                <div class="row mt-15">
-                    <div class="col-lg-12 text-center">
-                        {{ $reviews->links() }}
-                    </div>
+                    @empty
+                        <div class="card p-5">
+                            {{ __('No Review') }}
+                        </div>
+                    @endforelse
                 </div>
-
             </div>
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="text-center">
                             <div class="d-inline align-baseline display-3 mr-1">
-                                {{ round($item->reviews->avg('rating'), 2) }}</div>
+                                {{ round(\App\Models\Review::getAverageRating($item->id), 1) }}
+                            </div>
                             <div class="d-inline align-baseline text-sm text-warning mr-1">
                                 <div class="rating-stars">
-                                    {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
+                                    @php
+                                        $avgRating = \App\Models\Review::getAverageRating($item->id);
+                                    @endphp
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= $avgRating)
+                                            <i class="fas fa-star text-warning"></i>
+                                        @elseif($i - 0.5 <= $avgRating)
+                                            <i class="fas fa-star-half-alt text-warning"></i>
+                                        @else
+                                            <i class="far fa-star text-muted"></i>
+                                        @endif
+                                    @endfor
                                 </div>
+                            </div>
+                            <div class="text-muted small">
+                                {{ \App\Models\Review::getReviewCount($item->id) }} {{ __('reviews') }}
                             </div>
                         </div>
                         <div class="pt-3">
-                            <label class="text-medium text-sm">5 {{ __('stars') }} <span class="text-muted">-
-                                    {{ $item->reviews->where('status', 1)->where('rating', 5)->count() }}</span></label>
-                            <div class="progress margin-bottom-1x">
-                                <div class="progress-bar bg-warning" role="progressbar"
-                                    style="width: {{ $item->reviews->where('status', 1)->where('rating', 5)->sum('rating') * 20 }}%; height: 2px;"
-                                    aria-valuenow="100"
-                                    aria-valuemin="{{ $item->reviews->where('rating', 5)->sum('rating') * 20 }}"
-                                    aria-valuemax="100"></div>
-                            </div>
-                            <label class="text-medium text-sm">4 {{ __('stars') }} <span class="text-muted">-
-                                    {{ $item->reviews->where('status', 1)->where('rating', 4)->count() }}</span></label>
-                            <div class="progress margin-bottom-1x">
-                                <div class="progress-bar bg-warning" role="progressbar"
-                                    style="width: {{ $item->reviews->where('status', 1)->where('rating', 4)->sum('rating') * 20 }}%; height: 2px;"
-                                    aria-valuenow="{{ $item->reviews->where('rating', 4)->sum('rating') * 20 }}"
-                                    aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <label class="text-medium text-sm">3 {{ __('stars') }} <span class="text-muted">-
-                                    {{ $item->reviews->where('status', 1)->where('rating', 3)->count() }}</span></label>
-                            <div class="progress margin-bottom-1x">
-                                <div class="progress-bar bg-warning" role="progressbar"
-                                    style="width: {{ $item->reviews->where('rating', 3)->sum('rating') * 20 }}%; height: 2px;"
-                                    aria-valuenow="{{ $item->reviews->where('rating', 3)->sum('rating') * 20 }}"
-                                    aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <label class="text-medium text-sm">2 {{ __('stars') }} <span class="text-muted">-
-                                    {{ $item->reviews->where('status', 1)->where('rating', 2)->count() }}</span></label>
-                            <div class="progress margin-bottom-1x">
-                                <div class="progress-bar bg-warning" role="progressbar"
-                                    style="width: {{ $item->reviews->where('status', 1)->where('rating', 2)->sum('rating') * 20 }}%; height: 2px;"
-                                    aria-valuenow="{{ $item->reviews->where('rating', 2)->sum('rating') * 20 }}"
-                                    aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <label class="text-medium text-sm">1 {{ __('star') }} <span class="text-muted">-
-                                    {{ $item->reviews->where('status', 1)->where('rating', 1)->count() }}</span></label>
-                            <div class="progress mb-2">
-                                <div class="progress-bar bg-warning" role="progressbar"
-                                    style="width: {{ $item->reviews->where('status', 1)->where('rating', 1)->sum('rating') * 20 }}; height: 2px;"
-                                    aria-valuenow="0"
-                                    aria-valuemin="{{ $item->reviews->where('rating', 1)->sum('rating') * 20 }}"
-                                    aria-valuemax="100"></div>
-                            </div>
+                            @for($star = 5; $star >= 1; $star--)
+                                @php
+                                    $starCount = \App\Models\Review::where('item_id', $item->id)
+                                                                  ->where('status', 'approved')
+                                                                  ->where('rating', $star)
+                                                                  ->count();
+                                    $totalReviews = \App\Models\Review::getReviewCount($item->id);
+                                    $percentage = $totalReviews > 0 ? ($starCount / $totalReviews) * 100 : 0;
+                                @endphp
+                                <label class="text-medium text-sm">{{ $star }} {{ __('stars') }} 
+                                    <span class="text-muted">- {{ $starCount }}</span>
+                                </label>
+                                <div class="progress margin-bottom-1x">
+                                    <div class="progress-bar bg-warning" role="progressbar"
+                                        style="width: {{ $percentage }}%; height: 2px;"
+                                        aria-valuenow="{{ $percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            @endfor
                         </div>
-                        @if (Auth::user())
-                            <div class="pb-2"><a class="btn btn-primary btn-block" href="#"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#leaveReview"><span>{{ __('Leave a Review') }}</span></a></div>
-                        @else
-                            <div class="pb-2"><a class="btn btn-primary btn-block"
-                                    href="{{ route('user.login') }}"><span>{{ __('Login') }}</span></a></div>
-                        @endif
+                        <div class="pb-2">
+                            <button class="btn btn-primary btn-block" type="button" data-toggle="modal" data-target="#review-modal" id="review-login-btn">
+                                <span>{{ __('Login') }}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -596,7 +792,7 @@
                                             {{ PriceHelper::grandCurrencyPrice($related) }}
                                         </h4>
                                         <div class="product-buttons">
-                                            <a href="{{ route('front.product', $related->slug) }}" class="btn btn-primary btn-sm" style="color: white !important; text-decoration: none !important;">
+                                            <a href="{{ route('front.product', $related->slug) }}" class="btn btn-primary btn-sm related-buy-now-btn" style="color: white !important; text-decoration: none !important;">
                                                 {{ __('Buy Now') }}
                                             </a>
                                         </div>
@@ -618,31 +814,31 @@
             <div class="col-xl-8 col-lg-8">
                 <div class="card">
                     <div class="card-body">
-                        <h6>{{ __('Delivery Information') }}</h6>
+                        <h6>{{ __('ডেলিভারি তথ্য') }}</h6>
 
                         <form id="checkoutBilling" action="{{ route('front.order.direct') }}" method="POST">
                             @csrf
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label for="checkout-name">{{ __('Name') }}</label>
+                                        <label for="checkout-name">{{ __('নাম') }}</label>
                                         <input class="form-control" name="bill_first_name" type="text" required
-                                            id="checkout-name" value="{{ isset($user) ? $user->first_name . ' ' . $user->last_name : '' }}" placeholder="Enter your full name">
+                                            id="checkout-name" value="{{ isset($user) ? $user->first_name . ' ' . $user->last_name : '' }}" placeholder="আপনার পুরো নাম লিখুন">
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label for="checkout-phone">{{ __('Phone Number') }}</label>
+                                        <label for="checkout-phone">{{ __('ফোন নাম্বার') }}</label>
                                         <input class="form-control" name="bill_phone" type="text"
                                             id="checkout-phone" required
-                                            value="{{ isset($user) ? $user->phone : '' }}" placeholder="Enter your phone number">
+                                            value="{{ isset($user) ? $user->phone : '' }}" placeholder="আপনার ফোন নম্বর লিখুন">
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label for="checkout-address1">{{ __('Address') }}</label>
+                                        <label for="checkout-address1">{{ __('ঠিকানা') }}</label>
                                         <textarea class="form-control" name="bill_address1" required
-                                            id="checkout-address1" rows="3" placeholder="Enter your delivery address">{{ isset($user) ? $user->bill_address1 : '' }}</textarea>
+                                            id="checkout-address1" rows="3" placeholder="আপনার ডেলিভারি ঠিকানা লিখুন">{{ isset($user) ? $user->bill_address1 : '' }}</textarea>
                                     </div>
                                 </div>
                                 <!-- Hidden fields for required data -->
@@ -664,26 +860,27 @@
                     <div class="padding-top-2x hidden-lg-up"></div>
                     <!-- Order Summary Widget-->
                     <section class="card widget-featured-posts widget-order-summary p-4">
-                        <h3 class="widget-title">{{ __('Order Summary') }}</h3>
+                        <h3 class="widget-title">{{ __('অর্ডার সংক্ষেপ') }}</h3>
                         @php
                             $base_price = $item->discount_price;
-                            $cart_total = $base_price; // Default quantity is 1
+                            $hasBulkPricingCheckout = $item->enable_bulk_pricing && !empty($item->getBulkPricingData());
+                            $cart_total = $hasBulkPricingCheckout ? 0 : $base_price; // 0 if bulk pricing enabled
                             $tax = 0;
                             $grand_total = $cart_total + $tax;
                         @endphp
 
                         <table class="table">
                             <tr>
-                                <td>{{ __('Cart subtotal') }}:</td>
+                                <td>{{ __('প্রোডাক্ট বিল') }}:</td>
                                 <td class="text-gray-dark" id="cart-subtotal">{{ PriceHelper::setCurrencyPrice($cart_total) }}</td>
                             </tr>
 
                             <tr>
-                                <td>{{ __('Delivery Fee') }}:</td>
+                                <td>{{ __('ডেলিভারি ফি') }}:</td>
                                 <td class="text-gray-dark">{{ PriceHelper::setCurrencyPrice(0) }}</td>
                             </tr>
                             <tr>
-                                <td class="text-lg text-primary">{{ __('Order total') }}</td>
+                                <td class="text-lg text-primary">{{ __('মোট টাকা') }}</td>
                                 <td class="text-lg text-primary grand_total_set" id="order-total">{{ PriceHelper::setCurrencyPrice($grand_total) }}
                                 </td>
                             </tr>
@@ -693,14 +890,22 @@
                         <input type="hidden" id="base-price" value="{{ $item->discount_price }}">
                         <input type="hidden" id="currency-sign" value="{{ PriceHelper::setCurrencySign() }}">
                         <input type="hidden" id="currency-direction" value="{{ $setting->currency_direction }}">
+                        <input type="hidden" id="has-bulk-pricing" value="{{ $hasBulkPricingCheckout ? '1' : '0' }}">
                         
                     </section>
+
+                    <!-- Quantity Selection Message -->
+                    @if ($hasBulkPricingCheckout)
+                        <div id="bulk-selection-message" class="alert alert-info mt-3" style="display: none;">
+                            <i class="fas fa-shopping-cart"></i> <span id="bulk-message-text">{{ __('আপনি 0 পরিমাণ কেনার জন্য ক্লিক করেছেন') }}</span>
+                        </div>
+                    @endif
 
                     <!-- Order Now Button-->
                     <div class="mt-4">
                         <button id="order_now_btn"
-                            class="btn btn-primary btn-lg w-100 order_now_btn p-0" type="submit">
-                            <span>{{ __('Order Now') }}</span>
+                            class="btn btn-primary btn-lg w-100 order_now_btn p-0" type="submit" {{ $hasBulkPricingCheckout ? 'disabled' : '' }}>
+                            <span>{{ __('অর্ডার করুন') }}</span>
                         </button>
                     </div>
                 </aside>
@@ -797,7 +1002,15 @@ $(document).ready(function() {
         var currencySign = $('#currency-sign').val();
         var currencyDirection = parseInt($('#currency-direction').val());
         
-        var subtotal = (basePrice + attributePrice) * quantity;
+        // Check if bulk pricing is active
+        var subtotal;
+        if (window.bulkPricingSelection && window.bulkPricingSelection.totalPrice) {
+            subtotal = window.bulkPricingSelection.totalPrice;
+            quantity = window.bulkPricingSelection.quantity;
+        } else {
+            subtotal = (basePrice + attributePrice) * quantity;
+        }
+        
         var total = subtotal; // Delivery fee is 0
         
         // Format price based on currency direction with proper decimal handling
@@ -873,11 +1086,70 @@ $(document).ready(function() {
         $(this).removeClass('is-invalid').css('border-color', '');
     });
     
+    // Handle Bulk Buy Now button click
+    $(document).on("click", ".bulk-buy-now", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        
+        let quantity = $(this).data('quantity');
+        let price = $(this).data('price');
+        
+        // Set the quantity in hidden field or update cart
+        $('.cart-amount').val(quantity);
+        
+        // Store bulk pricing info for checkout
+        window.bulkPricingSelection = {
+            quantity: quantity,
+            totalPrice: price
+        };
+        
+        // Update Order Summary with bulk pricing
+        updateOrderSummaryWithBulkPrice(price, quantity);
+        
+        // Show and update bulk selection message
+        $('#bulk-message-text').text('আপনি ' + quantity + ' টা কেনার জন্য ক্লিক করেছেন');
+        $('#bulk-selection-message').show();
+        
+        // Enable Order Now button
+        $('#order_now_btn').prop('disabled', false).removeClass('disabled');
+        
+        // Scroll to checkout section
+        $('html, body').animate({
+            scrollTop: $('#checkout-section').offset().top - 100
+        }, 1000);
+        
+        return false;
+    });
+    
+    // Function to update Order Summary with bulk price
+    function updateOrderSummaryWithBulkPrice(price, quantity) {
+        var currencySign = $('#currency-sign').val();
+        var currencyDirection = parseInt($('#currency-direction').val());
+        
+        // Format price
+        var formattedPrice;
+        var decimalPlaces = (price % 1 === 0) ? 0 : 2;
+        
+        if (currencyDirection == 0) {
+            formattedPrice = currencySign + parseFloat(price).toFixed(decimalPlaces);
+        } else {
+            formattedPrice = parseFloat(price).toFixed(decimalPlaces) + currencySign;
+        }
+        
+        // Update cart subtotal and order total
+        $('#cart-subtotal').text(formattedPrice);
+        $('#order-total').text(formattedPrice);
+    }
+    
     // Handle Buy Now button click (scroll to checkout section)
     $(document).on("click", "#but_to_cart", function(e) {
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
+        
+        // Clear bulk pricing selection
+        window.bulkPricingSelection = null;
         
         // Scroll to checkout section
         $('html, body').animate({
@@ -987,19 +1259,29 @@ $(document).ready(function() {
         // Show loading state immediately
         $('#order_now_btn').prop('disabled', true).html('<span><i class="fas fa-spinner fa-spin"></i> Processing Order...</span>');
         
+        // Prepare order data
+        var orderData = {
+            _token: "{{ csrf_token() }}",
+            item_id: itemId,
+            quantity: quantity,
+            bill_first_name: $('input[name="bill_first_name"]').val(),
+            bill_phone: $('input[name="bill_phone"]').val(),
+            bill_address1: $('textarea[name="bill_address1"]').val(),
+            selected_attributes: JSON.stringify(selectedAttributes)
+        };
+        
+        // Add bulk pricing info if available
+        if (window.bulkPricingSelection) {
+            orderData.bulk_pricing = true;
+            orderData.bulk_quantity = window.bulkPricingSelection.quantity;
+            orderData.bulk_total_price = window.bulkPricingSelection.totalPrice;
+        }
+        
         // Place order directly (no cart needed)
         $.ajax({
             url: "{{ route('front.order.direct') }}",
             type: "POST",
-            data: {
-                _token: "{{ csrf_token() }}",
-                item_id: itemId,
-                quantity: quantity,
-                bill_first_name: $('input[name="bill_first_name"]').val(),
-                bill_phone: $('input[name="bill_phone"]').val(),
-                bill_address1: $('textarea[name="bill_address1"]').val(),
-                selected_attributes: JSON.stringify(selectedAttributes)
-            },
+            data: orderData,
             success: function(response) {
                 console.log('Order placed successfully:', response);
                 console.log('Redirect URL from response:', response.redirect_url);
@@ -1040,5 +1322,654 @@ $(document).ready(function() {
     border-color: #dc3545 !important;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
 }
+
+.avatar-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.star-rating {
+    font-size: 24px;
+    color: #ddd;
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.star-rating:hover,
+.star-rating.active {
+    color: #ffc107;
+}
+
+.star-rating-container {
+    display: flex;
+    align-items: center;
+}
+
+#review-submit-form {
+    display: none;
+}
+
+/* Modal z-index fix for frontend */
+.modal {
+    z-index: 9999 !important;
+}
+
+/* Image preview styles */
+.image-preview-item {
+    position: relative;
+    display: inline-block;
+}
+
+.image-preview-item img {
+    border: 2px solid #ddd;
+    border-radius: 4px;
+}
+
+.remove-image {
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    font-size: 12px;
+    line-height: 1;
+}
+
+/* Review image thumbnails */
+.review-image-thumb {
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+.review-image-thumb:hover {
+    transform: scale(1.1);
+    border-color: #007bff !important;
+}
+
+/* Review layout improvements */
+.single-review {
+    padding: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background-color: #fff;
+    margin-bottom: 15px;
+}
+
+.comment-text {
+    font-size: 14px;
+    line-height: 1.4;
+    color: #555;
+}
+
+/* Admin reply section */
+.admin-reply-compact {
+    background-color: #f8f9fa;
+    border-left: 3px solid #007bff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+.admin-reply-section .card {
+    border: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin: 0;
+}
+
+.admin-reply-section .card-body {
+    padding: 12px 15px;
+}
+
+.admin-reply-section .border-start {
+    border-left-width: 4px !important;
+}
+
+/* Contact Section Styling */
+.contact-section {
+    margin-bottom: 15px;
+    padding: 0;
+}
+
+.phone-number-section {
+    display: flex;
+    align-items: center;
+}
+
+.phone-number-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.phone-number-link:hover {
+    text-decoration: none;
+    color: #007bff;
+    transform: scale(1.05);
+}
+
+.phone-icon {
+    font-size: 24px;
+    animation: bounce 2s infinite;
+}
+
+.phone-number-blinking {
+    font-size: 20px;
+    font-weight: bold;
+    color: #28a745;
+    animation: blink 1.5s infinite;
+    text-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+}
+
+.whatsapp-section {
+    display: flex;
+    align-items: center;
+}
+
+.whatsapp-image-link {
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.whatsapp-image-link:hover {
+    transform: scale(1.05);
+}
+
+.whatsapp-image {
+    max-height: 50px;
+    width: auto;
+    border: none;
+    box-shadow: none;
+    background: none;
+}
+
+/* Animations */
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+        text-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+    }
+    51%, 100% {
+        opacity: 0.3;
+        text-shadow: 0 0 2px rgba(40, 167, 69, 0.1);
+    }
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-5px);
+    }
+    60% {
+        transform: translateY(-3px);
+    }
+}
+
+@media (max-width: 576px) {
+    .contact-section {
+        flex-direction: column;
+        gap: 15px !important;
+    }
+    
+    .phone-number-blinking {
+        font-size: 18px;
+    }
+    
+    .whatsapp-image {
+        max-height: 45px;
+    }
+}
 </style>
+
+<!-- Review Modal -->
+<div class="modal fade" id="review-modal" tabindex="-1" role="dialog" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewModalLabel">{{ __('Write a Review') }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            
+            <!-- Step 1: Order Verification -->
+            <div id="review-verification-form">
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <h6>{{ __('Please verify your order to write a review') }}</h6>
+                        <p class="text-muted">{{ __('Enter your Order ID and Phone number to continue') }}</p>
+                    </div>
+                    
+                    <form id="verify-order-form">
+                        <div class="form-group">
+                            <label for="order_id">{{ __('Order ID') }} *</label>
+                            <input type="text" class="form-control" id="order_id" name="order_id" 
+                                   placeholder="{{ __('Enter your Order ID') }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone">{{ __('Phone Number') }} *</label>
+                            <input type="text" class="form-control" id="phone" name="phone" 
+                                   placeholder="{{ __('Enter your phone number') }}" required>
+                        </div>
+                        
+                        <input type="hidden" id="item_id" value="{{ $item->id }}">
+                    </form>
+                    
+                    <div id="verification-message" class="mt-3" style="display: none;"></div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="button" class="btn btn-primary" id="verify-order-btn">
+                        <span class="btn-text">{{ __('Verify Order') }}</span>
+                        <span class="spinner-border spinner-border-sm" style="display: none;"></span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Review Form -->
+            <div id="review-submit-form">
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <h6>{{ __('Write Your Review') }}</h6>
+                        <p class="text-muted">{{ __('Share your experience with this product') }}</p>
+                    </div>
+                    
+                    <form id="submit-review-form" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{{ __('Customer Name') }}</label>
+                                    <input type="text" class="form-control" id="customer_name_display" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>{{ __('Phone Number') }}</label>
+                                    <input type="text" class="form-control" id="customer_phone_display" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>{{ __('Rating') }} *</label>
+                            <div class="star-rating-container">
+                                <div class="star-rating" data-rating="1">★</div>
+                                <div class="star-rating" data-rating="2">★</div>
+                                <div class="star-rating" data-rating="3">★</div>
+                                <div class="star-rating" data-rating="4">★</div>
+                                <div class="star-rating" data-rating="5">★</div>
+                            </div>
+                            <input type="hidden" id="rating_value" name="rating" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="review_text">{{ __('Review') }}</label>
+                            <textarea class="form-control" id="review_text" name="review_text" rows="4" 
+                                      placeholder="{{ __('Write your review here...') }}"></textarea>
+                        </div>
+                        
+                                <div class="form-group">
+                                    <label for="review_images">{{ __('Upload Images (Optional)') }}</label>
+                                    <input type="file" class="form-control-file" id="review_images" name="review_images[]" 
+                                           accept="image/*" multiple>
+                                    <small class="form-text text-muted">{{ __('Supported formats: JPG, PNG, GIF (Max: 2MB each, Max 3 images)') }}</small>
+                                    <div id="image-preview" class="mt-2" style="display: none;">
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <div class="image-preview-item">
+                                                    <img id="preview-0" src="" alt="Preview 1" class="img-thumbnail" style="display: none; width: 80px; height: 80px; object-fit: cover;">
+                                                    <button type="button" class="btn btn-sm btn-danger remove-image" data-index="0" style="display: none; position: absolute; top: 0; right: 0;">×</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="image-preview-item">
+                                                    <img id="preview-1" src="" alt="Preview 2" class="img-thumbnail" style="display: none; width: 80px; height: 80px; object-fit: cover;">
+                                                    <button type="button" class="btn btn-sm btn-danger remove-image" data-index="1" style="display: none; position: absolute; top: 0; right: 0;">×</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="image-preview-item">
+                                                    <img id="preview-2" src="" alt="Preview 3" class="img-thumbnail" style="display: none; width: 80px; height: 80px; object-fit: cover;">
+                                                    <button type="button" class="btn btn-sm btn-danger remove-image" data-index="2" style="display: none; position: absolute; top: 0; right: 0;">×</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                        <input type="hidden" id="verified_order_id" name="order_id">
+                        <input type="hidden" id="verified_phone" name="phone">
+                        <input type="hidden" id="verified_item_id" name="item_id">
+                    </form>
+                    
+                    <div id="submit-message" class="mt-3" style="display: none;"></div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="back-to-verification">{{ __('Back') }}</button>
+                    <button type="button" class="btn btn-primary" id="submit-review-btn">
+                        <span class="btn-text">{{ __('Submit Review') }}</span>
+                        <span class="spinner-border spinner-border-sm" style="display: none;"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Modal trigger with debugging
+    $('#review-login-btn').click(function(e) {
+        e.preventDefault();
+        console.log('Login button clicked, showing modal');
+        $('#review-modal').modal('show');
+    });
+    
+    // Debug modal events
+    $('#review-modal').on('show.bs.modal', function (e) {
+        console.log('Modal is showing');
+    });
+    
+    $('#review-modal').on('hide.bs.modal', function (e) {
+        console.log('Modal is hiding');
+    });
+    
+    $('#review-modal').on('hidden.bs.modal', function (e) {
+        console.log('Modal is hidden');
+        // Reset modal forms when hidden
+        resetModalForms();
+    });
+    
+    // Function to reset modal forms
+    function resetModalForms() {
+        $('#review-verification-form').show();
+        $('#review-submit-form').hide();
+        $('#verify-order-form')[0].reset();
+        $('#submit-review-form')[0].reset();
+        $('#verification-message').hide();
+        $('#submit-message').hide();
+        $('#rating_value').val('');
+        $('.star-rating').removeClass('active');
+    }
+    
+    // Test if modal exists
+    if ($('#review-modal').length) {
+        console.log('Review modal element found');
+    } else {
+        console.log('Review modal element NOT found');
+    }
+    
+    // Star rating functionality
+    $('.star-rating').click(function() {
+        var rating = $(this).data('rating');
+        $('#rating_value').val(rating);
+        
+        $('.star-rating').removeClass('active');
+        $('.star-rating').each(function() {
+            if ($(this).data('rating') <= rating) {
+                $(this).addClass('active');
+            }
+        });
+    });
+    
+    // Hover effect for stars
+    $('.star-rating').hover(
+        function() {
+            var rating = $(this).data('rating');
+            $('.star-rating').removeClass('active');
+            $('.star-rating').each(function() {
+                if ($(this).data('rating') <= rating) {
+                    $(this).addClass('active');
+                }
+            });
+        },
+        function() {
+            var currentRating = $('#rating_value').val();
+            $('.star-rating').removeClass('active');
+            if (currentRating) {
+                $('.star-rating').each(function() {
+                    if ($(this).data('rating') <= currentRating) {
+                        $(this).addClass('active');
+                    }
+                });
+            }
+        }
+    );
+    
+    // Verify order
+    $('#verify-order-btn').click(function() {
+        var btn = $(this);
+        var btnText = btn.find('.btn-text');
+        var spinner = btn.find('.spinner-border');
+        var message = $('#verification-message');
+        
+        var orderId = $('#order_id').val().trim();
+        var phone = $('#phone').val().trim();
+        var itemId = $('#item_id').val();
+        
+        if (!orderId || !phone) {
+            showMessage(message, 'Please fill in all required fields.', 'danger');
+            return;
+        }
+        
+        btn.prop('disabled', true);
+        btnText.hide();
+        spinner.show();
+        message.hide();
+        
+        $.ajax({
+            url: '{{ route("front.review.verify") }}',
+            method: 'POST',
+            data: {
+                order_id: orderId,
+                phone: phone,
+                item_id: itemId,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Fill customer details
+                    $('#customer_name_display').val(response.customer_name);
+                    $('#customer_phone_display').val(response.phone);
+                    $('#verified_order_id').val(orderId);
+                    $('#verified_phone').val(phone);
+                    $('#verified_item_id').val(itemId);
+                    
+                    // Show review form
+                    $('#review-verification-form').hide();
+                    $('#review-submit-form').show();
+                } else {
+                    showMessage(message, response.message, 'danger');
+                }
+            },
+            error: function(xhr) {
+                var response = xhr.responseJSON;
+                var errorMessage = response && response.message ? response.message : 'An error occurred. Please try again.';
+                showMessage(message, errorMessage, 'danger');
+            },
+            complete: function() {
+                btn.prop('disabled', false);
+                btnText.show();
+                spinner.hide();
+            }
+        });
+    });
+    
+    // Submit review
+    $('#submit-review-btn').click(function() {
+        var btn = $(this);
+        var btnText = btn.find('.btn-text');
+        var spinner = btn.find('.spinner-border');
+        var message = $('#submit-message');
+        
+        var rating = $('#rating_value').val();
+        
+        if (!rating) {
+            showMessage(message, 'Please select a rating.', 'danger');
+            return;
+        }
+        
+        btn.prop('disabled', true);
+        btnText.hide();
+        spinner.show();
+        message.hide();
+        
+        var formData = new FormData($('#submit-review-form')[0]);
+        formData.append('_token', '{{ csrf_token() }}');
+        
+        $.ajax({
+            url: '{{ route("front.review.submit") }}',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    showMessage(message, response.message, 'success');
+                    setTimeout(function() {
+                        $('#review-modal').modal('hide');
+                        location.reload(); // Reload to show new review
+                    }, 2000);
+                } else {
+                    showMessage(message, response.message, 'danger');
+                }
+            },
+            error: function(xhr) {
+                var response = xhr.responseJSON;
+                var errorMessage = response && response.message ? response.message : 'An error occurred. Please try again.';
+                showMessage(message, errorMessage, 'danger');
+            },
+            complete: function() {
+                btn.prop('disabled', false);
+                btnText.show();
+                spinner.hide();
+            }
+        });
+    });
+    
+    // Back to verification
+    $('#back-to-verification').click(function() {
+        $('#review-submit-form').hide();
+        $('#review-verification-form').show();
+        $('#verification-message').hide();
+        $('#submit-message').hide();
+    });
+    
+    // Reset modal when closed
+    $('#review-modal').on('hidden.bs.modal', function() {
+        $('#review-verification-form').show();
+        $('#review-submit-form').hide();
+        $('#verify-order-form')[0].reset();
+        $('#submit-review-form')[0].reset();
+        $('#rating_value').val('');
+        $('.star-rating').removeClass('active');
+        $('#verification-message').hide();
+        $('#submit-message').hide();
+    });
+    
+    function showMessage(element, text, type) {
+        element.removeClass('alert-success alert-danger alert-warning alert-info')
+               .addClass('alert alert-' + type)
+               .text(text)
+               .show();
+    }
+    
+    // Manual close handlers to ensure modal closes properly
+    $(document).on('click', '#review-modal .close', function(e) {
+        console.log('Close button clicked');
+        $('#review-modal').modal('hide');
+    });
+    
+    $(document).on('click', '#review-modal .btn-secondary', function(e) {
+        console.log('Cancel button clicked');
+        $('#review-modal').modal('hide');
+    });
+    
+    // Back to verification button
+    $(document).on('click', '#back-to-verification', function(e) {
+        e.preventDefault();
+        $('#review-verification-form').show();
+        $('#review-submit-form').hide();
+    });
+
+    // Multiple image upload handling
+    let selectedImages = [];
+    
+    $('#review_images').on('change', function(e) {
+        const files = Array.from(e.target.files);
+        
+        // Validate file count
+        if (files.length > 3) {
+            alert('You can upload maximum 3 images');
+            return;
+        }
+        
+        // Validate file sizes
+        for (let file of files) {
+            if (file.size > 2 * 1024 * 1024) { // 2MB
+                alert('File size should not exceed 2MB');
+                return;
+            }
+        }
+        
+        selectedImages = files;
+        displayImagePreviews(files);
+    });
+    
+    function displayImagePreviews(files) {
+        // Hide all previews first
+        for (let i = 0; i < 3; i++) {
+            $('#preview-' + i).hide();
+            $('.remove-image[data-index="' + i + '"]').hide();
+        }
+        
+        // Show previews for selected files
+        files.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#preview-' + index).attr('src', e.target.result).show();
+                $('.remove-image[data-index="' + index + '"]').show();
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        $('#image-preview').show();
+    }
+    
+    // Remove image functionality
+    $(document).on('click', '.remove-image', function() {
+        const index = $(this).data('index');
+        selectedImages.splice(index, 1);
+        
+        // Update file input
+        const dt = new DataTransfer();
+        selectedImages.forEach(file => dt.items.add(file));
+        $('#review_images')[0].files = dt.files;
+        
+        // Update previews
+        displayImagePreviews(selectedImages);
+        
+        // Hide preview container if no images
+        if (selectedImages.length === 0) {
+            $('#image-preview').hide();
+        }
+    });
+});
+</script>
+
 @endsection

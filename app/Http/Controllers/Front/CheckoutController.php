@@ -884,6 +884,15 @@ class CheckoutController extends Controller
             // Calculate pricing (will be updated after attributes are processed)
             $product_price = $item->discount_price;
 
+            // Check if bulk pricing is being used
+            $isBulkPricing = $request->has('bulk_pricing') && $request->bulk_pricing;
+            $bulkTotalPrice = 0;
+
+            if ($isBulkPricing && $request->has('bulk_total_price')) {
+                $bulkTotalPrice = (float) $request->bulk_total_price;
+                $quantity = (int) $request->bulk_quantity;
+            }
+
             // Get currency info
             if (Session::has('currency')) {
                 $currency = Currency::findOrFail(Session::get('currency'));
@@ -898,8 +907,8 @@ class CheckoutController extends Controller
             $optionsIds = [];
             $totalAttributePrice = 0;
 
-            // Process selected attributes if any
-            if ($request->has('selected_attributes')) {
+            // Process selected attributes if any (not applicable for bulk pricing)
+            if (!$isBulkPricing && $request->has('selected_attributes')) {
                 $selectedAttributes = json_decode($request->selected_attributes, true);
 
                 foreach ($selectedAttributes as $attributeId => $optionId) {
@@ -917,13 +926,31 @@ class CheckoutController extends Controller
                 }
             }
 
-            // Calculate final pricing with attributes
-            $cart_total = ($product_price + $totalAttributePrice) * $quantity;
+            // Calculate final pricing
+            if ($isBulkPricing) {
+                // Use bulk pricing total directly
+                $cart_total = $bulkTotalPrice;
+            } else {
+                // Calculate with attributes
+                $cart_total = ($product_price + $totalAttributePrice) * $quantity;
+            }
+
             $tax = $item->tax ? $item::taxCalculate($item) * $quantity : 0;
             $shipping_price = 0; // Free shipping
             $discount = 0; // No discount
             $state_price = 0; // No state tax
             $grand_total = $cart_total + $tax + $shipping_price - $discount + $state_price;
+
+            // Calculate per-item price for cart
+            // If bulk pricing, divide the total by quantity to get per-item price
+            if ($isBulkPricing) {
+                $perItemPrice = $bulkTotalPrice / $quantity;
+                $cartMainPrice = $perItemPrice;
+                $cartAttributePrice = 0; // Bulk pricing doesn't use attributes
+            } else {
+                $cartMainPrice = $product_price;
+                $cartAttributePrice = $totalAttributePrice;
+            }
 
             // Create cart structure for order (matching normal cart structure)
             $cart = [
@@ -931,8 +958,8 @@ class CheckoutController extends Controller
                     'name' => $item->name,
                     'slug' => $item->slug,
                     'photo' => $item->photo,
-                    'main_price' => $product_price,
-                    'attribute_price' => $totalAttributePrice,
+                    'main_price' => $cartMainPrice,
+                    'attribute_price' => $cartAttributePrice,
                     'qty' => $quantity,
                     'size_qty' => 0,
                     'size_price' => 0,

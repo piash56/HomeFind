@@ -50,4 +50,9 @@ class Order extends Model
     {
         return $this->hasMany('App\Models\Notification', 'order_id');
     }
+
+    public function transaction()
+    {
+        return $this->hasOne('App\Models\Transaction', 'order_id');
+    }
 }

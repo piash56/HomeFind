@@ -8,6 +8,7 @@ use App\Models\Item;
 use App\Models\PaymentSetting;
 use App\Models\Setting;
 use App\Models\State;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Session;
 
 class PriceHelper

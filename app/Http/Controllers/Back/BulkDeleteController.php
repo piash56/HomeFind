@@ -59,15 +59,20 @@ class BulkDeleteController extends Controller
             foreach ($ids as $id) {
                 $id = (int)$id;
                 $order = Order::findOrFail($id);
-                $order->tranaction->delete();
+
+                // Delete related notifications
                 if (Notification::where('order_id', $id)->exists()) {
                     Notification::where('order_id', $id)->delete();
                 }
+
+                // Delete related track orders
                 if (count($order->tracks_data) > 0) {
                     foreach ($order->tracks_data as $track) {
                         $track->delete();
                     }
                 }
+
+                // Delete the order itself
                 $order->delete();
             }
         }

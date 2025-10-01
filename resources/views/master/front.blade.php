@@ -468,6 +468,8 @@ body_theme4 @endif
 
     <!-- JavaScript (jQuery) libraries, plugins and custom scripts-->
     <script type="text/javascript" src="{{ asset('assets/front/js/plugins.min.js') }}"></script>
+    <!-- Ensure Bootstrap is properly loaded for modals -->
+    <script type="text/javascript" src="{{ asset('assets/back/js/core/bootstrap.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('assets/back/js/plugin/bootstrap-notify/bootstrap-notify.min.js') }}">
     </script>
     <script type="text/javascript" src="{{ asset('assets/front/js/scripts.min.js') }}"></script>
