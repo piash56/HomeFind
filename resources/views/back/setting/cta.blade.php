@@ -88,7 +88,7 @@
 									<div class="phone-number-section">
 										<a href="#" class="phone-number-link">
 											<span class="phone-icon" style="font-size: 24px; animation: bounce 2s infinite;">📞</span>
-											<span class="phone-number-blinking" style="font-size: 20px; font-weight: bold; color: #28a745; animation: blink 1.5s infinite;">{{ old('cta_phone', $setting->cta_phone ?? '01872200587') }}</span>
+											<span class="phone-number-blinking" style="font-size: 20px; font-weight: bold; animation: blinkGreenRed 2s infinite;">{{ old('cta_phone', $setting->cta_phone ?? '01872200587') }}</span>
 										</a>
 									</div>
 									
@@ -100,6 +100,11 @@
 												 style="max-height: 50px; width: auto; border: none; box-shadow: none; background: none;">
 										</a>
 									</div>
+									
+									{{-- WhatsApp Link Info --}}
+									<small class="text-muted mt-2 d-block">
+										{{ __('WhatsApp Link') }}: wa.me/8801872200587 ({{ __('Auto-formatted with Bangladesh country code') }})
+									</small>
 								</div>
 							</div>
 						</div>
@@ -123,14 +128,22 @@
 @section('scripts')
 <style>
 /* Preview Animations */
-@keyframes blink {
-    0%, 50% {
-        opacity: 1;
-        text-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+@keyframes blinkGreenRed {
+    0%, 25% {
+        color: #28a745; /* Green */
+        text-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
     }
-    51%, 100% {
-        opacity: 0.3;
-        text-shadow: 0 0 2px rgba(40, 167, 69, 0.1);
+    26%, 50% {
+        color: #dc3545; /* Red */
+        text-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
+    }
+    51%, 75% {
+        color: #28a745; /* Green */
+        text-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
+    }
+    76%, 100% {
+        color: #dc3545; /* Red */
+        text-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
     }
 }
 

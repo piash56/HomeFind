@@ -353,7 +353,17 @@
                                     @php
                                         $phoneNumber = $setting->cta_phone ?? '01872200587';
                                         $whatsappNumber = $setting->cta_whatsapp ?? $phoneNumber;
+                                        // Clean phone number for WhatsApp and add Bangladesh country code
                                         $whatsappCleanNumber = preg_replace('/[^0-9]/', '', $whatsappNumber);
+                                        // Remove leading 0 and add +880 for Bangladesh
+                                        if (strpos($whatsappCleanNumber, '880') === 0) {
+                                            // Already has country code
+                                            $whatsappFormattedNumber = $whatsappCleanNumber;
+                                        } else {
+                                            // Remove leading 0 and add 880
+                                            $whatsappCleanNumber = ltrim($whatsappCleanNumber, '0');
+                                            $whatsappFormattedNumber = '880' . $whatsappCleanNumber;
+                                        }
                                     @endphp
                                     
                                     {{-- Phone Number with Blinking Effect --}}
@@ -366,7 +376,7 @@
                                     
                                     {{-- WhatsApp Image --}}
                                     <div class="whatsapp-section">
-                                        <a href="https://wa.me/{{ $whatsappCleanNumber }}?text=Hello, I'm interested in {{ $item->name }}" 
+                                        <a href="https://wa.me/{{ $whatsappFormattedNumber }}?text=Hello, I'm interested in {{ $item->name }}" 
                                            target="_blank" class="whatsapp-image-link">
                                             <img src="{{ asset('assets/images/whatsapp-click-to-chat.png') }}" 
                                                  alt="WhatsApp Chat" 
@@ -1466,9 +1476,7 @@ $(document).ready(function() {
 .phone-number-blinking {
     font-size: 20px;
     font-weight: bold;
-    color: #28a745;
-    animation: blink 1.5s infinite;
-    text-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+    animation: blinkGreenRed 2s infinite;
 }
 
 .whatsapp-section {
@@ -1494,14 +1502,22 @@ $(document).ready(function() {
 }
 
 /* Animations */
-@keyframes blink {
-    0%, 50% {
-        opacity: 1;
-        text-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+@keyframes blinkGreenRed {
+    0%, 25% {
+        color: #28a745; /* Green */
+        text-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
     }
-    51%, 100% {
-        opacity: 0.3;
-        text-shadow: 0 0 2px rgba(40, 167, 69, 0.1);
+    26%, 50% {
+        color: #dc3545; /* Red */
+        text-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
+    }
+    51%, 75% {
+        color: #28a745; /* Green */
+        text-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
+    }
+    76%, 100% {
+        color: #dc3545; /* Red */
+        text-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
     }
 }
 
