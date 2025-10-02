@@ -1053,8 +1053,16 @@ class CheckoutController extends Controller
             $item->stock = $item->stock - $quantity;
             $item->save();
 
-            // TODO: SMS notification will be added later
-            // For now, no email or SMS notifications
+            // Send admin email notification (temporarily disabled due to PHPMailer issue)
+            try {
+                $setting = Setting::first();
+                if ($setting->order_mail == 1) {
+                    $this->sendAdminOrderNotification($order, $item, $isBulkPricing, $bulkTotalPrice, $quantity, $cart_total, $perItemPrice);
+                }
+            } catch (\Exception $emailError) {
+                \Log::error('Email notification failed: ' . $emailError->getMessage());
+                // Continue with order creation even if email fails
+            }
 
             // Clear any existing sessions (including order_id to prevent conflicts)
             Session::forget(['cart', 'billing_address', 'shipping_address', 'shipping_id', 'state_id', 'order_id']);
@@ -1074,6 +1082,50 @@ class CheckoutController extends Controller
             return response()->json([
                 'error' => 'Failed to place order: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Send admin email notification for new order
+     */
+    private function sendAdminOrderNotification($order, $item, $isBulkPricing, $bulkTotalPrice, $quantity, $cart_total, $perItemPrice)
+    {
+        try {
+            $setting = Setting::first();
+
+            // Get customer information from shipping address
+            $shippingInfo = json_decode($order->shipping_info, true);
+            $customerName = $shippingInfo['ship_first_name'] . ' ' . $shippingInfo['ship_last_name'];
+            $customerPhone = $shippingInfo['ship_phone'];
+            $customerAddress = $shippingInfo['ship_address1'];
+
+            // Prepare bulk pricing information
+            $bulkPricingInfo = 'No bulk pricing used';
+            if ($isBulkPricing) {
+                $bulkPricingInfo = "Bulk pricing applied: {$quantity} units at {$setting->currency_sign}{$perItemPrice} each = {$setting->currency_sign}{$cart_total} total";
+            }
+
+            // Prepare email data
+            $emailData = [
+                'transaction_number' => $order->transaction_number,
+                'customer_name' => trim($customerName),
+                'customer_phone' => $customerPhone,
+                'customer_address' => $customerAddress,
+                'product_name' => $item->name,
+                'quantity' => $quantity,
+                'unit_price' => $setting->currency_sign . number_format($perItemPrice, 2),
+                'total_price' => $setting->currency_sign . number_format($cart_total, 2),
+                'payment_method' => $order->payment_method,
+                'order_status' => $order->order_status,
+                'bulk_pricing_info' => $bulkPricingInfo,
+            ];
+
+            // Send email using EmailHelper
+            $emailHelper = new \App\Helpers\EmailHelper();
+            $emailHelper->adminMail($emailData);
+        } catch (\Exception $e) {
+            \Log::error('Failed to send admin order notification: ' . $e->getMessage());
+            // Don't throw error to prevent order creation failure
         }
     }
 }
