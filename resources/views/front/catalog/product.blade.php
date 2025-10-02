@@ -874,7 +874,8 @@
                         @php
                             $base_price = $item->discount_price;
                             $hasBulkPricingCheckout = $item->enable_bulk_pricing && !empty($item->getBulkPricingData());
-                            $cart_total = $hasBulkPricingCheckout ? 0 : $base_price; // 0 if bulk pricing enabled
+                            // Default to base price even if bulk pricing is enabled; will update if a bulk option is chosen
+                            $cart_total = $base_price;
                             $tax = 0;
                             $grand_total = $cart_total + $tax;
                         @endphp
@@ -906,15 +907,15 @@
 
                     <!-- Quantity Selection Message -->
                     @if ($hasBulkPricingCheckout)
-                        <div id="bulk-selection-message" class="alert alert-info mt-3" style="display: none;">
-                            <i class="fas fa-shopping-cart"></i> <span id="bulk-message-text">{{ __('আপনি 0 পরিমাণ কেনার জন্য ক্লিক করেছেন') }}</span>
+                        <div id="bulk-selection-message" class="alert alert-info mt-3" style="display: block;">
+                            <i class="fas fa-shopping-cart"></i> <span id="bulk-message-text">{{ __('আপনি ১ টা কিনার জন্য ক্লিক করছেন') }}</span>
                         </div>
                     @endif
 
                     <!-- Order Now Button-->
                     <div class="mt-4">
                         <button id="order_now_btn"
-                            class="btn btn-primary btn-lg w-100 order_now_btn p-0" type="submit" {{ $hasBulkPricingCheckout ? 'disabled' : '' }}>
+                            class="btn btn-primary btn-lg w-100 order_now_btn p-0" type="submit">
                             <span>{{ __('অর্ডার করুন') }}</span>
                         </button>
                     </div>
@@ -1158,8 +1159,11 @@ $(document).ready(function() {
         e.stopPropagation();
         e.stopImmediatePropagation();
         
-        // Clear bulk pricing selection
+        // Clear bulk pricing selection and reset message to default
         window.bulkPricingSelection = null;
+        $('#bulk-message-text').text('You are clicking for 1 piece only');
+        $('#bulk-selection-message').show();
+        updateOrderSummary();
         
         // Scroll to checkout section
         $('html, body').animate({
