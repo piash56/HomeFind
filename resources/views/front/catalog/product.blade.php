@@ -908,7 +908,7 @@
                     <!-- Quantity Selection Message -->
                     @if ($hasBulkPricingCheckout)
                         <div id="bulk-selection-message" class="alert alert-info mt-3" style="display: block;">
-                            <i class="fas fa-shopping-cart"></i> <span id="bulk-message-text">{{ __('আপনি ১ টা কিনার জন্য ক্লিক করছেন') }}</span>
+                            <i class="fas fa-shopping-cart"></i> <span id="bulk-message-text">{{ __('আপনি একটা কিনার জন্য ক্লিক করছেন') }}</span>
                         </div>
                     @endif
 

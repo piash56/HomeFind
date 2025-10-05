@@ -12,6 +12,7 @@ use App\{
 };
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 use PHPMailer\PHPMailer\{
     PHPMailer,
     Exception
@@ -30,8 +31,8 @@ class EmailHelper
         try {
             $this->mail = new PHPMailer(true);
 
+            // Use admin SMTP settings if configured, otherwise fall back to .env settings
             if ($this->setting->smtp_check == 1) {
-
                 $this->mail->isSMTP();
                 $this->mail->Host       = $this->setting->email_host;
                 $this->mail->SMTPAuth   = true;
@@ -43,6 +44,16 @@ class EmailHelper
                     $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 }
                 $this->mail->Port           = $this->setting->email_port;
+                $this->mail->CharSet        = 'UTF-8';
+            } else {
+                // Fallback to .env SMTP settings
+                $this->mail->isSMTP();
+                $this->mail->Host       = env('MAIL_HOST', 'smtp.gmail.com');
+                $this->mail->SMTPAuth   = true;
+                $this->mail->Username   = env('MAIL_USERNAME');
+                $this->mail->Password   = env('MAIL_PASSWORD');
+                $this->mail->SMTPSecure = env('MAIL_ENCRYPTION', 'tls') == 'ssl' ? PHPMailer::ENCRYPTION_SMTPS : PHPMailer::ENCRYPTION_STARTTLS;
+                $this->mail->Port           = env('MAIL_PORT', 587);
                 $this->mail->CharSet        = 'UTF-8';
             }
         } catch (\Exception $e) {
@@ -60,7 +71,11 @@ class EmailHelper
             $email_body = preg_replace("/{transaction_number}/", $emailData['transaction_number'], $email_body);
             $email_body = preg_replace("/{site_title}/", $this->setting->title, $email_body);
 
-            $this->mail->setFrom($this->setting->email_from, $this->setting->email_from_name);
+            // Use admin email settings if configured, otherwise fall back to .env
+            $fromEmail = $this->setting->email_from ?: env('MAIL_FROM_ADDRESS', 'homefindbd@gmail.com');
+            $fromName = $this->setting->email_from_name ?: env('MAIL_FROM_NAME', 'HomeFindBD.com');
+
+            $this->mail->setFrom($fromEmail, $fromName);
             $this->mail->addAddress($emailData['to']);
             $this->mail->isHTML(true);
             $this->mail->Subject = $template->subject;
@@ -80,8 +95,11 @@ class EmailHelper
     {
 
         try {
+            // Use admin email settings if configured, otherwise fall back to .env
+            $fromEmail = $this->setting->email_from ?: env('MAIL_FROM_ADDRESS', 'homefindbd@gmail.com');
+            $fromName = $this->setting->email_from_name ?: env('MAIL_FROM_NAME', 'HomeFindBD.com');
 
-            $this->mail->setFrom($this->setting->email_from, $this->setting->email_from_name);
+            $this->mail->setFrom($fromEmail, $fromName);
             $this->mail->addAddress($emailData['to']);
             $this->mail->isHTML(true);
             $this->mail->Subject = $emailData['subject'];
@@ -138,9 +156,14 @@ class EmailHelper
             $email_body = preg_replace("/{user_name}/", $emailData['customer_name'] ?? $emailData['user_name'] ?? '', $email_body);
             $email_body = preg_replace("/{order_cost}/", $emailData['total_price'] ?? $emailData['order_cost'] ?? '', $email_body);
 
-            $this->mail->setFrom($this->setting->email_from, $this->setting->email_from_name);
+            // Use admin email settings if configured, otherwise fall back to .env
+            $fromEmail = $this->setting->email_from ?: env('MAIL_FROM_ADDRESS', 'homefindbd@gmail.com');
+            $fromName = $this->setting->email_from_name ?: env('MAIL_FROM_NAME', 'HomeFindBD.com');
+            $adminEmail = $this->setting->contact_email ?: env('MAIL_FROM_ADDRESS', 'homefindbd@gmail.com');
+
+            $this->mail->setFrom($fromEmail, $fromName);
             $this->mail->clearAddresses();
-            $this->mail->addAddress($this->setting->contact_email);
+            $this->mail->addAddress($adminEmail);
             $this->mail->isHTML(true);
             $this->mail->Subject = $template->subject;
             $this->mail->Body = $email_body;

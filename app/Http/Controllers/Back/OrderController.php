@@ -76,16 +76,207 @@ class OrderController extends Controller
     {
         $order = Order::findOrFail($id);
 
+        // Validate required fields
+        $request->validate([
+            'transaction_number' => 'required|string|max:255',
+            'order_date' => 'required|date',
+            'bill_first_name' => 'required|string|max:255',
+            'bill_phone' => 'required|string|max:20',
+            'bill_address1' => 'required|string|max:500',
+            'bill_email' => 'nullable|email|max:255',
+            'item_id' => 'required|integer|exists:items,id',
+        ]);
+
         // Check if order_id is available
         if (Order::where('transaction_number', $request->transaction_number)->where('id', '!=', $id)->exists()) {
             return redirect()->route('back.order.index')->withErrors(__('Order ID already exists.'));
         }
 
-        $order->update($request->all());
+        // Get the product
+        $item = \App\Models\Item::findOrFail($request->item_id);
+
+        // Determine quantity and pricing
+        $quantity = 1;
+        $pricePerUnit = $item->discount_price;
+        $isBulkPricing = false;
+        $totalAttributePrice = 0;
+        $attributeOptionNames = [];
+        $attributeNames = [];
+        $attributeOptionPrices = [];
+        $optionsIds = [];
+
+        // Process selected attributes if any
+        if ($request->has('selected_attributes') && !empty($request->selected_attributes)) {
+            $selectedAttributes = json_decode($request->selected_attributes, true);
+
+            foreach ($selectedAttributes as $attributeId => $optionId) {
+                // Get attribute and option details
+                $attribute = \App\Models\Attribute::find($attributeId);
+                $option = \App\Models\AttributeOption::find($optionId);
+
+                if ($attribute && $option) {
+                    $attributeOptionNames[] = $option->name;
+                    $attributeNames[] = $attribute->name;
+                    $attributeOptionPrices[] = $option->price;
+                    $optionsIds[] = $optionId;
+                    $totalAttributePrice += $option->price;
+                }
+            }
+        }
+
+        if ($request->has('quantity_option')) {
+            // Bulk pricing option selected
+            $selectedOption = $request->quantity_option;
+            $quantity = (int) $selectedOption;
+
+            // Check if this is a bulk pricing option
+            if ($item->enable_bulk_pricing) {
+                $bulkPricingData = $item->getBulkPricingData();
+                foreach ($bulkPricingData as $option) {
+                    if ($option['quantity'] == $quantity) {
+                        $pricePerUnit = $option['price'] / $quantity;
+                        $isBulkPricing = true;
+                        break;
+                    }
+                }
+            }
+        } elseif ($request->has('normal_quantity')) {
+            // Normal quantity input
+            $quantity = (int) $request->normal_quantity;
+        }
+
+        // Create new cart structure (matching CheckoutController structure)
+        $cart = [
+            $item->id => [
+                'name' => $item->name,
+                'slug' => $item->slug,
+                'photo' => $item->photo,
+                'main_price' => $pricePerUnit,
+                'attribute_price' => $totalAttributePrice,
+                'qty' => $quantity,
+                'size_qty' => 0,
+                'size_price' => 0,
+                'size_key' => null,
+                'keys' => '',
+                'values' => '',
+                'item_type' => $item->item_type,
+                'license' => '',
+                'options_id' => $optionsIds,
+                'attribute' => [
+                    'option_name' => $attributeOptionNames,
+                    'names' => $attributeNames,
+                    'option_price' => $attributeOptionPrices
+                ]
+            ]
+        ];
+
+        // Create new billing info
+        $billingInfo = [
+            'bill_first_name' => $request->bill_first_name,
+            'bill_last_name' => '',
+            'bill_email' => $request->bill_email ?? '',
+            'bill_phone' => $request->bill_phone,
+            'bill_company' => '',
+            'bill_address1' => $request->bill_address1,
+            'bill_address2' => '',
+            'bill_zip' => '',
+            'bill_city' => 'Dhaka',
+            'bill_state' => '',
+            'bill_country' => 'Bangladesh',
+        ];
+
+        // Create new shipping info (same as billing)
+        $shippingInfo = [
+            'ship_first_name' => $request->bill_first_name,
+            'ship_last_name' => '',
+            'ship_email' => $request->bill_email ?? '',
+            'ship_phone' => $request->bill_phone,
+            'ship_company' => '',
+            'ship_address1' => $request->bill_address1,
+            'ship_address2' => '',
+            'ship_zip' => '',
+            'ship_city' => 'Dhaka',
+            'ship_state' => '',
+            'ship_country' => 'Bangladesh',
+        ];
+
+        // Calculate total amount
+        $totalAmount = $pricePerUnit * $quantity;
+
+        // Update order
+        $order->update([
+            'transaction_number' => $request->transaction_number,
+            'created_at' => $request->order_date,
+            'cart' => json_encode($cart),
+            'billing_info' => json_encode($billingInfo),
+            'shipping_info' => json_encode($shippingInfo),
+        ]);
+
         return redirect()->route('back.order.index')->withSuccess(__('Order Updated Successfully.'));
     }
 
+    /**
+     * Get product data for order editing
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getProductData(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|integer|exists:items,id'
+        ]);
 
+        $product = \App\Models\Item::with(['attributes.options' => function ($query) {
+            $query->where('stock', '!=', 0);
+        }])->findOrFail($request->product_id);
+
+        // Transform thumbnail URL
+        if ($product->thumbnail) {
+            if (strpos($product->thumbnail, 'assets/images/') === 0) {
+                $product->thumbnail = asset($product->thumbnail);
+            } else {
+                $product->thumbnail = asset('assets/images/' . $product->thumbnail);
+            }
+        } else {
+            $product->thumbnail = asset('assets/images/noimage.png');
+        }
+
+        // Get bulk pricing data
+        $bulkPricingData = $product->getBulkPricingData();
+
+        // Format attributes data
+        $attributesData = [];
+        foreach ($product->attributes as $attribute) {
+            if ($attribute->options->count() > 0) {
+                $attributesData[] = [
+                    'id' => $attribute->id,
+                    'name' => $attribute->name,
+                    'options' => $attribute->options->map(function ($option) {
+                        return [
+                            'id' => $option->id,
+                            'name' => $option->name,
+                            'price' => $option->price,
+                            'stock' => $option->stock
+                        ];
+                    })
+                ];
+            }
+        }
+
+        return response()->json([
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'thumbnail' => $product->thumbnail,
+                'discount_price' => $product->discount_price,
+                'stock' => $product->stock,
+                'enable_bulk_pricing' => $product->enable_bulk_pricing,
+                'bulk_pricing_data' => $bulkPricingData,
+                'attributes' => $attributesData
+            ]
+        ]);
+    }
 
     /**
      * Display the specified resource.

@@ -27,7 +27,8 @@ class Order extends Model
         'tax',
         'state_price',
         'state',
-        'steadfast_parcel_info'
+        'steadfast_parcel_info',
+        'created_at'
     ];
 
     public function user()

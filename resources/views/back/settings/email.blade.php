@@ -48,6 +48,12 @@
                                                 <div class="tab-content">
                                                     <div id="conf" class="container tab-pane active"><br>
 
+                                                        <!-- Info Alert -->
+                                                        <div class="alert alert-info">
+                                                            <i class="fas fa-info-circle"></i>
+                                                            <strong>{{ __('Note:') }}</strong>
+                                                            {{ __('If SMTP is disabled, the system will automatically use .env email settings (Gmail configuration).') }}
+                                                        </div>
 
                                                         <div class="row justify-content-center">
 
@@ -201,6 +207,9 @@
                                                                             id="contact_email" name="contact_email"
                                                                             placeholder="{{ __('Enter Contact Email') }}"
                                                                             value="{{ $setting->contact_email }}"="">
+                                                                        <small class="form-text text-muted">
+                                                                            {{ __('Admin emails will be sent to this address. If not set, will use: homefindbd@gmail.com') }}
+                                                                        </small>
                                                                     </div>
 
 
@@ -211,6 +220,11 @@
                                                                             class="form-group d-flex justify-content-center">
                                                                             <button type="submit"
                                                                                 class="btn btn-secondary btn-block w-100">{{ __('Submit') }}</button>
+                                                                        </div>
+
+                                                                        <div class="form-group d-flex justify-content-center mt-3">
+                                                                            <button type="button" id="test-email-btn"
+                                                                                class="btn btn-info btn-sm">{{ __('Test Email') }}</button>
                                                                         </div>
 
                                                                     </div>
@@ -295,4 +309,41 @@
         </div>
 
     </div>
+@endsection
+
+@section('script')
+<script>
+$(document).ready(function() {
+    // Test email functionality
+    $('#test-email-btn').click(function() {
+        var btn = $(this);
+        var originalText = btn.html();
+        
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Testing...');
+        
+        $.ajax({
+            url: '{{ route("back.email.test") }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert('Test email sent successfully! Check your inbox.');
+                } else {
+                    alert('Test email failed: ' + response.message);
+                }
+            },
+            error: function(xhr) {
+                var response = xhr.responseJSON;
+                var message = response && response.message ? response.message : 'Test email failed. Please check your email settings.';
+                alert('Error: ' + message);
+            },
+            complete: function() {
+                btn.prop('disabled', false).html(originalText);
+            }
+        });
+    });
+});
+</script>
 @endsection

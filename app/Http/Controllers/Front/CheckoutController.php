@@ -950,6 +950,8 @@ class CheckoutController extends Controller
             } else {
                 $cartMainPrice = $product_price;
                 $cartAttributePrice = $totalAttributePrice;
+                // Ensure per-item price is defined for non-bulk orders
+                $perItemPrice = $product_price + $totalAttributePrice;
             }
 
             // Create cart structure for order (matching normal cart structure)
@@ -1053,10 +1055,12 @@ class CheckoutController extends Controller
             $item->stock = $item->stock - $quantity;
             $item->save();
 
-            // Send admin email notification (temporarily disabled due to PHPMailer issue)
+            // Send admin email notification
             try {
                 $setting = Setting::first();
                 if ($setting->order_mail == 1) {
+                    // Calculate perItemPrice for email notification
+                    $perItemPrice = $isBulkPricing ? ($bulkTotalPrice / $quantity) : $product_price;
                     $this->sendAdminOrderNotification($order, $item, $isBulkPricing, $bulkTotalPrice, $quantity, $cart_total, $perItemPrice);
                 }
             } catch (\Exception $emailError) {

@@ -51,6 +51,7 @@ Route::group(['middleware' => ['adminlocalize', 'demo']], function () {
             Route::get('/order/invoice/{id}', 'Back\OrderController@invoice')->name('back.order.invoice');
             Route::get('/order/status/{id}/{field}/{value}', 'Back\OrderController@status')->name('back.order.status');
             Route::get('/order/steadfast-parcel/{id}', 'Back\OrderController@createSteadFastParcel')->name('back.order.steadfast.parcel');
+            Route::get('/order/get-product-data', 'Back\OrderController@getProductData')->name('admin.order.get-product-data');
         });
 
         Route::group(['middleware' => 'permissions:Manage Products'], function () {
@@ -191,6 +192,7 @@ Route::group(['middleware' => ['adminlocalize', 'demo']], function () {
             //------------ EMAIL TEMPLATE ------------
             Route::get('/setting/email', 'Back\EmailSettingController@email')->name('back.setting.email');
             Route::post('/setting/email/update', 'Back\EmailSettingController@emailUpdate')->name('back.email.update');
+            Route::post('/setting/email/test', 'Back\EmailSettingController@testEmail')->name('back.email.test');
             Route::get('email/template/{template}/edit', 'Back\EmailSettingController@edit')->name('back.template.edit');
             Route::put('email/template/update/{template}', 'Back\EmailSettingController@update')->name('back.template.update');
 
