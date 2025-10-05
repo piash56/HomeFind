@@ -70,6 +70,26 @@
 					</div>
 				</div>
 				
+				<div class="row">
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="review_date">{{ __('Review Date') }}</label>
+							<input type="datetime-local" class="form-control" id="review_date" name="review_date" 
+								   value="{{ old('review_date', $review->created_at ? $review->created_at->format('Y-m-d\TH:i') : '') }}">
+							<small class="form-text text-muted">{{ __('Date and time when the review was created') }}</small>
+						</div>
+					</div>
+					
+					<div class="col-md-6">
+						<div class="form-group">
+							<label for="admin_reply_date">{{ __('Admin Reply Date') }}</label>
+							<input type="datetime-local" class="form-control" id="admin_reply_date" name="admin_reply_date" 
+								   value="{{ old('admin_reply_date', $review->admin_reply_date ? \Carbon\Carbon::parse($review->admin_reply_date)->format('Y-m-d\TH:i') : '') }}">
+							<small class="form-text text-muted">{{ __('Date and time when admin replied') }}</small>
+						</div>
+					</div>
+				</div>
+				
 				<div class="form-group">
 					<label for="review_text">{{ __('Review Text') }}</label>
 					<textarea class="form-control" id="review_text" name="review_text" rows="4" 

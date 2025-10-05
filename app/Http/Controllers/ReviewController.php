@@ -287,7 +287,9 @@ class ReviewController extends Controller
             'review_text' => 'nullable|string|max:1000',
             'status' => 'required|in:pending,approved,rejected',
             'review_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'admin_reply' => 'nullable|string|max:1000'
+            'admin_reply' => 'nullable|string|max:1000',
+            'review_date' => 'nullable|date',
+            'admin_reply_date' => 'nullable|date'
         ]);
 
         $review = Review::findOrFail($id);
@@ -300,6 +302,16 @@ class ReviewController extends Controller
             'status' => $request->status,
             'admin_reply' => $request->admin_reply
         ];
+
+        // Handle review date
+        if ($request->filled('review_date')) {
+            $data['created_at'] = $request->review_date;
+        }
+
+        // Handle admin reply date
+        if ($request->filled('admin_reply_date')) {
+            $data['admin_reply_date'] = $request->admin_reply_date;
+        }
 
         // Handle multiple image uploads
         if ($request->hasFile('review_images')) {

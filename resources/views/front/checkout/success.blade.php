@@ -118,17 +118,17 @@
     <div class="container padding-bottom-3x padding-top-2x mb-1">
         <div class="card text-center">
             <div class="card-body">
-                <h3 class="card-title text-success">{{ __('Thank you for your order') }}!</h3>
-                <p class="card-text">{{ __('Your order has been placed and will be processed as soon as possible.') }}</p>
-                <p class="card-text">{{ __('Make sure you make note of your order number, which is') }} <span
+                <h3 class="card-title text-success">{{ __('ধন্যবাদ আপনাকে ওর্ডার করার জন্য') }}!</h3>
+                <p class="card-text">{{ __('আপনার অর্ডার দেওয়া হয়ে গেছে এবং যত তাড়াতাড়ি সম্ভব প্রক্রিয়া শুরু হবে।') }}</p>
+                <p class="card-text">{{ __('আপনার অর্ডার নম্বরটি নোট করে রাখুন, যা হল') }} <span
                         class="text-medium">{{ $order->transaction_number }}</span></p>
-                <p class="card-text">{{ __('You will be receiving an email shortly with confirmation of your order.') }}
+                <p class="card-text">{{ __('আপনার অর্ডার নিশ্চিতকরণের জন্য শীঘ্রই আপনি একটি মেসেজ পাবেন।') }}
 
                 </p>
                 <div class="padding-top-1x padding-bottom-1x">
 
                     <a class="btn btn-primary m-4" href="{{ route('front.index') }}"><span><i
-                                class="icon-package pr-2"></i> {{ __('View our products again') }}</span></a>
+                                class="icon-package pr-2"></i> {{ __('আমাদের আরো প্রোডাক্ট দেখুন') }}</span></a>
 
                 </div>
             </div>

@@ -17,7 +17,8 @@ class Review extends Model
         'admin_reply',
         'admin_reply_date',
         'is_admin_added',
-        'status'
+        'status',
+        'created_at'
     ];
 
     public function item()

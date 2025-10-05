@@ -68,8 +68,14 @@
 						</tr>
 						<tr>
 							<th>{{ __('Review Date') }}:</th>
-							<td>{{ $review->created_at->format('M d, Y H:i') }}</td>
+							<td>{{ $review->created_at ? \Carbon\Carbon::parse($review->created_at)->format('M d, Y H:i') : 'N/A' }}</td>
 						</tr>
+						@if($review->admin_reply_date)
+						<tr>
+							<th>{{ __('Admin Reply Date') }}:</th>
+							<td>{{ \Carbon\Carbon::parse($review->admin_reply_date)->format('M d, Y H:i') }}</td>
+						</tr>
+						@endif
 						@if($review->review_text)
 						<tr>
 							<th>{{ __('Review Text') }}:</th>
@@ -112,7 +118,7 @@
 						<div class="card-body">
 							<p class="mb-0">{{ $review->admin_reply }}</p>
 							@if($review->admin_reply_date)
-								<small class="text-muted">Replied on: {{ $review->admin_reply_date->format('M d, Y H:i') }}</small>
+								<small class="text-muted">Replied on: {{ \Carbon\Carbon::parse($review->admin_reply_date)->format('M d, Y H:i') }}</small>
 							@endif
 						</div>
 					</div>

@@ -442,23 +442,23 @@
                                                     <div class="bulk-price-option border rounded p-3 h-100 cursor-pointer" data-quantity="{{ $option['quantity'] }}" data-price="{{ $option['price'] }}">
                                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                                             <div>
-                                                                <strong style="font-size: 1.1rem;">{{ __('Buy') }} {{ $option['quantity'] }}</strong>
+                                                                <strong style="font-size: 1.1rem;">{{ $option['quantity'] }} {{ __('টি কিনুন') }}</strong>
                                                                 @if ($option['is_single'])
-                                                                    <div class="text-muted small">{{ __('Single Price') }}</div>
+                                                                    <div class="text-muted small">{{ __('একটার দাম') }}</div>
                                                                 @else
                                                                     @php
                                                                         $savings = ($item->discount_price * $option['quantity']) - $option['price'];
                                                                         $savingsPercent = ($savings / ($item->discount_price * $option['quantity'])) * 100;
                                                                     @endphp
                                                                     @if ($savings > 0)
-                                                                        <div class="text-success small">{{ __('Save') }} {{ PriceHelper::setCurrencyPrice($savings) }} ({{ number_format($savingsPercent, 0) }}%)</div>
+                                                                        <div class="text-success small">{{ __('বাচলো') }} {{ PriceHelper::setCurrencyPrice($savings) }} ({{ number_format($savingsPercent, 0) }}%)</div>
                                                                     @endif
                                                                 @endif
                                                             </div>
                                                             <div class="text-right">
                                                                 <div class="h5 mb-0 text-primary">{{ PriceHelper::setCurrencyPrice($option['price']) }}</div>
                                                                 @if (!$option['is_single'])
-                                                                    <small class="text-muted">{{ PriceHelper::setCurrencyPrice($option['price'] / $option['quantity']) }} {{ __('each') }}</small>
+                                                                    <small class="text-muted">{{ PriceHelper::setCurrencyPrice($option['price'] / $option['quantity']) }} {{ __('একটি') }}</small>
                                                                 @endif
                                                             </div>
                                                         </div>
@@ -587,7 +587,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="section-title">
-                    <h2 class="h3">{{ __('Latest Reviews') }}</h2>
+                    <h2 class="h3">{{ __('সর্বশেষ রিভিউ') }}</h2>
                 </div>
             </div>
         </div>
@@ -671,14 +671,14 @@
                         </div>
                     @empty
                         <div class="card p-5">
-                            {{ __('No Review') }}
+                            {{ __('কোনো রিভিউ নেই') }}
                         </div>
                     @endforelse
                     
                     @if($totalReviews > 3)
                         <div class="text-center mt-4 mb-4">
                             <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#all-reviews-modal">
-                                {{ __('More Reviews') }} ({{ $totalReviews - 3 }} {{ __('more') }})
+                                {{ __('আরো রিভিউ দেখুন') }} ( {{ __('আরো') }} {{ $totalReviews - 3 }} {{ __('টা আছে') }})
                             </button>
                         </div>
                     @endif
@@ -733,7 +733,7 @@
                         </div>
                         <div class="pb-2">
                             <button class="btn btn-primary btn-block" type="button" data-toggle="modal" data-target="#review-modal" id="review-login-btn">
-                                <span>{{ __('Login') }}</span>
+                                <span>{{ __('রিভিউ দিন') }}</span>
                             </button>
                         </div>
                     </div>
@@ -748,7 +748,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="section-title">
-                        <h2 class="h3">{{ __('You May Also Like') }}</h2>
+                        <h2 class="h3">{{ __('আপনি পছন্দ করতে পারেন') }}</h2>
                     </div>
                 </div>
             </div>
@@ -1802,7 +1802,7 @@ $(document).ready(function() {
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="reviewModalLabel">{{ __('Write a Review') }}</h5>
+                <h5 class="modal-title" id="reviewModalLabel">{{ __('আপনার মূল্যবান রিভিউ দিন') }}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -1812,21 +1812,21 @@ $(document).ready(function() {
             <div id="review-verification-form">
                 <div class="modal-body">
                     <div class="text-center mb-4">
-                        <h6>{{ __('Please verify your order to write a review') }}</h6>
-                        <p class="text-muted">{{ __('Enter your Order ID and Phone number to continue') }}</p>
+                        <h6>{{ __('রিভিউ দিতে অনুগ্রহ করে আপনার অর্ডার যাচাই করুন') }}</h6>
+                        <p class="text-muted">{{ __('চালিয়ে যেতে আপনার অর্ডার আইডি এবং ফোন নম্বর লিখুন।') }}</p>
                     </div>
                     
                     <form id="verify-order-form">
                         <div class="form-group">
-                            <label for="order_id">{{ __('Order ID') }} *</label>
+                            <label for="order_id">{{ __('অর্ডার আইডি') }} *</label>
                             <input type="text" class="form-control" id="order_id" name="order_id" 
-                                   placeholder="{{ __('Enter your Order ID') }}" required>
+                                   placeholder="{{ __('আপনার অর্ডার আইডি লিখুন') }}" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="phone">{{ __('Phone Number') }} *</label>
+                            <label for="phone">{{ __('ফোন নম্বর') }} *</label>
                             <input type="text" class="form-control" id="phone" name="phone" 
-                                   placeholder="{{ __('Enter your phone number') }}" required>
+                                   placeholder="{{ __('আপনার ফোন নম্বর লিখুন') }}" required>
                         </div>
                         
                         <input type="hidden" id="item_id" value="{{ $item->id }}">
@@ -1836,9 +1836,9 @@ $(document).ready(function() {
                 </div>
                 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('বাতিল করুন') }}</button>
                     <button type="button" class="btn btn-primary" id="verify-order-btn">
-                        <span class="btn-text">{{ __('Verify Order') }}</span>
+                        <span class="btn-text">{{ __('ভেরিফাই করুন') }}</span>
                         <span class="spinner-border spinner-border-sm" style="display: none;"></span>
                     </button>
                 </div>
@@ -1848,28 +1848,28 @@ $(document).ready(function() {
             <div id="review-submit-form">
                 <div class="modal-body">
                     <div class="text-center mb-4">
-                        <h6>{{ __('Write Your Review') }}</h6>
-                        <p class="text-muted">{{ __('Share your experience with this product') }}</p>
+                        <h6>{{ __('আপনার রিভিউ লেখুন') }}</h6>
+                        <p class="text-muted">{{ __('এই পণ্যের সাথে আপনার অভিজ্ঞতা শেয়ার করুন') }}</p>
                     </div>
                     
                     <form id="submit-review-form" enctype="multipart/form-data">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>{{ __('Customer Name') }}</label>
+                                    <label>{{ __('আপনার নাম') }}</label>
                                     <input type="text" class="form-control" id="customer_name_display" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label>{{ __('Phone Number') }}</label>
+                                    <label>{{ __('ফোন নাম্বার') }}</label>
                                     <input type="text" class="form-control" id="customer_phone_display" readonly>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="form-group">
-                            <label>{{ __('Rating') }} *</label>
+                            <label>{{ __('রেটিং') }} *</label>
                             <div class="star-rating-container">
                                 <div class="star-rating" data-rating="1">★</div>
                                 <div class="star-rating" data-rating="2">★</div>
@@ -1881,13 +1881,13 @@ $(document).ready(function() {
                         </div>
                         
                         <div class="form-group">
-                            <label for="review_text">{{ __('Review') }}</label>
+                            <label for="review_text">{{ __('রিভিউ লেখুন') }}</label>
                             <textarea class="form-control" id="review_text" name="review_text" rows="4" 
-                                      placeholder="{{ __('Write your review here...') }}"></textarea>
+                                      placeholder="{{ __('আপনার মূল্যবান রিভিউ লেখুন এখানে...') }}"></textarea>
                         </div>
                         
                                 <div class="form-group">
-                                    <label for="review_images">{{ __('Upload Images (Optional)') }}</label>
+                                    <label for="review_images">{{ __('ছবি আপলোড করুন (Optional)') }}</label>
                                     <input type="file" class="form-control-file" id="review_images" name="review_images[]" 
                                            accept="image/*" multiple>
                                     <small class="form-text text-muted">{{ __('Supported formats: JPG, PNG, GIF (Max: 2MB each, Max 3 images)') }}</small>
@@ -2027,7 +2027,7 @@ $(document).ready(function() {
         var itemId = $('#item_id').val();
         
         if (!orderId || !phone) {
-            showMessage(message, 'Please fill in all required fields.', 'danger');
+            showMessage(message, 'অনুগ্রহ করে সমস্ত প্রয়োজনীয় ক্ষেত্র পূরণ করুন।', 'danger');
             return;
         }
         
