@@ -476,7 +476,7 @@
                         </div>
 
                         <div class="div">
-                            <div class="t-c-b-area">
+                            {{-- <div class="t-c-b-area">
                                 @if ($item->brand_id)
                                     <div class="pt-1 mb-1"><span class="text-medium">{{ __('Brand') }}:</span>
                                         <a
@@ -500,7 +500,7 @@
                                     <div class="pt-1 mb-4"><span class="text-medium">{{ __('SKU') }}:</span>
                                         #{{ $item->sku }}</div>
                                 @endif
-                            </div>
+                            </div> --}}
 
                             <div class="mt-4 p-d-f-area">
                                 
@@ -595,7 +595,8 @@
             <div class="col-md-8">
                 <div id="reviews-container">
                     @php
-                        $approvedReviews = \App\Models\Review::where('item_id', $item->id)->where('status', 'approved')->orderBy('created_at', 'desc')->limit(4)->get();
+                        $approvedReviews = \App\Models\Review::where('item_id', $item->id)->where('status', 'approved')->orderBy('created_at', 'desc')->limit(3)->get();
+                        $totalReviews = \App\Models\Review::where('item_id', $item->id)->where('status', 'approved')->count();
                     @endphp
                     @forelse ($approvedReviews as $review)
                         <div class="single-review mb-4">
@@ -635,8 +636,9 @@
                                             <div class="review-images-right">
                                                 @foreach($reviewImages as $index => $image)
                                                     <img src="{{ asset($image) }}" class="img-fluid rounded review-image-thumb d-inline-block" 
-                                                         style="width: 50px; height: 50px; object-fit: cover; border: 2px solid #ddd; margin: 2px;" 
-                                                         alt="Review Image {{ $index + 1 }}">
+                                                         style="width: 50px; height: 50px; object-fit: cover; border: 2px solid #ddd; margin: 2px; cursor: pointer;" 
+                                                         alt="Review Image {{ $index + 1 }}"
+                                                         onclick="openImageSlider({{ $review->id }}, {{ $index }}, {{ json_encode($reviewImages) }})">
                                                 @endforeach
                                             </div>
                                         @endif
@@ -672,6 +674,14 @@
                             {{ __('No Review') }}
                         </div>
                     @endforelse
+                    
+                    @if($totalReviews > 3)
+                        <div class="text-center mt-4 mb-4">
+                            <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#all-reviews-modal">
+                                {{ __('More Reviews') }} ({{ $totalReviews - 3 }} {{ __('more') }})
+                            </button>
+                        </div>
+                    @endif
                 </div>
             </div>
             <div class="col-md-4 mb-4">
@@ -1438,6 +1448,240 @@ $(document).ready(function() {
     margin: 0;
 }
 
+/* All Reviews Modal Styles */
+#all-reviews-modal .modal-body {
+    padding: 20px;
+}
+
+#all-reviews-modal .single-review {
+    box-shadow: none;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 15px;
+}
+
+#all-reviews-modal .single-review:last-child {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Filter Section Styles */
+.reviews-filter-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.reviews-filter-section .form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.reviews-filter-section .form-control-sm {
+    font-size: 13px;
+}
+
+/* Image Slider Modal Styles */
+.image-slider-modal .modal-dialog {
+    max-width: 95vw;
+    max-height: 95vh;
+    margin: 2.5vh auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-slider-modal .modal-content {
+    background: transparent;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;
+}
+
+.image-slider-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 8px;
+}
+
+.slider-image {
+    max-width: 90vw;
+    max-height: 85vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.slider-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.slider-nav:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.slider-nav.prev {
+    left: 20px;
+}
+
+.slider-nav.next {
+    right: 20px;
+}
+
+.slider-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: translateY(-50%);
+}
+
+.slider-counter {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.slider-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    z-index: 1000;
+}
+
+.slider-close:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.1);
+}
+
+/* Mobile Responsive for Filters */
+@media (max-width: 768px) {
+    .reviews-filter-section .row {
+        margin: 0;
+    }
+    
+    .reviews-filter-section .col-md-6 {
+        padding: 0 5px;
+        margin-bottom: 10px;
+    }
+    
+    .image-slider-modal .modal-dialog {
+        max-width: 98vw;
+        max-height: 98vh;
+        margin: 1vh auto;
+    }
+    
+    .slider-image {
+        max-width: 95vw;
+        max-height: 90vh;
+    }
+    
+    .slider-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .slider-nav.prev {
+        left: 10px;
+    }
+    
+    .slider-nav.next {
+        right: 10px;
+    }
+    
+    .slider-close {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .slider-counter {
+        bottom: 10px;
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .slider-image {
+        max-width: 98vw;
+        max-height: 85vh;
+    }
+    
+    .slider-nav {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
+    
+    .slider-close {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+}
+
 .admin-reply-section .card-body {
     padding: 12px 15px;
 }
@@ -1989,7 +2233,320 @@ $(document).ready(function() {
             $('#image-preview').hide();
         }
     });
+    
+    // Review filtering functionality (only for modal)
+    function filterReviews() {
+        const ratingFilter = $('#rating-filter').val();
+        const imageFilter = $('#image-filter').val();
+        
+        $('#all-reviews-container .single-review').each(function() {
+            const $review = $(this);
+            const reviewRating = parseInt($review.data('rating'));
+            const hasImagesStr = $review.data('has-images');
+            const hasImages = hasImagesStr === 'true' || hasImagesStr === true;
+            
+            let showReview = true;
+            
+            // Filter by rating
+            if (ratingFilter !== 'all' && reviewRating != parseInt(ratingFilter)) {
+                showReview = false;
+            }
+            
+            // Filter by images
+            if (imageFilter === 'with-images' && !hasImages) {
+                showReview = false;
+            } else if (imageFilter === 'without-images' && hasImages) {
+                showReview = false;
+            }
+            
+            // Show/hide review
+            if (showReview) {
+                $review.show();
+            } else {
+                $review.hide();
+            }
+        });
+        
+        // Update "no reviews" message
+        const visibleReviews = $('#all-reviews-container .single-review:visible').length;
+        if (visibleReviews === 0) {
+            if ($('#no-reviews-message').length === 0) {
+                $('#all-reviews-container').append(`
+                    <div id="no-reviews-message" class="text-center p-5">
+                        <p class="text-muted">{{ __('No reviews match the selected filters.') }}</p>
+                    </div>
+                `);
+            }
+        } else {
+            $('#no-reviews-message').remove();
+        }
+    }
+    
+    // Initialize filters (only for modal)
+    $('#rating-filter, #image-filter').on('change', filterReviews);
+    
+    // Reset filters when modal is closed
+    $('#all-reviews-modal').on('hidden.bs.modal', function() {
+        $('#rating-filter').val('all');
+        $('#image-filter').val('all');
+        $('#all-reviews-container .single-review').show();
+        $('#no-reviews-message').remove();
+    });
+    
+    // Image slider functionality
+    let currentSliderImages = [];
+    let currentSliderIndex = 0;
+    
+    // Global function to open image slider
+    window.openImageSlider = function(reviewId, imageIndex, images) {
+        currentSliderImages = images;
+        currentSliderIndex = imageIndex;
+        
+        // Convert relative paths to absolute URLs
+        let imageSrc = images[imageIndex];
+        if (imageSrc.startsWith('assets/')) {
+            // Convert to absolute URL using Laravel asset() function equivalent
+            imageSrc = window.location.origin + '/' + imageSrc;
+        } else if (!imageSrc.startsWith('http') && !imageSrc.startsWith('/')) {
+            imageSrc = window.location.origin + '/' + imageSrc;
+        }
+        
+        $('#slider-main-image').attr('src', imageSrc);
+        updateSliderCounter();
+        updateSliderButtons();
+        
+        $('#image-slider-modal').modal('show');
+    };
+    
+    function updateSliderCounter() {
+        $('#slider-counter').text(`${currentSliderIndex + 1} / ${currentSliderImages.length}`);
+    }
+    
+    function updateSliderButtons() {
+        $('#slider-prev').prop('disabled', currentSliderIndex === 0);
+        $('#slider-next').prop('disabled', currentSliderIndex === currentSliderImages.length - 1);
+    }
+    
+    // Slider navigation
+    $('#slider-prev').on('click', function() {
+        if (currentSliderIndex > 0) {
+            currentSliderIndex--;
+            let imageSrc = currentSliderImages[currentSliderIndex];
+            if (imageSrc.startsWith('assets/')) {
+                imageSrc = window.location.origin + '/' + imageSrc;
+            } else if (!imageSrc.startsWith('http') && !imageSrc.startsWith('/')) {
+                imageSrc = window.location.origin + '/' + imageSrc;
+            }
+            $('#slider-main-image').attr('src', imageSrc);
+            updateSliderCounter();
+            updateSliderButtons();
+        }
+    });
+    
+    $('#slider-next').on('click', function() {
+        if (currentSliderIndex < currentSliderImages.length - 1) {
+            currentSliderIndex++;
+            let imageSrc = currentSliderImages[currentSliderIndex];
+            if (imageSrc.startsWith('assets/')) {
+                imageSrc = window.location.origin + '/' + imageSrc;
+            } else if (!imageSrc.startsWith('http') && !imageSrc.startsWith('/')) {
+                imageSrc = window.location.origin + '/' + imageSrc;
+            }
+            $('#slider-main-image').attr('src', imageSrc);
+            updateSliderCounter();
+            updateSliderButtons();
+        }
+    });
+    
+    // Keyboard navigation for slider
+    $(document).on('keydown', function(e) {
+        if ($('#image-slider-modal').hasClass('show')) {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                $('#slider-prev').click();
+            } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                $('#slider-next').click();
+            } else if (e.key === 'Escape') {
+                $('#image-slider-modal').modal('hide');
+            }
+        }
+    });
+    
+    // Ensure close button works properly
+    $(document).on('click', '.slider-close', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $('#image-slider-modal').modal('hide');
+    });
+    
+    // Also handle clicks on the modal backdrop
+    $('#image-slider-modal').on('click', function(e) {
+        if (e.target === this) {
+            $('#image-slider-modal').modal('hide');
+        }
+    });
 });
 </script>
+
+<!-- All Reviews Modal -->
+<div class="modal fade" id="all-reviews-modal" tabindex="-1" role="dialog" aria-labelledby="allReviewsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="allReviewsModalLabel">{{ __('All Reviews') }} ({{ $totalReviews }})</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <!-- Filter Controls -->
+                <div class="reviews-filter-section mb-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="rating-filter" class="form-label">{{ __('Filter by Rating') }}</label>
+                                <select class="form-control form-control-sm" id="rating-filter">
+                                    <option value="all">{{ __('All Ratings') }}</option>
+                                    <option value="5">5 {{ __('Stars') }}</option>
+                                    <option value="4">4 {{ __('Stars') }}</option>
+                                    <option value="3">3 {{ __('Stars') }}</option>
+                                    <option value="2">2 {{ __('Stars') }}</option>
+                                    <option value="1">1 {{ __('Star') }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="image-filter" class="form-label">{{ __('Filter by Images') }}</label>
+                                <select class="form-control form-control-sm" id="image-filter">
+                                    <option value="all">{{ __('All Reviews') }}</option>
+                                    <option value="with-images">{{ __('With Images') }}</option>
+                                    <option value="without-images">{{ __('Without Images') }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="all-reviews-container">
+                    @php
+                        $allApprovedReviews = \App\Models\Review::where('item_id', $item->id)->where('status', 'approved')->orderBy('created_at', 'desc')->get();
+                    @endphp
+                    @forelse ($allApprovedReviews as $review)
+                        @php
+                            $reviewImages = $review->getReviewImages();
+                            $hasImages = !empty($reviewImages);
+                        @endphp
+                        <div class="single-review mb-4 border-bottom pb-3" 
+                             data-rating="{{ $review->rating }}" 
+                             data-has-images="{{ $hasImages ? 'true' : 'false' }}">
+                            <div class="row">
+                                <!-- Left Side: Avatar, Name, Date, Review Text -->
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-start">
+                                        <div class="avatar-circle me-3">
+                                            {{ strtoupper(substr($review->customer_name, 0, 1)) }}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ $review->customer_name }}</h5>
+                                            <small class="text-muted">{{ $review->created_at->format('M d, Y') }}</small>
+                                            @if($review->review_text)
+                                                <p class="comment-text mt-2 mb-0">{{ $review->review_text }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Right Side: Stars and Images -->
+                                <div class="col-md-4">
+                                    <div class="text-right">
+                                        <div class="mb-2">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                @if($i <= $review->rating)
+                                                    <i class="fas fa-star text-warning"></i>
+                                                @else
+                                                    <i class="far fa-star text-muted"></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                        @php
+                                            $reviewImages = $review->getReviewImages();
+                                        @endphp
+                                        @if(!empty($reviewImages))
+                                            <div class="review-images-right">
+                                                @foreach($reviewImages as $index => $image)
+                                                    <img src="{{ asset($image) }}" class="img-fluid rounded review-image-thumb d-inline-block" 
+                                                         style="width: 50px; height: 50px; object-fit: cover; border: 2px solid #ddd; margin: 2px; cursor: pointer;" 
+                                                         alt="Review Image {{ $index + 1 }}"
+                                                         onclick="openImageSlider({{ $review->id }}, {{ $index }}, {{ json_encode($reviewImages) }})">
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            @if($review->hasAdminReply())
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <div class="admin-reply-compact">
+                                            <div class="d-flex align-items-start">
+                                                <i class="fas fa-user-shield text-primary me-2 mt-1" style="font-size: 12px;"></i>
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <strong class="text-primary" style="font-size: 13px;">{{ __('Reply by HomeFindBD.com') }}</strong>
+                                                        <small class="text-muted ms-auto" style="font-size: 11px;">
+                                                            @if($review->admin_reply_date)
+                                                                {{ \Carbon\Carbon::parse($review->admin_reply_date)->format('M d, Y') }}
+                                                            @endif
+                                                        </small>
+                                                    </div>
+                                                    <p class="mb-0 text-dark" style="font-size: 13px; line-height: 1.3;">{{ $review->admin_reply }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="text-center p-5">
+                            <p class="text-muted">{{ __('No reviews found.') }}</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Slider Modal -->
+<div class="modal fade image-slider-modal" id="image-slider-modal" tabindex="-1" role="dialog" aria-labelledby="imageSliderModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="image-slider-container">
+                <button type="button" class="slider-close" data-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+                
+                <img id="slider-main-image" class="slider-image" src="" alt="Review Image">
+                
+                <button type="button" class="slider-nav prev" id="slider-prev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                
+                <button type="button" class="slider-nav next" id="slider-next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <div class="slider-counter" id="slider-counter">
+                    1 / 1
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
