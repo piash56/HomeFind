@@ -198,6 +198,39 @@
                                         </td>
                                         </tr>
                                         @endif
+                                        @if($order->delivery_cost_minus && $order->delivery_cost_minus > 0)
+                                        <tr>
+                                        <td class="px-0 border-top border-top-2">
+                                        <span class="text-muted">{{__('Delivery Cost Minus')}}</span>
+                                        @if($order->order_status == 'Delivered')
+                                        <button type="button" class="btn btn-sm btn-info ml-2" data-toggle="modal" data-target="#editDeliveryCostModal">
+                                            <i class="fas fa-edit"></i> {{ __('Edit') }}
+                                        </button>
+                                        @endif
+                                        </td>
+                                        <td class="px-0 text-right border-top border-top-2" colspan="5">
+                                            <span class="text-danger">
+                                            @if ($setting->currency_direction == 1)
+                                                -{{$order->currency_sign}}{{PriceHelper::testPrice($order->delivery_cost_minus)}}
+                                            @else
+                                                -{{PriceHelper::testPrice($order->delivery_cost_minus)}}{{$order->currency_sign}}
+                                            @endif
+                                            </span>
+                                        </td>
+                                        </tr>
+                                        @elseif($order->order_status == 'Delivered')
+                                        <tr>
+                                        <td class="px-0 border-top border-top-2">
+                                        <span class="text-muted">{{__('Delivery Cost Minus')}}</span>
+                                        <button type="button" class="btn btn-sm btn-success ml-2" data-toggle="modal" data-target="#editDeliveryCostModal">
+                                            <i class="fas fa-plus"></i> {{ __('Add') }}
+                                        </button>
+                                        </td>
+                                        <td class="px-0 text-right border-top border-top-2" colspan="5">
+                                            <span class="text-muted">{{ __('Not set') }}</span>
+                                        </td>
+                                        </tr>
+                                        @endif
                                         <tr>
                                         <td class="px-0 border-top border-top-2">
 
@@ -229,5 +262,59 @@
 
 
 </div>
+
+{{-- EDIT DELIVERY COST MINUS MODAL --}}
+@if($order->order_status == 'Delivered')
+<div class="modal fade" id="editDeliveryCostModal" tabindex="-1" role="dialog" aria-labelledby="editDeliveryCostModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{{ route('back.order.update.delivery.cost', $order->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editDeliveryCostModalLabel">
+                        {{ $order->delivery_cost_minus > 0 ? __('Edit Delivery Cost Minus') : __('Add Delivery Cost Minus') }}
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="delivery_cost_minus_edit">{{ __('Delivery Cost Minus') }}</label>
+                        <input type="number" step="0.01" min="0" class="form-control" 
+                               id="delivery_cost_minus_edit" 
+                               name="delivery_cost_minus" 
+                               value="{{ $order->delivery_cost_minus ?? 0 }}"
+                               placeholder="{{ __('Enter amount to deduct from order total') }}" 
+                               required>
+                        <small class="form-text text-muted">
+                            {{ __('This amount will be deducted from the order total. Current total: ') }}
+                            @if ($setting->currency_direction == 1)
+                                {{$order->currency_sign}}{{PriceHelper::OrderTotal($order)}}
+                            @else
+                                {{PriceHelper::OrderTotal($order)}}{{$order->currency_sign}}
+                            @endif
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">
+                        {{ $order->delivery_cost_minus > 0 ? __('Update') : __('Add') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
+{{-- EDIT DELIVERY COST MINUS MODAL ENDS --}}
 
 @endsection

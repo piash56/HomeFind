@@ -327,6 +327,15 @@ class OrderController extends Controller
                 return redirect()->route('back.order.index')->withErrors(__('Order is already Delivered.'));
             }
         }
+
+        // Handle delivery cost minus when changing to Delivered status
+        if ($field == 'order_status' && $value == 'Delivered') {
+            $deliveryCostMinus = request()->query('delivery_cost_minus');
+            if (!is_null($deliveryCostMinus) && is_numeric($deliveryCostMinus) && $deliveryCostMinus > 0) {
+                $order->delivery_cost_minus = (float)$deliveryCostMinus;
+            }
+        }
+
         $order->update([$field => $value]);
         if ($order->payment_status == 'Paid') {
             $this->setPromoCode($order);
@@ -345,6 +354,33 @@ class OrderController extends Controller
         }
 
         return redirect()->route('back.order.index')->withSuccess(__('Status Updated Successfully.'));
+    }
+
+    /**
+     * Update delivery cost minus for a delivered order
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateDeliveryCost(Request $request, $id)
+    {
+        $request->validate([
+            'delivery_cost_minus' => 'required|numeric|min:0'
+        ]);
+
+        $order = Order::findOrFail($id);
+
+        // Only allow updating for delivered orders
+        if ($order->order_status !== 'Delivered') {
+            return redirect()->back()->withErrors(__('Delivery cost minus can only be updated for delivered orders.'));
+        }
+
+        $order->delivery_cost_minus = $request->delivery_cost_minus;
+        $order->save();
+
+        return redirect()->route('back.order.invoice', $order->id)
+            ->withSuccess(__('Delivery cost minus updated successfully.'));
     }
 
     /**

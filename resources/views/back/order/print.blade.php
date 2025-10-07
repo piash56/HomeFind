@@ -218,6 +218,22 @@
                                         </td>
                                         </tr>
                                         @endif
+                                        @if($order->delivery_cost_minus && $order->delivery_cost_minus > 0)
+                                        <tr>
+                                        <td class="px-0 border-top border-top-2">
+                                        <span class="text-muted">{{__('Delivery Cost Minus')}}</span>
+                                        </td>
+                                        <td class="px-0 text-right border-top border-top-2" colspan="5">
+                                            <span class="text-danger">
+                                            @if ($setting->currency_direction == 1)
+                                                -{{$order->currency_sign}}{{PriceHelper::testPrice($order->delivery_cost_minus)}}
+                                            @else
+                                                -{{PriceHelper::testPrice($order->delivery_cost_minus)}}{{$order->currency_sign}}
+                                            @endif
+                                            </span>
+                                        </td>
+                                        </tr>
+                                        @endif
                                         <tr>
                                         <td class="px-0 border-top border-top-2">
 

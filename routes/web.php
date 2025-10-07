@@ -49,6 +49,7 @@ Route::group(['middleware' => ['adminlocalize', 'demo']], function () {
             Route::post('/order/update/{id}', 'Back\OrderController@update')->name('back.order.update');
             Route::get('/order/print/{id}', 'Back\OrderController@printOrder')->name('back.order.print');
             Route::get('/order/invoice/{id}', 'Back\OrderController@invoice')->name('back.order.invoice');
+            Route::put('/order/update-delivery-cost/{id}', 'Back\OrderController@updateDeliveryCost')->name('back.order.update.delivery.cost');
             Route::get('/order/status/{id}/{field}/{value}', 'Back\OrderController@status')->name('back.order.status');
             Route::get('/order/steadfast-parcel/{id}', 'Back\OrderController@createSteadFastParcel')->name('back.order.steadfast.parcel');
             Route::get('/order/get-product-data', 'Back\OrderController@getProductData')->name('admin.order.get-product-data');

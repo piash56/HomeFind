@@ -108,6 +108,11 @@
                 <input type="number" step="0.01" min="0" class="form-control" id="delivery_fee" placeholder="{{ __('Enter delivery fee') }}">
                 <small class="form-text text-muted">{{ __('If provided, this will be added to the total in the SMS.') }}</small>
             </div>
+            <div class="form-group mt-3 d-none" id="deliveryCostMinusGroup">
+              <label for="delivery_cost_minus">{{ __('Delivery Cost Minus (optional)') }}</label>
+              <input type="number" step="0.01" min="0" class="form-control" id="delivery_cost_minus" placeholder="{{ __('Enter amount to deduct from order total') }}">
+              <small class="form-text text-muted">{{ __('This amount will be deducted from the order total when marked as Delivered.') }}</small>
+          </div>
       </div>
 
 		<!-- Modal footer -->

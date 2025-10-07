@@ -235,6 +235,11 @@ class PriceHelper
         $grand_total = $grand_total - ($discount ? $discount['discount'] : 0);
         $grand_total = $grand_total + $order->state_price;
 
+        // Subtract delivery cost minus if order is delivered
+        if ($order->delivery_cost_minus && $order->delivery_cost_minus > 0) {
+            $grand_total = $grand_total - $order->delivery_cost_minus;
+        }
+
         // For BDT base system, don't multiply by currency value - prices are stored as-is
         $total_amount = round($grand_total, 2);
         if (!$trns) {
@@ -276,6 +281,13 @@ class PriceHelper
 
         $grand_total = ($cart_total + ($shipping ? $shipping['price'] : 0)) + $total_tax;
         $grand_total = $grand_total - ($discount ? $discount['discount'] : 0);
+        $grand_total = $grand_total + $order->state_price;
+
+        // Subtract delivery cost minus if order is delivered
+        if ($order->delivery_cost_minus && $order->delivery_cost_minus > 0) {
+            $grand_total = $grand_total - $order->delivery_cost_minus;
+        }
+
         // For BDT base system, don't multiply by currency value - prices are stored as-is
         $total_amount = round($grand_total, 2);
 

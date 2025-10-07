@@ -28,6 +28,7 @@ class Order extends Model
         'state_price',
         'state',
         'steadfast_parcel_info',
+        'delivery_cost_minus',
         'created_at'
     ];
 

@@ -132,7 +132,7 @@ class AccountRepository
     public function getTodayProductSale()
     {
         $current_date = Carbon::now();
-        $orders = Order::whereDate('created_at', '=', $current_date)->get();
+        $orders = Order::whereOrderStatus('Delivered')->whereDate('created_at', '=', $current_date)->get();
         $total_items_qty = 0;
         foreach ($orders as $order) {
             $cart = json_decode($order->cart, true);
@@ -181,7 +181,7 @@ class AccountRepository
     {
         $current_date = Carbon::now();
         $total = 0;
-        $orders = Order::whereDate('created_at', '=', $current_date)->get();
+        $orders = Order::whereOrderStatus('Pending')->whereDate('created_at', '=', $current_date)->get();
         foreach ($orders as $order) {
             $total += PriceHelper::OrderTotalChart($order);
         }
@@ -281,5 +281,4 @@ class AccountRepository
     {
         return Review::count();
     }
-
 }

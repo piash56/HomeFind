@@ -56,22 +56,48 @@
     // Toggle delivery fee input if moving to In Progress
     if (statusValue === "In Progress") {
       $("#deliveryFeeGroup").removeClass("d-none");
-    } else {
+      $("#deliveryCostMinusGroup").addClass("d-none");
+      $("#delivery_cost_minus").val("");
+    } else if (statusValue === "Delivered") {
+      $("#deliveryCostMinusGroup").removeClass("d-none");
       $("#deliveryFeeGroup").addClass("d-none");
       $("#delivery_fee").val("");
+    } else {
+      $("#deliveryFeeGroup").addClass("d-none");
+      $("#deliveryCostMinusGroup").addClass("d-none");
+      $("#delivery_fee").val("");
+      $("#delivery_cost_minus").val("");
     }
   });
 
-  // When clicking update, append delivery_fee if present
+  // When clicking update, append delivery_fee and delivery_cost_minus if present
   $(document).on("click", "#statusModal .btn-ok", function (e) {
     var $btn = $(this);
     var href = $btn.attr("href");
+
+    // Handle delivery fee (for In Progress)
     var feeVal = $("#delivery_fee").val();
     if (typeof feeVal !== "undefined" && feeVal !== "" && !isNaN(feeVal)) {
       var connector = href.indexOf("?") === -1 ? "?" : "&";
       href = href + connector + "delivery_fee=" + encodeURIComponent(feeVal);
-      $btn.attr("href", href);
     }
+
+    // Handle delivery cost minus (for Delivered)
+    var minusVal = $("#delivery_cost_minus").val();
+    if (
+      typeof minusVal !== "undefined" &&
+      minusVal !== "" &&
+      !isNaN(minusVal)
+    ) {
+      var connector = href.indexOf("?") === -1 ? "?" : "&";
+      href =
+        href +
+        connector +
+        "delivery_cost_minus=" +
+        encodeURIComponent(minusVal);
+    }
+
+    $btn.attr("href", href);
   });
 
   $(".radio-check").on("change", function () {

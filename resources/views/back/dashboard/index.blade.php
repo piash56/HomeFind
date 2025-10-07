@@ -18,6 +18,7 @@
   <div class="row">
 
     <div class="col-xl-3 col-md-6">
+        <a href="{{ route('back.order.index') }}" class="text-decoration-none" style="text-decoration: none !important;">
         <div class="card card-stats card-round">
             <div class="card-body ">
                 <div class="row align-items-center">
@@ -35,9 +36,11 @@
                 </div>
             </div>
         </div>
+        </a>
       </div>
 
       <div class="col-xl-3 col-md-6">
+        <a href="{{ route('back.order.index', ['type' => 'Pending']) }}" class="text-decoration-none" style="text-decoration: none !important;">
         <div class="card card-stats card-round">
             <div class="card-body ">
                 <div class="row align-items-center">
@@ -55,8 +58,10 @@
                 </div>
             </div>
         </div>
+        </a>
       </div>
       <div class="col-xl-3 col-md-6">
+        <a href="{{ route('back.order.index', ['type' => 'Delivered']) }}" class="text-decoration-none" style="text-decoration: none !important;">
         <div class="card card-stats card-round">
             <div class="card-body ">
                 <div class="row align-items-center">
@@ -74,9 +79,11 @@
                 </div>
             </div>
         </div>
+        </a>
       </div>
 
       <div class="col-xl-3 col-md-6">
+        <a href="{{ route('back.order.index', ['type' => 'Canceled']) }}" class="text-decoration-none" style="text-decoration: none !important;">
         <div class="card card-stats card-round">
             <div class="card-body ">
                 <div class="row align-items-center">
@@ -94,6 +101,7 @@
                 </div>
             </div>
         </div>
+        </a>
       </div>
 
       <div class="col-xl-3 col-md-6">
@@ -115,6 +123,7 @@
             </div>
         </div>
       </div>
+
       <div class="col-xl-3 col-md-6">
         <div class="card card-stats card-round">
             <div class="card-body ">
