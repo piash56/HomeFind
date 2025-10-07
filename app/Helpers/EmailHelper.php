@@ -131,7 +131,7 @@ class EmailHelper
         try {
             // Check if PHPMailer is available
             if (!$this->mail) {
-                \Log::error('PHPMailer not available, skipping email notification');
+                \Log::error('PHPMailer not available, skipping email notification. Check SMTP configuration.');
                 return;
             }
 
@@ -169,9 +169,40 @@ class EmailHelper
             $this->mail->Body = $email_body;
 
             $this->mail->send();
+            \Log::info('Admin order notification email sent successfully');
         } catch (\Throwable $th) {
             \Log::error('Admin email failed: ' . $th->getMessage());
+            \Log::error('Email configuration - Host: ' . ($this->mail ? $this->mail->Host : 'N/A'));
+            \Log::error('Email configuration - Port: ' . ($this->mail ? $this->mail->Port : 'N/A'));
+            \Log::error('Email configuration - Username: ' . ($this->mail ? $this->mail->Username : 'N/A'));
             // Don't throw error to prevent order creation failure
+        }
+    }
+
+    /**
+     * Test email functionality - useful for debugging
+     */
+    public function testEmail($toEmail = 'homefindbd@gmail.com')
+    {
+        try {
+            if (!$this->mail) {
+                return ['success' => false, 'message' => 'PHPMailer not initialized'];
+            }
+
+            $this->mail->setFrom(
+                $this->setting->email_from ?: env('MAIL_FROM_ADDRESS', 'homefindbd@gmail.com'),
+                $this->setting->email_from_name ?: env('MAIL_FROM_NAME', 'HomeFindBD.com')
+            );
+            $this->mail->addAddress($toEmail);
+            $this->mail->isHTML(true);
+            $this->mail->Subject = 'Test Email from HomeFindBD';
+            $this->mail->Body = '<h3>Test Email</h3><p>This is a test email to verify email functionality.</p>';
+
+            $this->mail->send();
+            return ['success' => true, 'message' => 'Test email sent successfully'];
+        } catch (\Throwable $th) {
+            \Log::error('Test email failed: ' . $th->getMessage());
+            return ['success' => false, 'message' => $th->getMessage()];
         }
     }
 }

@@ -300,6 +300,17 @@ Route::group(['middleware' => 'maintainance'], function () {
 
         //------------ DIRECT ORDER ------------
         Route::post('/order/place-direct', 'Front\CheckoutController@placeDirectOrder')->name('front.order.direct');
+
+        // Email test route (remove this after debugging)
+        Route::get('/test-email', function () {
+            try {
+                $emailHelper = new \App\Helpers\EmailHelper();
+                $result = $emailHelper->testEmail();
+                return response()->json($result);
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()]);
+            }
+        });
         Route::get('/checkout/success', 'Front\CheckoutController@paymentSuccess')->name('front.checkout.success');
 
         //------------ REVIEW ------------
