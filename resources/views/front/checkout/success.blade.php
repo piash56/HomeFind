@@ -95,6 +95,18 @@
             // Push to dataLayer
             window.dataLayer.push(purchaseEvent);
             
+            // Facebook Pixel Purchase Event
+            if (typeof fbq !== 'undefined') {
+                fbq('track', 'Purchase', {
+                    'currency': @json(env('CURRENCY_ISO', 'BDT')),
+                    'value': orderValue,
+                    'content_type': 'product',
+                    'content_ids': cartItems.map(item => item.item_id),
+                    'contents': cartItems,
+                    'order_id': transactionId
+                });
+            }
+            
         } catch (error) {
             // Fail silently - no console logs
         }
