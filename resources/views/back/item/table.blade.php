@@ -22,21 +22,24 @@
           </div>
     </td>
     <td>
-      <p class="
-        @if($data->is_type == 'undefine')
-        @else
-            bg-info badge text-white
-        @endif
-      ">
-        @if($data->is_type == 'undefine')
-            {{ __('Not Define') }}
-        @else
-            {{$data->is_type ? ucfirst(str_replace('_',' ',$data->is_type)) : __('undefine')}}
-        @endif
-        </p>
-    </td>
-    <td>
-      {{ucfirst($data->item_type)}}
+        <div class="d-flex flex-column">
+            @if($data->in_progress_qty > 0 || $data->delivered_qty > 0)
+                <div class="mb-1">
+                    <span class="badge badge-warning" style="background-color: #ffc107; color: #000;">
+                        {{ $data->in_progress_qty ?? 0 }}
+                    </span>
+                    <small class="text-muted">(In Progress)</small>
+                </div>
+                <div>
+                    <span class="badge badge-success" style="background-color: #28a745; color: #fff;">
+                        {{ $data->delivered_qty ?? 0 }}
+                    </span>
+                    <small class="text-muted">(Delivered)</small>
+                </div>
+            @else
+                <span class="text-muted">0</span>
+            @endif
+        </div>
     </td>
     <td>
         <div class="dropdown">

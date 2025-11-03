@@ -30,16 +30,32 @@
     <meta name="description" content="{{ $setting->meta_description }}">
     <meta name="keywords" content="{{ $setting->meta_keywords }}">
     <meta name="image" content="{{ asset('storage/images/' . $setting->meta_image) }}">
-    <meta property="og:title" content="{{ $setting->title}}">
-    <meta property="og:description" content="{{ $setting->meta_description }}">
+    
+    @php
+        // Use home_page_title (tagline) if available, otherwise use title
+        $ogTitle = !empty($setting->home_page_title) ? $setting->home_page_title : $setting->title;
+        // Use meta_description or fallback to a combination
+        $ogDescription = !empty($setting->meta_description) ? $setting->meta_description : ($setting->home_page_title ?? $setting->title);
+    @endphp
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ $ogTitle }}">
+    <meta property="og:description" content="{{ $ogDescription }}">
     <meta property="og:image" content="{{ asset('storage/images/' . $setting->meta_image) }}">
     <meta property="og:image:secure_url" content="{{ asset('storage/images/' . $setting->meta_image) }}" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="627" />
-    <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:site_name" content="{{ $setting->title }}">
-    <meta property="og:type" content="website">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:title" content="{{ $ogTitle }}">
+    <meta name="twitter:description" content="{{ $ogDescription }}">
+    <meta name="twitter:image" content="{{ asset('storage/images/' . $setting->meta_image) }}">
     
 
     <!-- Mobile Specific Meta Tag-->

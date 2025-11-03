@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Back;
 use App\{
     Models\Item,
     Models\Gallery,
+    Models\Order,
     Http\Requests\ItemRequest,
     Http\Controllers\Controller,
     Http\Requests\GalleryRequest,
@@ -78,6 +79,12 @@ class ItemController extends Controller
                 return $query->orderby('id', $orderby);
             })
             ->get();
+
+        // Calculate sale quantities for each product
+        foreach ($datas as $item) {
+            $item->in_progress_qty = $this->getProductSaleQuantity($item->id, 'In Progress');
+            $item->delivered_qty = $this->getProductSaleQuantity($item->id, 'Delivered');
+        }
 
         return view('back.item.index', [
             'datas' => $datas
@@ -290,5 +297,29 @@ class ItemController extends Controller
     {
         $datas = Item::where('item_type', 'normal')->where('stock', 0)->get();
         return view('back.item.stockout', compact('datas'));
+    }
+
+    /**
+     * Get product sale quantity by order status
+     *
+     * @param int $productId
+     * @param string $orderStatus
+     * @return int
+     */
+    private function getProductSaleQuantity($productId, $orderStatus)
+    {
+        $totalQuantity = 0;
+
+        $orders = Order::where('order_status', $orderStatus)->get();
+
+        foreach ($orders as $order) {
+            $cart = json_decode($order->cart, true);
+
+            if (is_array($cart) && isset($cart[$productId])) {
+                $totalQuantity += (int)($cart[$productId]['qty'] ?? 0);
+            }
+        }
+
+        return $totalQuantity;
     }
 }

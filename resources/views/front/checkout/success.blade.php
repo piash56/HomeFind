@@ -77,7 +77,15 @@
             // Create transaction ID
             var transactionId = @json($order->transaction_number ?? '');
             
-            // GA4 purchase event
+            // Extract billing information for advanced matching
+            @php
+                $billingInfo = json_decode($order->billing_info ?? '{}', true) ?: [];
+                $billingName = $billingInfo['bill_first_name'] ?? '';
+                $billingPhone = $billingInfo['bill_phone'] ?? '';
+                $billingCountry = $billingInfo['bill_country'] ?? '';
+            @endphp
+            
+            // GA4 purchase event with advanced matching
             var purchaseEvent = {
                 'event': 'purchase',
                 'ecommerce': {
@@ -88,6 +96,13 @@
                     'shipping': parseFloat(@json($order->shipping_cost ?? $order->shipping ?? 0)),
                     'coupon': @json($order->coupon ?? ''),
                     'items': cartItems
+                },
+                'customer': {
+                    'billing': {
+                        'name': @json($billingName),
+                        'phone': @json($billingPhone),
+                        'country': @json($billingCountry)
+                    }
                 },
                 'eventID': transactionId
             };
@@ -134,9 +149,16 @@
                 <p class="card-text">{{ __('আপনার অর্ডার দেওয়া হয়ে গেছে এবং যত তাড়াতাড়ি সম্ভব প্রক্রিয়া শুরু হবে।') }}</p>
                 <p class="card-text">{{ __('আপনার অর্ডার নম্বরটি নোট করে রাখুন, যা হল') }} <span
                         class="text-medium">{{ $order->transaction_number }}</span></p>
-                <p class="card-text">{{ __('আপনার অর্ডার নিশ্চিতকরণের জন্য শীঘ্রই আপনি একটি মেসেজ পাবেন।') }}
+                <p class="card-text">{{ __('আপনার অর্ডার নিশ্চিতকরণের জন্য শীঘ্রই আপনাকে ফোন দেওয়া হবে।') }}
 
                 </p>
+                
+                <!-- Warning Message -->
+                <div class="alert alert-danger mt-3 mb-3" style="display: block; background-color: #dc3545; color: #fff; border-color: #dc3545; font-weight: 500;">
+                    <i class="fas fa-exclamation-triangle" style="background-color: #dc3545; color: #fff; border-color: #dc3545;"></i> 
+                    <strong style="background-color: #dc3545; color: #fff; border-color: #dc3545;">{{ __('সাবধান!') }}</strong> 
+                    {{ __('ফেক অর্ডার করলে বা ফোনে অর্ডার কনফার্ম করার পরেও পার্সেল রিসিভ না করলে আইনিগত ব্যবস্থা নেওয়া হবে') }}
+                </div>
                 <div class="padding-top-1x padding-bottom-1x">
 
                     <a class="btn btn-primary m-4" href="{{ route('front.index') }}"><span><i

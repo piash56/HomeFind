@@ -10,13 +10,20 @@
     <meta name="keywords" content="{{ $item->meta_keywords }}">
     <meta name="description" content="{{ $item->meta_description }}">
 
-    <meta name="twitter:title" content="{{ $item->title }}">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="product">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ $item->name }}">
+    <meta property="og:description" content="{{ $item->meta_description ?? $item->name }}">
+    <meta property="og:image" content="{{ asset('storage/images/' . $item->photo) }}">
+    <meta property="og:image:secure_url" content="{{ asset('storage/images/' . $item->photo) }}" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:title" content="{{ $item->name }}">
+    <meta name="twitter:description" content="{{ $item->meta_description ?? $item->name }}">
     <meta name="twitter:image" content="{{ asset('storage/images/' . $item->photo) }}">
-    <meta name="twitter:description" content="{{ $item->meta_description }}">
-
-    <meta name="og:title" content="{{ $item->title }}">
-    <meta name="og:image" content="{{ asset('storage/images/' . $item->photo) }}">
-    <meta name="og:description" content="{{ $item->meta_description }}">
 @endsection
 
 @section('styles')
@@ -193,18 +200,17 @@
             
             // Ecommerce tracking
             'ecommerce': {
-                'detail': {
-                    'products': [{
-                        'id': '{{ $item->id }}',
-                        'name': '{{ addslashes($item->name) }}',
-                        'category': '{{ addslashes($item->category->name ?? '') }}',
-                        'price': {{ $item->discount_price ?? $item->price }},
-                        'currency': '{{ env('CURRENCY_ISO', 'BDT') }}',
-                        'brand': '{{ addslashes($item->brand->name ?? '') }}',
-                        'variant': '{{ addslashes($item->is_type ?? '') }}',
-                        'quantity': 1
-                    }]
-                }
+                'currency': '{{ env('CURRENCY_ISO', 'BDT') }}',
+                'value': {{ $item->discount_price ?? $item->price }},
+                'items': [{
+                    'item_id': '{{ $item->id }}',
+                    'item_name': '{{ addslashes($item->name) }}',
+                    'item_category': '{{ addslashes($item->category->name ?? '') }}',
+                    'item_brand': '{{ addslashes($item->brand->name ?? '') }}',
+                    'item_variant': '{{ addslashes($item->is_type ?? '') }}',
+                    'price': {{ $item->discount_price ?? $item->price }},
+                    'quantity': 1
+                }]
             },
             'event': 'view_item'
         });
@@ -915,6 +921,8 @@
                         
                     </section>
 
+                    
+
                     <!-- Quantity Selection Message -->
                     @if ($hasBulkPricingCheckout)
                         <div id="bulk-selection-message" class="alert alert-info mt-3" style="display: block;">
@@ -929,6 +937,14 @@
                             <span>{{ __('অর্ডার করুন') }}</span>
                         </button>
                     </div>
+
+                    <!-- Warning Message -->
+                    <div class="alert alert-danger mt-3" style="display: block; background-color: #dc3545; color: #fff; border-color: #dc3545; font-weight: 500;">
+                        <i class="fas fa-exclamation-triangle" style="background-color: #dc3545; color: #fff; border-color: #dc3545;"></i> 
+                        <strong style="background-color: #dc3545; color: #fff; border-color: #dc3545;">{{ __('সাবধান!') }}</strong> 
+                        {{ __('ফেক অর্ডার করলে বা ফোনে অর্ডার কনফার্ম করার পরেও পার্সেল রিসিভ না করলে আইনিগত ব্যবস্থা নেওয়া হবে') }}
+                    </div>
+
                 </aside>
             </div>
         </div>
@@ -1251,18 +1267,22 @@ $(document).ready(function() {
                 'bill_phone': phone,
                 'bill_address1': address,
                 'bill_email': $('input[name="bill_email"]').val()
-            },
+            }
+        });
+        
+        // GA4 add_to_cart event
+        window.dataLayer.push({
+            'event': 'add_to_cart',
             'ecommerce': {
-                'add_to_cart': {
-                    'products': [{
-                        'id': $('#item_id').val(),
-                        'name': '{{ addslashes($item->name) }}',
-                        'category': '{{ addslashes($item->category->name ?? '') }}',
-                        'price': {{ $item->discount_price ?? $item->price }},
-                        'currency': '{{ env('CURRENCY_ISO', 'BDT') }}',
-                        'quantity': parseInt($('.cart-amount').val()) || 1
-                    }]
-                }
+                'currency': '{{ env('CURRENCY_ISO', 'BDT') }}',
+                'value': ({{ $item->discount_price ?? $item->price }} * (parseInt($('.cart-amount').val()) || 1)),
+                'items': [{
+                    'item_id': $('#item_id').val(),
+                    'item_name': '{{ addslashes($item->name) }}',
+                    'item_category': '{{ addslashes($item->category->name ?? '') }}',
+                    'price': {{ $item->discount_price ?? $item->price }},
+                    'quantity': parseInt($('.cart-amount').val()) || 1
+                }]
             }
         });
         
