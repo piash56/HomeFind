@@ -42,6 +42,38 @@
                                         <input type="file" class="form-control" name="favicon" accept="image/*">
                                     </div>
                                 </div>
+                                
+                                <!-- SEO & Social Media Settings -->
+                                <div class="col-md-12">
+                                    <hr>
+                                    <h5 class="mb-3">{{ __('SEO & Social Media Settings') }}</h5>
+                                    <p class="text-muted mb-3">{{ __('These settings control how your website appears when shared on social media platforms like Facebook, WhatsApp, Twitter, etc.') }}</p>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>{{ __('Meta Description') }} <small class="text-muted">({{ __('For social media sharing') }})</small></label>
+                                        <textarea class="form-control" name="meta_description" rows="4" placeholder="{{ __('Enter a description of your website. This will appear when sharing your website URL on social media.') }}">{{ $setting->meta_description }}</textarea>
+                                        <small class="form-text text-muted">{{ __('Recommended: 150-160 characters. This description will be used for social media previews (WhatsApp, Facebook, etc.).') }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>{{ __('Meta Keywords') }}</label>
+                                        <input type="text" class="form-control" name="meta_keywords" value="{{ $setting->meta_keywords }}" placeholder="{{ __('e.g., ecommerce, shopping, online store') }}">
+                                        <small class="form-text text-muted">{{ __('Comma-separated keywords relevant to your website.') }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>{{ __('Social Media Image') }} <small class="text-muted">({{ __('OG Image') }})</small></label>
+                                        <div class="mb-2">
+                                            <img src="{{ $setting->meta_image ? asset('storage/images/' . $setting->meta_image) : asset('storage/images/placeholder.png') }}" alt="meta image" style="max-width:300px; max-height:200px; border:1px solid #ddd; padding:5px;">
+                                        </div>
+                                        <input type="file" class="form-control" name="meta_image" accept="image/*">
+                                        <small class="form-text text-muted">{{ __('Recommended size: 1200x627 pixels. This image will appear when sharing your website URL on social media.') }}</small>
+                                    </div>
+                                </div>
+                                
                                 <div class="col-md-12">
                                     <hr>
                                     <h5 class="mb-3">{{ __('Tracking & Pixels') }}</h5>

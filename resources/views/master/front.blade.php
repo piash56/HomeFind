@@ -34,8 +34,8 @@
     @php
         // Use home_page_title (tagline) if available, otherwise use title
         $ogTitle = !empty($setting->home_page_title) ? $setting->home_page_title : $setting->title;
-        // Use meta_description or fallback to a combination
-        $ogDescription = !empty($setting->meta_description) ? $setting->meta_description : ($setting->home_page_title ?? $setting->title);
+        // Use ONLY meta_description for social media sharing - no fallbacks to avoid showing old text
+        $ogDescription = !empty($setting->meta_description) ? trim($setting->meta_description) : '';
     @endphp
     
     <!-- Open Graph / Facebook -->
