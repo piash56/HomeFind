@@ -32,12 +32,16 @@ class AttributeOptionRequest extends FormRequest
         $id = $this->option ?  $this->option->id : '';
 
         return  [
-            'name' => 'required|max:100',Rule::unique('attribute_options', 'name')->where(function ($query) use ($data) {
+            'name' => 'required|max:100',
+            Rule::unique('attribute_options', 'name')->where(function ($query) use ($data) {
                 return $query->where('attribute_id', $data['attribute_id']);
             })->ignore($id),
             'attribute_id' => 'required',
             'stock' => 'required',
-            'price' => 'required|numeric|max:9999999999'
+            'price' => 'required|numeric|max:9999999999',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'color_code' => 'nullable|string|max:7',
+            'gallery_image_id' => 'nullable|exists:galleries,id'
         ];
     }
 
@@ -53,6 +57,4 @@ class AttributeOptionRequest extends FormRequest
             'name.unique'   => __('This name has already been taken.'),
         ];
     }
-
-
 }

@@ -1,7 +1,14 @@
 @foreach($datas as $data)
     <tr>
         <td>
-            {{ $data->name }}
+            <div class="d-flex align-items-center">
+                @if($data->image)
+                    <img src="{{ asset('storage/images/' . $data->image) }}" alt="{{ $data->name }}" style="max-width: 40px; max-height: 40px; border: 1px solid #ddd; padding: 2px; border-radius: 4px; margin-right: 10px;">
+                @elseif($data->color_code)
+                    <span style="display: inline-block; width: 40px; height: 40px; background-color: {{ $data->color_code }}; border: 1px solid #ddd; border-radius: 4px; margin-right: 10px;"></span>
+                @endif
+                <span>{{ $data->name }}</span>
+            </div>
         </td>
         <td>
             {{ $data->attribute }}

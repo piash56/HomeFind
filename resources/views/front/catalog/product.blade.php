@@ -32,6 +32,50 @@
     margin-top: 15px;
 }
 
+/* Color Swatches Styling */
+.color-swatches-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.color-swatch-btn {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.color-swatch-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.color-swatch-btn.active {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #007bff;
+}
+
+/* Image Selector Styling */
+.image-selector-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.image-selector-btn {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.image-selector-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.image-selector-btn.active {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #007bff;
+}
+
 .bulk-price-option {
     transition: all 0.3s ease;
     cursor: pointer;
@@ -270,9 +314,10 @@
                     @endif
 
                     <div class="product-thumbnails insize">
-                        <div class="product-details-slider owl-carousel">
-                            <div class="item"><img src="{{ asset('storage/images/' . $item->photo) }}"
-                                    alt="zoom" />
+                        <div class="product-details-slider owl-carousel" id="product-gallery-slider">
+                            <div class="item" id="main-product-image-item">
+                                <img id="main-product-image" src="{{ asset('storage/images/' . $item->photo) }}"
+                                    alt="zoom" data-original-image="{{ asset('storage/images/' . $item->photo) }}" />
                             </div>
                             @foreach ($galleries as $key => $gallery)
                                 <div class="item"><img src="{{ asset('storage/images/' . $gallery->photo) }}"
@@ -334,17 +379,102 @@
                         <div class="row margin-top-1x">
                             @foreach ($attributes as $attribute)
                                 @if ($attribute->options->count() != 0)
+                                    @php
+                                        $displayType = $attribute->display_type ?: 'name';
+                                        $availableOptions = $attribute->options->where('stock', '!=', '0');
+                                        $firstOption = $availableOptions->first();
+                                    @endphp
                                     <div class="col-sm-6">
                                         <div class="form-group">
                                             <label for="{{ $attribute->name }}">{{ $attribute->name }}</label>
-                                            <select class="form-control attribute_option" id="{{ $attribute->name }}">
-                                                @foreach ($attribute->options->where('stock', '!=', '0') as $option)
-                                                    <option value="{{ $option->name }}" data-type="{{ $attribute->id }}"
+                                            
+                                            @if($displayType == 'color')
+                                                {{-- Color Swatches Display --}}
+                                                <div class="color-swatches-container" data-attribute-id="{{ $attribute->id }}">
+                                                    @foreach($availableOptions as $option)
+                                                        @if($option->color_code)
+                                                            <button type="button" 
+                                                                    class="color-swatch-btn attribute-option-btn {{ $loop->first ? 'active' : '' }}"
+                                                                    data-option-id="{{ $option->id }}"
+                                                                    data-type="{{ $attribute->id }}"
                                                         data-href="{{ $option->id }}"
-                                                        data-target="{{ $option->price }}">
-                                                        {{ $option->name }}</option>
+                                                                    data-target="{{ $option->price }}"
+                                                                    data-image="{{ $option->image ? asset('storage/images/' . $option->image) : '' }}"
+                                                                    data-color-code="{{ $option->color_code }}"
+                                                                    data-gallery-image-id="{{ $option->gallery_image_id ?: '' }}"
+                                                                    data-gallery-image="{{ $option->galleryImage && $option->galleryImage->photo ? asset('storage/images/' . $option->galleryImage->photo) : '' }}"
+                                                                    data-option-name="{{ $option->name }}"
+                                                                    title="{{ $option->name }}"
+                                                                    style="width: 40px; height: 40px; border: 2px solid {{ $loop->first ? '#007bff' : '#ddd' }}; border-radius: 4px; background-color: {{ $option->color_code }}; margin-right: 8px; margin-bottom: 8px; cursor: pointer; display: inline-block;">
+                                                            <input type="hidden" name="attribute_option_{{ $attribute->id }}" value="{{ $loop->first ? $option->id : '' }}" class="attribute_option_hidden">
+                                                            </button>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                                <div class="selected-color-name mt-2" id="selected-color-{{ $attribute->id }}">
+                                                    @if($firstOption && $firstOption->color_code)
+                                                        <small class="text-muted">{{ $firstOption->name }}</small>
+                                                    @endif
+                                                </div>
+                                            
+                                            @elseif($displayType == 'image')
+                                                {{-- Image Selector Display --}}
+                                                <div class="image-selector-container" data-attribute-id="{{ $attribute->id }}">
+                                                    @foreach($availableOptions as $option)
+                                                        @if($option->image)
+                                                            <button type="button" 
+                                                                    class="image-selector-btn attribute-option-btn {{ $loop->first ? 'active' : '' }}"
+                                                                    data-option-id="{{ $option->id }}"
+                                                                    data-type="{{ $attribute->id }}"
+                                                                    data-href="{{ $option->id }}"
+                                                                    data-target="{{ $option->price }}"
+                                                                    data-image="{{ asset('storage/images/' . $option->image) }}"
+                                                                    data-color-code="{{ $option->color_code ?: '' }}"
+                                                                    data-gallery-image-id="{{ $option->gallery_image_id ?: '' }}"
+                                                                    data-gallery-image="{{ $option->galleryImage && $option->galleryImage->photo ? asset('storage/images/' . $option->galleryImage->photo) : '' }}"
+                                                                    data-option-name="{{ $option->name }}"
+                                                                    title="{{ $option->name }}"
+                                                                    style="width: 60px; height: 60px; border: 2px solid {{ $loop->first ? '#007bff' : '#ddd' }}; border-radius: 4px; padding: 2px; margin-right: 8px; margin-bottom: 8px; cursor: pointer; display: inline-block; background: #fff;">
+                                                                <img src="{{ asset('storage/images/' . $option->image) }}" 
+                                                                     alt="{{ $option->name }}" 
+                                                                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 2px;">
+                                                                <input type="hidden" name="attribute_option_{{ $attribute->id }}" value="{{ $loop->first ? $option->id : '' }}" class="attribute_option_hidden">
+                                                            </button>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                                <div class="selected-image-name mt-2" id="selected-image-{{ $attribute->id }}">
+                                                    @if($firstOption && $firstOption->image)
+                                                        <small class="text-muted">{{ $firstOption->name }}</small>
+                                                    @endif
+                                                </div>
+                                            
+                                            @else
+                                                {{-- Name Dropdown Display (Default) --}}
+                                                <select class="form-control attribute_option" id="{{ $attribute->name }}" data-attribute-id="{{ $attribute->id }}">
+                                                    @foreach ($availableOptions as $option)
+                                                        <option value="{{ $option->name }}" 
+                                                            data-type="{{ $attribute->id }}"
+                                                            data-href="{{ $option->id }}"
+                                                            data-target="{{ $option->price }}"
+                                                            data-image="{{ $option->image ? asset('storage/images/' . $option->image) : '' }}"
+                                                            data-color-code="{{ $option->color_code ?: '' }}"
+                                                            data-gallery-image-id="{{ $option->gallery_image_id ?: '' }}"
+                                                            data-gallery-image="{{ $option->galleryImage && $option->galleryImage->photo ? asset('storage/images/' . $option->galleryImage->photo) : '' }}">
+                                                            {{ $option->name }}
+                                                        </option>
                                                 @endforeach
                                             </select>
+                                                <div class="attribute-option-preview mt-2" id="preview-{{ $attribute->id }}" style="min-height: 40px;">
+                                                    @if($firstOption)
+                                                        @if($firstOption->image)
+                                                            <img src="{{ asset('storage/images/' . $firstOption->image) }}" alt="{{ $firstOption->name }}" style="max-width: 40px; max-height: 40px; border: 1px solid #ddd; border-radius: 4px; padding: 2px;">
+                                                        @elseif($firstOption->color_code)
+                                                            <span style="display: inline-block; width: 40px; height: 40px; background-color: {{ $firstOption->color_code }}; border: 1px solid #ddd; border-radius: 4px;"></span>
+                                                        @endif
+                                                    @endif
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 @endif
@@ -1023,11 +1153,26 @@ $(document).ready(function() {
     // Function to get total attribute price (raw prices, no currency conversion)
     function getTotalAttributePrice() {
         var totalAttributePrice = 0;
+        
+        // Get prices from dropdowns
         $('.attribute_option').each(function() {
             var selectedOption = $(this).find(':selected');
             var optionPrice = parseFloat(selectedOption.attr('data-target')) || 0;
             totalAttributePrice += optionPrice;
         });
+        
+        // Get prices from color swatches
+        $('.color-swatch-btn.active').each(function() {
+            var optionPrice = parseFloat($(this).attr('data-target')) || 0;
+            totalAttributePrice += optionPrice;
+        });
+        
+        // Get prices from image selectors
+        $('.image-selector-btn.active').each(function() {
+            var optionPrice = parseFloat($(this).attr('data-target')) || 0;
+            totalAttributePrice += optionPrice;
+        });
+        
         return totalAttributePrice;
     }
     
@@ -1099,14 +1244,187 @@ $(document).ready(function() {
         updateOrderSummary();
     });
     
-    // Handle attribute option changes
+    // Function to handle attribute option selection (works for dropdown, color swatches, and image selectors)
+    function handleAttributeOptionSelection(selectedElement, attributeId) {
+        var optionImage = selectedElement.data('image');
+        var optionColorCode = selectedElement.data('color-code');
+        var galleryImage = selectedElement.data('gallery-image');
+        var galleryImageId = selectedElement.data('gallery-image-id');
+        var optionName = selectedElement.data('option-name') || selectedElement.text();
+        var optionId = selectedElement.data('href') || selectedElement.data('option-id');
+        
+        // Update hidden input for form submission
+        $('input[name="attribute_option_' + attributeId + '"]').val(optionId);
+        
+        // Update preview/name display based on display type
+        var attributeContainer = $('[data-attribute-id="' + attributeId + '"]').closest('.form-group');
+        var displayType = attributeContainer.find('.color-swatches-container').length > 0 ? 'color' : 
+                         (attributeContainer.find('.image-selector-container').length > 0 ? 'image' : 'name');
+        
+        if (displayType === 'color') {
+            // Update selected color name
+            $('#selected-color-' + attributeId).html('<small class="text-muted">' + optionName + '</small>');
+        } else if (displayType === 'image') {
+            // Update selected image name
+            $('#selected-image-' + attributeId).html('<small class="text-muted">' + optionName + '</small>');
+        } else {
+            // Update preview for name dropdown
+            var previewDiv = $('#preview-' + attributeId);
+            previewDiv.empty();
+            if (optionImage) {
+                previewDiv.html('<img src="' + optionImage + '" alt="" style="max-width: 40px; max-height: 40px; border: 1px solid #ddd; border-radius: 4px; padding: 2px;">');
+            } else if (optionColorCode) {
+                previewDiv.html('<span style="display: inline-block; width: 40px; height: 40px; background-color: ' + optionColorCode + '; border: 1px solid #ddd; border-radius: 4px;"></span>');
+            }
+        }
+        
+        // Change featured image if gallery image is selected
+        updateProductFeaturedImage();
+        
+        updateOrderSummary();
+    }
+    
+    // Function to update product featured image based on all selected attributes
+    function updateProductFeaturedImage() {
+        var imageToShow = null;
+        var hasGalleryImage = false;
+        
+        // Check all attribute options (dropdown, color, image) for gallery images
+        $('.attribute_option').each(function() {
+            var opt = $(this).find(':selected');
+            var galImage = opt.data('gallery-image');
+            if (galImage && opt.data('gallery-image-id')) {
+                imageToShow = galImage;
+                hasGalleryImage = true;
+                return false; // break loop
+            }
+        });
+        
+        // Check color swatch buttons
+        if (!hasGalleryImage) {
+            $('.color-swatch-btn.active').each(function() {
+                var galImage = $(this).data('gallery-image');
+                if (galImage && $(this).data('gallery-image-id')) {
+                    imageToShow = galImage;
+                    hasGalleryImage = true;
+                    return false;
+                }
+            });
+        }
+        
+        // Check image selector buttons
+        if (!hasGalleryImage) {
+            $('.image-selector-btn.active').each(function() {
+                var galImage = $(this).data('gallery-image');
+                if (galImage && $(this).data('gallery-image-id')) {
+                    imageToShow = galImage;
+                    hasGalleryImage = true;
+                    return false;
+                }
+            });
+        }
+        
+        // If no gallery image found, check for attribute option images
+        if (!hasGalleryImage) {
+            $('.attribute_option').each(function() {
+                var opt = $(this).find(':selected');
+                var optImage = opt.data('image');
+                if (optImage && !imageToShow) {
+                    imageToShow = optImage;
+                }
+            });
+            
+            $('.color-swatch-btn.active').each(function() {
+                var optImage = $(this).data('image');
+                if (optImage && !imageToShow) {
+                    imageToShow = optImage;
+                }
+            });
+            
+            $('.image-selector-btn.active').each(function() {
+                var optImage = $(this).data('image');
+                if (optImage && !imageToShow) {
+                    imageToShow = optImage;
+                }
+            });
+        }
+        
+        // Update the main product image
+        if (imageToShow) {
+            $('#main-product-image').attr('src', imageToShow);
+        } else {
+            // Revert to original image if no attribute images are selected
+            var originalImage = $('#main-product-image').data('original-image');
+            $('#main-product-image').attr('src', originalImage);
+        }
+    }
+    
+    // Handle attribute option changes (dropdown)
     $('.attribute_option').on('change', function(e) {
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
-        updateOrderSummary();
+        
+        var selectedOption = $(this).find(':selected');
+        var attributeId = $(this).data('attribute-id');
+        handleAttributeOptionSelection(selectedOption, attributeId);
         return false;
     });
+    
+    // Handle color swatch button clicks
+    $(document).on('click', '.color-swatch-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var attributeId = $(this).data('type');
+        
+        // Remove active class from all buttons in this attribute group
+        $('.color-swatch-btn[data-type="' + attributeId + '"]').removeClass('active').css('border-color', '#ddd');
+        
+        // Add active class to clicked button
+        $(this).addClass('active').css('border-color', '#007bff');
+        
+        handleAttributeOptionSelection($(this), attributeId);
+        return false;
+    });
+    
+    // Handle image selector button clicks
+    $(document).on('click', '.image-selector-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var attributeId = $(this).data('type');
+        
+        // Remove active class from all buttons in this attribute group
+        $('.image-selector-btn[data-type="' + attributeId + '"]').removeClass('active').css('border-color', '#ddd');
+        
+        // Add active class to clicked button
+        $(this).addClass('active').css('border-color', '#007bff');
+        
+        handleAttributeOptionSelection($(this), attributeId);
+        return false;
+    });
+    
+    // Initialize attribute selections on page load
+    // Initialize color swatches - trigger first active button
+    $('.color-swatch-btn.active').each(function() {
+        var attributeId = $(this).data('type');
+        handleAttributeOptionSelection($(this), attributeId);
+    });
+    
+    // Initialize image selectors - trigger first active button
+    $('.image-selector-btn.active').each(function() {
+        var attributeId = $(this).data('type');
+        handleAttributeOptionSelection($(this), attributeId);
+    });
+    
+    // Initialize dropdowns - trigger change event
+    $('.attribute_option').each(function() {
+        $(this).trigger('change');
+    });
+    
+    // Update product image on initial load
+    updateProductFeaturedImage();
     
     // Function to remove validation errors
     function removeValidationErrors() {
@@ -1290,11 +1608,31 @@ $(document).ready(function() {
         var itemId = $('#item_id').val();
         var quantity = $('.cart-amount').val() || 1;
         
-        // Collect selected attributes
+        // Collect selected attributes (from dropdowns, color swatches, and image selectors)
         var selectedAttributes = {};
+        
+        // Get from dropdowns
         $('.attribute_option').each(function() {
             var attributeId = $(this).find(':selected').attr('data-type');
             var optionId = $(this).find(':selected').attr('data-href');
+            if (attributeId && optionId) {
+                selectedAttributes[attributeId] = optionId;
+            }
+        });
+        
+        // Get from color swatches
+        $('.color-swatch-btn.active').each(function() {
+            var attributeId = $(this).data('type');
+            var optionId = $(this).data('href') || $(this).data('option-id');
+            if (attributeId && optionId) {
+                selectedAttributes[attributeId] = optionId;
+            }
+        });
+        
+        // Get from image selectors
+        $('.image-selector-btn.active').each(function() {
+            var attributeId = $(this).data('type');
+            var optionId = $(this).data('href') || $(this).data('option-id');
             if (attributeId && optionId) {
                 selectedAttributes[attributeId] = optionId;
             }

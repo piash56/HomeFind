@@ -38,6 +38,22 @@
 										<input type="text" name="name" class="form-control" id="attr_name"
 											placeholder="{{ __('Enter Name') }}" value="{{ $attribute->name }}" >
 									</div>
+
+									<div class="form-group">
+										<label for="display_type">{{ __('Display Type') }} *</label>
+										<small class="d-block mb-2 text-muted">{{ __('Choose how this attribute will be displayed on the product page') }}</small>
+										<select name="display_type" class="form-control" id="display_type">
+											<option value="name" {{ ($attribute->display_type ?: 'name') == 'name' ? 'selected' : '' }}>{{ __('Name (Dropdown)') }}</option>
+											<option value="color" {{ $attribute->display_type == 'color' ? 'selected' : '' }}>{{ __('Color Picker (Color Swatches)') }}</option>
+											<option value="image" {{ $attribute->display_type == 'image' ? 'selected' : '' }}>{{ __('Image (Image Selector)') }}</option>
+										</select>
+										<small class="form-text text-muted">
+											<strong>{{ __('Name') }}:</strong> {{ __('Shows options in a dropdown') }}<br>
+											<strong>{{ __('Color') }}:</strong> {{ __('Shows color swatches that can be clicked') }}<br>
+											<strong>{{ __('Image') }}:</strong> {{ __('Shows images that can be clicked') }}
+										</small>
+									</div>
+
                                     <input type="hidden" id="attr_keyword" name="keyword" value="{{ $attribute->keyword }}">
                                     <input type="hidden" name="item_id" value="{{ $item->id }}">
 

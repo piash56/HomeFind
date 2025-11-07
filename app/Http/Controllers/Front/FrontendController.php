@@ -34,7 +34,9 @@ class FrontendController extends Controller
     {
         $item = Item::where('slug', $slug)->firstOrFail();
         $galleries = $item->galleries;
-        $attributes = $item->attributes;
+        $attributes = $item->attributes()->with(['options' => function ($query) {
+            $query->with('galleryImage');
+        }])->get();
         $reviews = $item->reviews()->paginate(5);
 
         // Process specifications

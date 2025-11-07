@@ -6,16 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Attribute extends Model
 {
-    protected $fillable = ['item_id','name','keyword'];
+    protected $fillable = ['item_id', 'name', 'keyword', 'display_type'];
 
     public $timestamps = false;
 
     public function options()
     {
-        return $this->hasMany('App\Models\AttributeOption','attribute_id','id');
+        return $this->hasMany('App\Models\AttributeOption', 'attribute_id', 'id');
     }
-
-  
-
-
 }
