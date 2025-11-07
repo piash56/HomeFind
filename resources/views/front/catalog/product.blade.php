@@ -137,6 +137,11 @@
         margin-bottom: 15px;
     }
 }
+
+/* Hide the first thumbnail (featured image) from gallery */
+.product-thumbnails .owl-thumbs .owl-thumb-item:first-child {
+    display: none !important;
+}
 </style>
 @endsection
 
@@ -320,7 +325,7 @@
                                     alt="zoom" data-original-image="{{ asset('storage/images/' . $item->photo) }}" />
                             </div>
                             @foreach ($galleries as $key => $gallery)
-                                <div class="item"><img src="{{ asset('storage/images/' . $gallery->photo) }}"
+                                <div class="item" data-gallery-id="{{ $gallery->id }}"><img src="{{ asset('storage/images/' . $gallery->photo) }}"
                                         alt="zoom" /></div>
                             @endforeach
                         </div>
@@ -1289,43 +1294,48 @@ $(document).ready(function() {
         var imageToShow = null;
         var hasGalleryImage = false;
         
-        // Check all attribute options (dropdown, color, image) for gallery images
+        // Priority 1: Check all attribute options (dropdown, color, image) for gallery images
+        // Check dropdowns first
         $('.attribute_option').each(function() {
             var opt = $(this).find(':selected');
             var galImage = opt.data('gallery-image');
-            if (galImage && opt.data('gallery-image-id')) {
+            var galImageId = opt.data('gallery-image-id');
+            if (galImage && galImageId) {
                 imageToShow = galImage;
                 hasGalleryImage = true;
-                return false; // break loop
+                return false; // break loop - use first gallery image found
             }
         });
         
-        // Check color swatch buttons
+        // Check color swatch buttons (if no gallery image from dropdown)
         if (!hasGalleryImage) {
             $('.color-swatch-btn.active').each(function() {
                 var galImage = $(this).data('gallery-image');
-                if (galImage && $(this).data('gallery-image-id')) {
+                var galImageId = $(this).data('gallery-image-id');
+                if (galImage && galImageId) {
                     imageToShow = galImage;
                     hasGalleryImage = true;
-                    return false;
+                    return false; // break loop
                 }
             });
         }
         
-        // Check image selector buttons
+        // Check image selector buttons (if no gallery image from dropdown or color)
         if (!hasGalleryImage) {
             $('.image-selector-btn.active').each(function() {
                 var galImage = $(this).data('gallery-image');
-                if (galImage && $(this).data('gallery-image-id')) {
+                var galImageId = $(this).data('gallery-image-id');
+                if (galImage && galImageId) {
                     imageToShow = galImage;
                     hasGalleryImage = true;
-                    return false;
+                    return false; // break loop
                 }
             });
         }
         
-        // If no gallery image found, check for attribute option images
+        // Priority 2: If no gallery image found, check for regular attribute option images
         if (!hasGalleryImage) {
+            // Check dropdowns for regular images
             $('.attribute_option').each(function() {
                 var opt = $(this).find(':selected');
                 var optImage = opt.data('image');
@@ -1334,6 +1344,7 @@ $(document).ready(function() {
                 }
             });
             
+            // Check color swatches for regular images
             $('.color-swatch-btn.active').each(function() {
                 var optImage = $(this).data('image');
                 if (optImage && !imageToShow) {
@@ -1341,6 +1352,7 @@ $(document).ready(function() {
                 }
             });
             
+            // Check image selectors for regular images
             $('.image-selector-btn.active').each(function() {
                 var optImage = $(this).data('image');
                 if (optImage && !imageToShow) {
@@ -1349,14 +1361,235 @@ $(document).ready(function() {
             });
         }
         
-        // Update the main product image
+        // Update the main product image in both the standalone element and carousel
         if (imageToShow) {
+            // Normalize image paths for comparison
+            var currentSrc = $('#main-product-image').attr('src') || '';
+            var normalizedCurrent = currentSrc.split('?')[0].replace(/\/$/, '');
+            var normalizedNew = imageToShow.split('?')[0].replace(/\/$/, '');
+            
+            // Always update the image - clear first to force reload
+            if (normalizedCurrent !== normalizedNew) {
+                // Different image - clear and set new
+                $('#main-product-image').attr('src', '').attr('src', imageToShow);
+                
+                // Also update the carousel's main image item
+                $('#main-product-image-item img').attr('src', '').attr('src', imageToShow);
+                
+                // Only navigate carousel if we're not syncing from gallery (to avoid conflicts)
+                if (!isSyncingFromGallery) {
+                    // Navigate carousel to show the main product image (index 0) when attribute changes
+                    var carousel = $('#product-gallery-slider').data('owlCarousel');
+                    if (carousel) {
+                        // Use a small delay to ensure image is loaded first
+                        setTimeout(function() {
+                            carousel.to(0, 300);
+                        }, 50);
+                    }
+                }
+            } else {
+                // Same image but ensure it's set correctly
             $('#main-product-image').attr('src', imageToShow);
+                $('#main-product-image-item img').attr('src', imageToShow);
+            }
         } else {
             // Revert to original image if no attribute images are selected
             var originalImage = $('#main-product-image').data('original-image');
-            $('#main-product-image').attr('src', originalImage);
+            if (originalImage) {
+                var currentSrc = $('#main-product-image').attr('src') || '';
+                var normalizedCurrent = currentSrc.split('?')[0].replace(/\/$/, '');
+                var normalizedOriginal = originalImage.split('?')[0].replace(/\/$/, '');
+                
+                if (normalizedCurrent !== normalizedOriginal) {
+                    $('#main-product-image').attr('src', '').attr('src', originalImage);
+                    $('#main-product-image-item img').attr('src', '').attr('src', originalImage);
+                    
+                    // Navigate carousel to show the main product image (index 0)
+                    if (!isSyncingFromGallery) {
+                        var carousel = $('#product-gallery-slider').data('owlCarousel');
+                        if (carousel) {
+                            setTimeout(function() {
+                                carousel.to(0, 300);
+                            }, 50);
+                        }
+                    }
+                }
+            }
         }
+        
+        // Sync gallery thumbnails with selected attributes
+        // Use a small delay to ensure carousel is ready
+        setTimeout(function() {
+            syncGalleryThumbnails();
+        }, 50);
+    }
+    
+    // Function to sync gallery thumbnails based on selected attribute options
+    function syncGalleryThumbnails() {
+        var selectedGalleryId = null;
+        
+        // Check all attribute options (dropdown, color, image) for gallery_image_id
+        $('.attribute_option').each(function() {
+            var opt = $(this).find(':selected');
+            var galImageId = opt.data('gallery-image-id');
+            if (galImageId) {
+                selectedGalleryId = galImageId;
+                return false; // break loop
+            }
+        });
+        
+        // Check color swatch buttons
+        if (!selectedGalleryId) {
+            $('.color-swatch-btn.active').each(function() {
+                var galImageId = $(this).data('gallery-image-id');
+                if (galImageId) {
+                    selectedGalleryId = galImageId;
+                    return false;
+                }
+            });
+        }
+        
+        // Check image selector buttons
+        if (!selectedGalleryId) {
+            $('.image-selector-btn.active').each(function() {
+                var galImageId = $(this).data('gallery-image-id');
+                if (galImageId) {
+                    selectedGalleryId = galImageId;
+                    return false;
+                }
+            });
+        }
+        
+        // Remove active class from all gallery thumbnails (only visible ones)
+        $('.owl-thumb-item:visible').removeClass('active');
+        
+        // Add active class to matching gallery thumbnail
+        if (selectedGalleryId) {
+            // Find the gallery item with matching ID
+            var galleryItem = $('.product-details-slider .item[data-gallery-id="' + selectedGalleryId + '"]');
+            if (galleryItem.length) {
+                // Get the image source from the gallery item and normalize it
+                var galleryImageSrc = galleryItem.find('img').attr('src');
+                // Extract filename from path for more reliable matching
+                var galleryFileName = galleryImageSrc.split('/').pop().split('?')[0];
+                
+                // Find the thumbnail that matches this image source (only search visible thumbnails)
+                var matchingThumbnail = null;
+                var thumbIndex = -1;
+                $('.owl-thumb-item:visible').each(function(index) {
+                    var thumbImgSrc = $(this).find('img').attr('src');
+                    if (thumbImgSrc) {
+                        // Extract filename from thumbnail path
+                        var thumbFileName = thumbImgSrc.split('/').pop().split('?')[0];
+                        // Check if filenames match (most reliable method)
+                        if (thumbFileName === galleryFileName) {
+                            matchingThumbnail = $(this);
+                            thumbIndex = index;
+                            return false; // break loop
+                        }
+                    }
+                });
+                
+                // If found by image source, activate it
+                if (matchingThumbnail && matchingThumbnail.length && thumbIndex >= 0) {
+                    matchingThumbnail.addClass('active');
+                    
+                    // Navigate the carousel to show this image
+                    // Note: thumbIndex in thumbnails corresponds to itemIndex+1 in carousel (since first item is featured image)
+                    var carousel = $('#product-gallery-slider').data('owlCarousel');
+                    if (carousel) {
+                        // Get all items to find the actual carousel index
+                        var allItems = $('.product-details-slider .item');
+                        var itemIndex = allItems.index(galleryItem);
+                        carousel.to(itemIndex, 300);
+                    }
+                } else {
+                    // Fallback: use index-based matching if image source matching fails
+                    var allItems = $('.product-details-slider .item');
+                    var itemIndex = allItems.index(galleryItem);
+                    // Find visible thumbnails only (excluding hidden featured image thumbnail)
+                    var visibleThumbnails = $('.owl-thumb-item:visible');
+                    // Thumbnail index = itemIndex - 1 (since first item is featured image, not in thumbnails)
+                    var thumbIndexToUse = itemIndex - 1;
+                    if (visibleThumbnails.length > thumbIndexToUse && thumbIndexToUse >= 0) {
+                        visibleThumbnails.eq(thumbIndexToUse).addClass('active');
+                        var carousel = $('#product-gallery-slider').data('owlCarousel');
+                        if (carousel) {
+                            carousel.to(itemIndex, 300);
+                        }
+                    }
+                }
+            }
+        } else {
+            // If no gallery image selected, don't mark any thumbnail as active
+            // (since featured image thumbnail is hidden)
+        }
+    }
+    
+    // Flag to prevent recursive syncing
+    var isSyncingFromGallery = false;
+    
+    // Function to sync attribute options when gallery thumbnail is clicked
+    function syncAttributeOptionsFromGallery(galleryId) {
+        if (!galleryId || isSyncingFromGallery) return;
+        
+        isSyncingFromGallery = true;
+        var foundOption = false;
+        
+        // Check dropdown options
+        $('.attribute_option option').each(function() {
+            if ($(this).data('gallery-image-id') == galleryId) {
+                var select = $(this).closest('.attribute_option');
+                var currentVal = select.val();
+                var newVal = $(this).val();
+                
+                // Always update to ensure featured image updates, even if value is the same
+                select.val(newVal);
+                // Trigger change event to ensure updateProductFeaturedImage is called
+                select.trigger('change');
+                foundOption = true;
+                return false;
+            }
+        });
+        
+        // Check color swatch buttons
+        if (!foundOption) {
+            $('.color-swatch-btn').each(function() {
+                if ($(this).data('gallery-image-id') == galleryId) {
+                    var attributeId = $(this).data('type');
+                    var isAlreadyActive = $(this).hasClass('active');
+                    // Always update active state to ensure consistency
+                    $('.color-swatch-btn[data-type="' + attributeId + '"]').removeClass('active').css('border-color', '#ddd');
+                    $(this).addClass('active').css('border-color', '#007bff');
+                    // Always call handleAttributeOptionSelection to ensure featured image updates
+                    handleAttributeOptionSelection($(this), attributeId);
+                    foundOption = true;
+                    return false;
+                }
+            });
+        }
+        
+        // Check image selector buttons
+        if (!foundOption) {
+            $('.image-selector-btn').each(function() {
+                if ($(this).data('gallery-image-id') == galleryId) {
+                    var attributeId = $(this).data('type');
+                    var isAlreadyActive = $(this).hasClass('active');
+                    // Always update active state to ensure consistency
+                    $('.image-selector-btn[data-type="' + attributeId + '"]').removeClass('active').css('border-color', '#ddd');
+                    $(this).addClass('active').css('border-color', '#007bff');
+                    // Always call handleAttributeOptionSelection to ensure featured image updates
+                    handleAttributeOptionSelection($(this), attributeId);
+                    foundOption = true;
+                    return false;
+                }
+            });
+        }
+        
+        // Reset flag after a short delay to allow sync to complete
+        setTimeout(function() {
+            isSyncingFromGallery = false;
+        }, 100);
     }
     
     // Handle attribute option changes (dropdown)
@@ -1364,6 +1597,9 @@ $(document).ready(function() {
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
+        
+        // Reset sync flag to allow updates
+        isSyncingFromGallery = false;
         
         var selectedOption = $(this).find(':selected');
         var attributeId = $(this).data('attribute-id');
@@ -1375,6 +1611,9 @@ $(document).ready(function() {
     $(document).on('click', '.color-swatch-btn', function(e) {
         e.preventDefault();
         e.stopPropagation();
+        
+        // Reset sync flag to allow updates
+        isSyncingFromGallery = false;
         
         var attributeId = $(this).data('type');
         
@@ -1392,6 +1631,9 @@ $(document).ready(function() {
     $(document).on('click', '.image-selector-btn', function(e) {
         e.preventDefault();
         e.stopPropagation();
+        
+        // Reset sync flag to allow updates
+        isSyncingFromGallery = false;
         
         var attributeId = $(this).data('type');
         
@@ -1425,6 +1667,117 @@ $(document).ready(function() {
     
     // Update product image on initial load
     updateProductFeaturedImage();
+    
+    // Handle gallery thumbnail clicks - sync with attribute options
+    $(document).on('click', '.owl-thumb-item:visible', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Get the thumbnail index within visible thumbnails (excluding hidden featured image)
+        var visibleThumbnails = $('.owl-thumb-item:visible');
+        var thumbIndex = visibleThumbnails.index($(this));
+        
+        // Get all carousel items (main image + gallery images)
+        // Thumbnail index 0 = carousel item index 1 (since first item is featured image, not in thumbnails)
+        var allItems = $('.product-details-slider .item');
+        var itemIndex = thumbIndex + 1; // Add 1 because first item is featured image
+        var galleryItem = allItems.eq(itemIndex);
+        var galleryId = galleryItem.data('gallery-id');
+        
+        // Update active thumbnail
+        $('.owl-thumb-item:visible').removeClass('active');
+        $(this).addClass('active');
+        
+        if (galleryId) {
+            // Sync attribute options based on gallery image
+            syncAttributeOptionsFromGallery(galleryId);
+            
+            // Navigate carousel to show this image
+            var carousel = $('#product-gallery-slider').data('owlCarousel');
+            if (carousel) {
+                carousel.to(itemIndex, 300);
+            }
+        }
+    });
+    
+    // Sync gallery thumbnails when carousel is initialized
+    $('#product-gallery-slider').on('initialized.owl.carousel', function() {
+        // Hide the first thumbnail (featured image) from gallery - multiple methods to ensure it works
+        $('.owl-thumb-item').first().hide().css('display', 'none');
+        $('.product-thumbnails .owl-thumbs .owl-thumb-item:first-child').hide().css('display', 'none');
+        
+        setTimeout(function() {
+            // Double check and hide again after a short delay
+            $('.owl-thumb-item').first().hide().css('display', 'none');
+            syncGalleryThumbnails();
+        }, 100);
+    });
+    
+    // Also sync after a delay to ensure everything is ready
+    setTimeout(function() {
+        if ($('#product-gallery-slider').data('owlCarousel')) {
+            // Ensure first thumbnail is hidden
+            $('.owl-thumb-item').first().hide().css('display', 'none');
+            $('.product-thumbnails .owl-thumbs .owl-thumb-item:first-child').hide().css('display', 'none');
+            syncGalleryThumbnails();
+        }
+    }, 500);
+    
+    // Additional check after page load
+    $(window).on('load', function() {
+        setTimeout(function() {
+            $('.owl-thumb-item').first().hide().css('display', 'none');
+            $('.product-thumbnails .owl-thumbs .owl-thumb-item:first-child').hide().css('display', 'none');
+        }, 100);
+    });
+    
+    // Use MutationObserver to watch for thumbnail creation and hide first one immediately
+    if (typeof MutationObserver !== 'undefined') {
+        var thumbObserver = new MutationObserver(function(mutations) {
+            var firstThumb = $('.owl-thumb-item').first();
+            if (firstThumb.length && firstThumb.is(':visible')) {
+                firstThumb.hide().css('display', 'none');
+            }
+        });
+        
+        // Observe the thumbnails container
+        var thumbsContainer = document.querySelector('.product-thumbnails .owl-thumbs');
+        if (thumbsContainer) {
+            thumbObserver.observe(thumbsContainer, {
+                childList: true,
+                subtree: true
+            });
+        }
+    }
+    
+    // Sync gallery thumbnails when carousel slide changes
+    $('#product-gallery-slider').on('changed.owl.carousel', function(event) {
+        // Prevent syncing if we're already syncing from gallery click
+        if (isSyncingFromGallery) return;
+        
+        // Get the actual DOM index, not the carousel's internal index (which accounts for loop)
+        var currentIndex = event.item.index;
+        var allItems = $('.product-details-slider .item');
+        var galleryItem = allItems.eq(currentIndex);
+        var galleryId = galleryItem.data('gallery-id');
+        
+        // Update active thumbnail
+        // If currentIndex is 0 (featured image), don't highlight any thumbnail
+        // If currentIndex > 0, highlight thumbnail at index (currentIndex - 1)
+        $('.owl-thumb-item:visible').removeClass('active');
+        if (currentIndex > 0) {
+            var visibleThumbnails = $('.owl-thumb-item:visible');
+            var thumbIndex = currentIndex - 1; // Subtract 1 because first item is featured image
+            if (visibleThumbnails.length > thumbIndex && thumbIndex >= 0) {
+                visibleThumbnails.eq(thumbIndex).addClass('active');
+            }
+        }
+        
+        // Sync attribute options if gallery image has matching attribute
+        if (galleryId) {
+            syncAttributeOptionsFromGallery(galleryId);
+        }
+    });
     
     // Function to remove validation errors
     function removeValidationErrors() {

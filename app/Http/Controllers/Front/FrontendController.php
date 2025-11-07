@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 
 class FrontendController extends Controller
 {
+    protected $repository;
 
     /**
      * Constructor Method.
@@ -47,7 +48,28 @@ class FrontendController extends Controller
             $sec_details = json_decode($item->specification_description, true) ?? [];
         }
 
-        $related_products = Item::where('category_id', $item->category_id)->where('id', '!=', $item->id)->whereStatus(1)->take(8)->get();
+        // Get related products - use selected ones if available, otherwise use category-based
+        $related_products = [];
+        if ($item->related_products) {
+            $relatedProductIds = json_decode($item->related_products, true);
+            if (!empty($relatedProductIds)) {
+                $related_products = Item::whereIn('id', $relatedProductIds)
+                    ->where('id', '!=', $item->id)
+                    ->whereStatus(1)
+                    ->take(8)
+                    ->get();
+            }
+        }
+
+        // Fallback to category-based if no related products selected
+        if (empty($related_products)) {
+            $related_products = Item::where('category_id', $item->category_id)
+                ->where('id', '!=', $item->id)
+                ->whereStatus(1)
+                ->take(8)
+                ->get();
+        }
+
         return view('front.catalog.product', [
             'item' => $item,
             'galleries' => $galleries,

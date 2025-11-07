@@ -233,14 +233,14 @@ class ReviewController extends Controller
 
         if (empty($query)) {
             // Show last 6 products when no search query
-            $products = Item::select('id', 'name', 'thumbnail')
+            $products = Item::select('id', 'name', 'thumbnail', 'photo')
                 ->where('status', 1)
                 ->orderBy('created_at', 'desc')
                 ->limit(6)
                 ->get();
         } else {
             // Search products by name
-            $products = Item::select('id', 'name', 'thumbnail')
+            $products = Item::select('id', 'name', 'thumbnail', 'photo')
                 ->where('status', 1)
                 ->where('name', 'like', '%' . $query . '%')
                 ->limit(6)
@@ -249,16 +249,21 @@ class ReviewController extends Controller
 
         // Transform thumbnail URLs
         $products->transform(function ($product) {
-            if ($product->thumbnail) {
-                // Check if thumbnail path already includes 'assets/images/'
-                if (strpos($product->thumbnail, 'assets/images/') === 0) {
-                    $product->thumbnail = asset($product->thumbnail);
+            // Use thumbnail if available, otherwise use photo
+            $imagePath = $product->thumbnail ?: $product->photo;
+
+            if ($imagePath) {
+                // Check if path already includes 'storage/images/'
+                if (strpos($imagePath, 'storage/images/') !== false) {
+                    $product->thumbnail = asset('storage/images/' . basename($imagePath));
+                } elseif (strpos($imagePath, 'assets/images/') === 0) {
+                    $product->thumbnail = asset($imagePath);
                 } else {
-                    // Add 'assets/images/' prefix if not present
-                    $product->thumbnail = asset('assets/images/' . $product->thumbnail);
+                    // Default to storage/images path
+                    $product->thumbnail = asset('storage/images/' . $imagePath);
                 }
             } else {
-                $product->thumbnail = asset('assets/images/noimage.png');
+                $product->thumbnail = asset('storage/images/placeholder.png');
             }
             return $product;
         });

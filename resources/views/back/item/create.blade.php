@@ -293,6 +293,24 @@
             <div class="card">
                 <div class="card-body">
                     <div class="form-group">
+                        <label for="related_products_search">{{ __('Related Products') }}</label>
+                        <small class="d-block mb-2 text-muted">{{ __('Select products to show in "আপনি পছন্দ করতে পারেন" section. Leave empty to show products from same category.') }}</small>
+                        <div class="position-relative">
+                            <input type="text" class="form-control" id="related_products_search" 
+                                   placeholder="{{ __('Search and select products') }}" autocomplete="off">
+                            <div id="related_products_search_results" class="dropdown-menu w-100" style="display: none; position: absolute; top: 100%; z-index: 1000; max-height: 300px; overflow-y: auto; background: white; border: 1px solid #ddd;">
+                                <!-- Search results will appear here -->
+                            </div>
+                        </div>
+                        <div id="selected_related_products" class="mt-3" style="min-height: 50px;">
+                            <!-- Selected products will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
                         <label for="stock">{{ __('Total in stock') }}
                             *</label>
                         <div class="input-group mb-3">
@@ -392,6 +410,118 @@ $(document).ready(function() {
 
     // Initialize
     updateRemoveButtons();
+
+    // Related Products Search Functionality
+    var selectedProductIds = [];
+    var isSearching = false;
+    
+    // Product search input handler
+    $('#related_products_search').on('input', function() {
+        var query = $(this).val();
+        if (query.length >= 2) {
+            searchRelatedProducts(query);
+        } else if (query.length === 0) {
+            $('#related_products_search_results').hide();
+        }
+    });
+    
+    // Show products on focus
+    $('#related_products_search').on('focus', function() {
+        if ($(this).val().length === 0) {
+            searchRelatedProducts('');
+        } else {
+            searchRelatedProducts($(this).val());
+        }
+    });
+    
+    // Hide search results when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#related_products_search, #related_products_search_results').length) {
+            $('#related_products_search_results').hide();
+        }
+    });
+    
+    function searchRelatedProducts(query) {
+        if (isSearching) {
+            return;
+        }
+        
+        isSearching = true;
+        
+        $.ajax({
+            url: '{{ route("admin.review.search-products") }}',
+            method: 'GET',
+            data: { q: query },
+            beforeSend: function() {
+                $('#related_products_search_results').html('<div class="dropdown-item text-muted">Loading...</div>').show();
+            },
+            success: function(response) {
+                displayRelatedProductResults(response.products);
+            },
+            error: function(xhr, status, error) {
+                $('#related_products_search_results').html('<div class="dropdown-item text-danger">Error loading products: ' + error + '</div>').show();
+            },
+            complete: function() {
+                isSearching = false;
+            }
+        });
+    }
+    
+    function displayRelatedProductResults(products) {
+        var html = '';
+        if (products.length === 0) {
+            html = '<div class="dropdown-item text-muted">No products found</div>';
+        } else {
+            products.forEach(function(product) {
+                if (selectedProductIds.indexOf(product.id.toString()) === -1) {
+                    var thumbnail = product.thumbnail || '{{ asset("storage/images/placeholder.png") }}';
+                    html += '<div class="dropdown-item related-product-item" data-product-id="' + product.id + '" style="cursor: pointer; padding: 10px;">';
+                    html += '<div class="d-flex align-items-center">';
+                    html += '<img src="' + thumbnail + '" alt="' + product.name + '" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 10px;">';
+                    html += '<span>' + product.name + '</span>';
+                    html += '</div>';
+                    html += '</div>';
+                }
+            });
+        }
+        $('#related_products_search_results').html(html).show();
+    }
+    
+    // Add product to selected list
+    $(document).on('click', '.related-product-item', function() {
+        var productId = $(this).data('product-id');
+        var productName = $(this).find('span').text();
+        var productThumbnail = $(this).find('img').attr('src');
+        
+        if (selectedProductIds.indexOf(productId.toString()) === -1) {
+            selectedProductIds.push(productId.toString());
+            
+            var selectedHtml = '<div class="selected-product-item mb-2 p-2 border rounded d-flex align-items-center justify-content-between" data-product-id="' + productId + '">';
+            selectedHtml += '<div class="d-flex align-items-center">';
+            selectedHtml += '<img src="' + productThumbnail + '" alt="' + productName + '" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 10px;">';
+            selectedHtml += '<span>' + productName + '</span>';
+            selectedHtml += '</div>';
+            selectedHtml += '<button type="button" class="btn btn-sm btn-danger remove-related-product" data-product-id="' + productId + '">';
+            selectedHtml += '<i class="fas fa-times"></i>';
+            selectedHtml += '</button>';
+            selectedHtml += '<input type="hidden" name="related_products[]" value="' + productId + '">';
+            selectedHtml += '</div>';
+            
+            $('#selected_related_products').append(selectedHtml);
+            $('#related_products_search').val('');
+            $('#related_products_search_results').hide();
+        }
+    });
+    
+    // Remove product from selected list
+    $(document).on('click', '.remove-related-product', function() {
+        var productId = $(this).data('product-id').toString();
+        var index = selectedProductIds.indexOf(productId);
+        if (index > -1) {
+            selectedProductIds.splice(index, 1);
+        }
+        $(this).closest('.selected-product-item').remove();
+    });
 });
 </script>
 @endsection

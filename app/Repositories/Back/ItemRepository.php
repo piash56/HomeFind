@@ -103,6 +103,14 @@ class ItemRepository
             $input['bulk_pricing_data'] = null;
         }
 
+        // Handle related products
+        if ($request->has('related_products') && is_array($request->related_products)) {
+            $relatedProducts = array_filter($request->related_products);
+            $input['related_products'] = !empty($relatedProducts) ? json_encode($relatedProducts) : null;
+        } else {
+            $input['related_products'] = null;
+        }
+
         $input['is_type'] = 'undefine';
 
         $item_id = Item::create($input)->id;
@@ -212,6 +220,14 @@ class ItemRepository
         } else {
             $input['enable_bulk_pricing'] = 0;
             $input['bulk_pricing_data'] = null;
+        }
+
+        // Handle related products
+        if ($request->has('related_products') && is_array($request->related_products)) {
+            $relatedProducts = array_filter($request->related_products);
+            $input['related_products'] = !empty($relatedProducts) ? json_encode($relatedProducts) : null;
+        } else {
+            $input['related_products'] = null;
         }
 
         $item->update($input);
