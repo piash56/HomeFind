@@ -969,7 +969,7 @@
     @endif
 
     <!-- Checkout Section -->
-    <div class="container padding-bottom-3x mb-1" id="checkout-section">
+    <div class="container padding-bottom-3x mb-1" id="checkout-section"></div>
         <div class="row">
             <!-- Delivery Information-->
             <div class="col-xl-8 col-lg-8">

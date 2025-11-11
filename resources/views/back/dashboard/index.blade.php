@@ -105,6 +105,72 @@
       </div>
 
       <div class="col-xl-3 col-md-6">
+        <a href="{{ route('back.order.index', ['type' => 'Fraud Return']) }}" class="text-decoration-none" style="text-decoration: none !important;">
+        <div class="card card-stats card-round">
+            <div class="card-body ">
+                <div class="row align-items-center">
+                    <div class="col-icon">
+                        <div class="icon-big text-center icon-warning bubble-shadow-small">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                    <div class="col col-stats ml-3 ml-sm-0">
+                        <div class="numbers">
+                            <p class="mb-0"><b>{{ __('Fraud Return Orders') }}</b></p>
+                            <h4 class="card-title">{{$totalFraudReturnOrders}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </a>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <a href="{{ route('back.order.index', ['type' => 'Partial Return']) }}" class="text-decoration-none" style="text-decoration: none !important;">
+        <div class="card card-stats card-round">
+            <div class="card-body ">
+                <div class="row align-items-center">
+                    <div class="col-icon">
+                        <div class="icon-big text-center icon-info bubble-shadow-small">
+                            <i class="fas fa-undo-alt"></i>
+                        </div>
+                    </div>
+                    <div class="col col-stats ml-3 ml-sm-0">
+                        <div class="numbers">
+                            <p class="mb-0"><b>{{ __('Partial Return Orders') }}</b></p>
+                            <h4 class="card-title">{{$totalPartialReturnOrders}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </a>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <a href="{{ route('back.order.index', ['type' => 'Exchange']) }}" class="text-decoration-none" style="text-decoration: none !important;">
+        <div class="card card-stats card-round">
+            <div class="card-body ">
+                <div class="row align-items-center">
+                    <div class="col-icon">
+                        <div class="icon-big text-center icon-primary bubble-shadow-small">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                    </div>
+                    <div class="col col-stats ml-3 ml-sm-0">
+                        <div class="numbers">
+                            <p class="mb-0"><b>{{ __('Exchange Orders') }}</b></p>
+                            <h4 class="card-title">{{$totalExchangeOrders}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </a>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
         <div class="card card-stats card-round">
             <div class="card-body ">
                 <div class="row align-items-center">

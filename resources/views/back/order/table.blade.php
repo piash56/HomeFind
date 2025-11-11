@@ -32,6 +32,12 @@
                         data-href="{{ route('back.order.status', [$data->id, 'order_status', 'Delivered']) }}" data-status-value="Delivered">{{ __('Delivered') }}</a>
                     <a class="dropdown-item" data-toggle="modal" data-target="#statusModal" href="javascript:;"
                         data-href="{{ route('back.order.status', [$data->id, 'order_status', 'Canceled']) }}" data-status-value="Canceled">{{ __('Canceled') }}</a>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#statusModal" href="javascript:;"
+                        data-href="{{ route('back.order.status', [$data->id, 'order_status', 'Fraud Return']) }}" data-status-value="Fraud Return">{{ __('Fraud Return') }}</a>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#statusModal" href="javascript:;"
+                        data-href="{{ route('back.order.status', [$data->id, 'order_status', 'Partial Return']) }}" data-status-value="Partial Return">{{ __('Partial Return') }}</a>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#statusModal" href="javascript:;"
+                        data-href="{{ route('back.order.status', [$data->id, 'order_status', 'Exchange']) }}" data-status-value="Exchange">{{ __('Exchange') }}</a>
                 </div>
             </div>
         </td>

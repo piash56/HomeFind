@@ -43,9 +43,9 @@ class AccountController extends Controller
     {
         $days = "";
         $sales = "";
-        for($i = 0; $i < 30; $i++) {
-            $days .= "'".date("d M", strtotime('-'. $i .' days'))."',";
-            $sales .=  "'".Order::where('order_status','=','Delivered')->whereDate('created_at', '=', date("Y-m-d", strtotime('-'. $i .' days')))->count()."',";
+        for ($i = 0; $i < 30; $i++) {
+            $days .= "'" . date("d M", strtotime('-' . $i . ' days')) . "',";
+            $sales .=  "'" . Order::where('order_status', '=', 'Delivered')->whereDate('created_at', '=', date("Y-m-d", strtotime('-' . $i . ' days')))->count() . "',";
         }
 
 
@@ -53,30 +53,33 @@ class AccountController extends Controller
         $total_incomess = '';
         $income = "";
         $check = 0;
-        for($i = 0; $i < 30; $i++) {
-            $earning_days .= "'".date("d M", strtotime('-'. $i .' days'))."',";
-            $incomes = Order::where('order_status','=','Delivered')->whereDate('created_at', '=', date("Y-m-d", strtotime('-'. $i .' days')))->get();
+        for ($i = 0; $i < 30; $i++) {
+            $earning_days .= "'" . date("d M", strtotime('-' . $i . ' days')) . "',";
+            $incomes = Order::where('order_status', '=', 'Delivered')->whereDate('created_at', '=', date("Y-m-d", strtotime('-' . $i . ' days')))->get();
 
-            if($incomes->count() > 0){
-                foreach($incomes as $income){
+            if ($incomes->count() > 0) {
+                foreach ($incomes as $income) {
                     $check += PriceHelper::OrderTotalChart($income);
                 }
-                $total_incomess .=  "'".$check."',";
-            }else{
-                $total_incomess .=  "'".'0'."',";
+                $total_incomess .=  "'" . $check . "',";
+            } else {
+                $total_incomess .=  "'" . '0' . "',";
             }
         }
 
-        $earning_days =rtrim($earning_days, ", ");
-        $check_income =rtrim($total_incomess, ", ");
+        $earning_days = rtrim($earning_days, ", ");
+        $check_income = rtrim($total_incomess, ", ");
 
-        return view('back.dashboard.index',[
+        return view('back.dashboard.index', [
             'totalUsers' => $this->repository->getTotalUsers(),
             'totalItems' => $this->repository->getTotalItems(),
             'totalOrders' => $this->repository->getTotalOrders(),
             'totalPendingOrders' => $this->repository->getPendingOrders(),
             'totalDeliveredOrders' => $this->repository->getDeliveredOrders(),
             'totalCanceledOrders' => $this->repository->getCanceledOrders(),
+            'totalFraudReturnOrders' => $this->repository->getFraudReturnOrders(),
+            'totalPartialReturnOrders' => $this->repository->getPartialReturnOrders(),
+            'totalExchangeOrders' => $this->repository->getExchangeOrders(),
             'recentUsers' => $this->repository->getRecentUsers(),
             'recentOrders' => $this->repository->getRecentOrders(),
             'totalBrand' => $this->repository->getTotalBrand(),
@@ -106,7 +109,7 @@ class AccountController extends Controller
     public function profileForm()
     {
         $data = Auth::guard('admin')->user();
-        return view('back.dashboard.profile',compact('data'));
+        return view('back.dashboard.profile', compact('data'));
     }
 
     /**
@@ -119,7 +122,6 @@ class AccountController extends Controller
     {
         $this->repository->updateProfile($request);
         return redirect()->back()->withSuccess(__('Profile Updated Successfully!'));
-
     }
 
     /**
@@ -148,12 +150,10 @@ class AccountController extends Controller
 
         $resp = $this->repository->updatePassword($request);
 
-        if($resp['status']){
+        if ($resp['status']) {
             return redirect()->back()->withSuccess($resp['message']);
-        }else{
+        } else {
             return redirect()->back()->withErrors($resp['message']);
         }
-
     }
-
 }

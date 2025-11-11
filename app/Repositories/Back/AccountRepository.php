@@ -96,6 +96,18 @@ class AccountRepository
     {
         return Order::whereOrderStatus('Canceled')->count();
     }
+    public function getFraudReturnOrders()
+    {
+        return Order::whereOrderStatus('Fraud Return')->count();
+    }
+    public function getPartialReturnOrders()
+    {
+        return Order::whereOrderStatus('Partial Return')->count();
+    }
+    public function getExchangeOrders()
+    {
+        return Order::whereOrderStatus('Exchange')->count();
+    }
 
     public function getTotalProductSale()
     {
