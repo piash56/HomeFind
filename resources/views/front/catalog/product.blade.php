@@ -322,7 +322,8 @@
                         <div class="product-details-slider owl-carousel" id="product-gallery-slider">
                             <div class="item" id="main-product-image-item">
                                 <img id="main-product-image" src="{{ asset('storage/images/' . $item->photo) }}"
-                                    alt="zoom" data-original-image="{{ asset('storage/images/' . $item->photo) }}" />
+                                    alt="zoom" data-original-image="{{ asset('storage/images/' . $item->photo) }}" 
+                                    data-featured-image="{{ asset('storage/images/' . $item->photo) }}" />
                             </div>
                             @foreach ($galleries as $key => $gallery)
                                 <div class="item" data-gallery-id="{{ $gallery->id }}"><img src="{{ asset('storage/images/' . $gallery->photo) }}"
@@ -1155,6 +1156,8 @@
 @section('script')
 <script>
 $(document).ready(function() {
+    // Flag to track if user has interacted with attributes
+    var userHasInteractedWithAttributes = false;
     // Function to get total attribute price (raw prices, no currency conversion)
     function getTotalAttributePrice() {
         var totalAttributePrice = 0;
@@ -1250,7 +1253,12 @@ $(document).ready(function() {
     });
     
     // Function to handle attribute option selection (works for dropdown, color swatches, and image selectors)
-    function handleAttributeOptionSelection(selectedElement, attributeId) {
+    function handleAttributeOptionSelection(selectedElement, attributeId, isInitialLoad = false) {
+        // Mark that user has interacted with attributes (unless this is initial load)
+        if (!isInitialLoad) {
+            userHasInteractedWithAttributes = true;
+        }
+        
         var optionImage = selectedElement.data('image');
         var optionColorCode = selectedElement.data('color-code');
         var galleryImage = selectedElement.data('gallery-image');
@@ -1283,14 +1291,35 @@ $(document).ready(function() {
             }
         }
         
-        // Change featured image if gallery image is selected
-        updateProductFeaturedImage();
+        // Change featured image if gallery image is selected (only if user has interacted)
+        updateProductFeaturedImage(!isInitialLoad);
         
         updateOrderSummary();
     }
     
     // Function to update product featured image based on all selected attributes
-    function updateProductFeaturedImage() {
+    function updateProductFeaturedImage(forceUpdate = false) {
+        // On initial page load, if user hasn't interacted with attributes, show featured image
+        if (!forceUpdate && !userHasInteractedWithAttributes) {
+            // Ensure featured image is displayed
+            var originalImage = $('#main-product-image').data('original-image') || 
+                               $('#main-product-image').data('featured-image') ||
+                               $('#main-product-image').attr('data-original-image') ||
+                               $('#main-product-image').attr('data-featured-image');
+            
+            if (originalImage) {
+                var currentSrc = $('#main-product-image').attr('src') || '';
+                var normalizedCurrent = currentSrc.split('?')[0].replace(/\/$/, '');
+                var normalizedOriginal = originalImage.split('?')[0].replace(/\/$/, '');
+                
+                if (normalizedCurrent !== normalizedOriginal || !currentSrc) {
+                    $('#main-product-image').attr('src', originalImage);
+                    $('#main-product-image-item img').attr('src', originalImage);
+                }
+            }
+            return; // Exit early - don't check for attribute images on initial load
+        }
+        
         var imageToShow = null;
         var hasGalleryImage = false;
         
@@ -1362,7 +1391,8 @@ $(document).ready(function() {
         }
         
         // Update the main product image in both the standalone element and carousel
-        if (imageToShow) {
+        // Only update if we have a valid image URL (not empty, null, or undefined)
+        if (imageToShow && typeof imageToShow === 'string' && imageToShow.trim() !== '') {
             // Normalize image paths for comparison
             var currentSrc = $('#main-product-image').attr('src') || '';
             var normalizedCurrent = currentSrc.split('?')[0].replace(/\/$/, '');
@@ -1394,15 +1424,32 @@ $(document).ready(function() {
             }
         } else {
             // Revert to original image if no attribute images are selected
-            var originalImage = $('#main-product-image').data('original-image');
+            // Always ensure the featured image is shown when no attribute images are found
+            var originalImage = $('#main-product-image').data('original-image') || 
+                               $('#main-product-image').data('featured-image') ||
+                               $('#main-product-image').attr('data-original-image') ||
+                               $('#main-product-image').attr('data-featured-image');
+            
+            // Fallback: if data attribute is not available, use the initial src from the img tag
+            if (!originalImage) {
+                var imgElement = document.getElementById('main-product-image');
+                if (imgElement) {
+                    originalImage = imgElement.getAttribute('data-original-image') || 
+                                   imgElement.getAttribute('data-featured-image') ||
+                                   imgElement.getAttribute('src');
+                }
+            }
+            
             if (originalImage) {
                 var currentSrc = $('#main-product-image').attr('src') || '';
                 var normalizedCurrent = currentSrc.split('?')[0].replace(/\/$/, '');
                 var normalizedOriginal = originalImage.split('?')[0].replace(/\/$/, '');
                 
-                if (normalizedCurrent !== normalizedOriginal) {
-                    $('#main-product-image').attr('src', '').attr('src', originalImage);
-                    $('#main-product-image-item img').attr('src', '').attr('src', originalImage);
+                // Always ensure the original image is set, even if it seems to be the same
+                // This handles cases where the image might have been cleared or set incorrectly
+                if (normalizedCurrent !== normalizedOriginal || !currentSrc) {
+                    $('#main-product-image').attr('src', originalImage);
+                    $('#main-product-image-item img').attr('src', originalImage);
                     
                     // Navigate carousel to show the main product image (index 0)
                     if (!isSyncingFromGallery) {
@@ -1413,6 +1460,10 @@ $(document).ready(function() {
                             }, 50);
                         }
                     }
+                } else {
+                    // Even if paths match, ensure the image is properly set
+                    $('#main-product-image').attr('src', originalImage);
+                    $('#main-product-image-item img').attr('src', originalImage);
                 }
             }
         }
@@ -1562,7 +1613,8 @@ $(document).ready(function() {
                     $('.color-swatch-btn[data-type="' + attributeId + '"]').removeClass('active').css('border-color', '#ddd');
                     $(this).addClass('active').css('border-color', '#007bff');
                     // Always call handleAttributeOptionSelection to ensure featured image updates
-                    handleAttributeOptionSelection($(this), attributeId);
+                    userHasInteractedWithAttributes = true; // User clicked gallery, so allow attribute images
+                    handleAttributeOptionSelection($(this), attributeId, false);
                     foundOption = true;
                     return false;
                 }
@@ -1579,7 +1631,8 @@ $(document).ready(function() {
                     $('.image-selector-btn[data-type="' + attributeId + '"]').removeClass('active').css('border-color', '#ddd');
                     $(this).addClass('active').css('border-color', '#007bff');
                     // Always call handleAttributeOptionSelection to ensure featured image updates
-                    handleAttributeOptionSelection($(this), attributeId);
+                    userHasInteractedWithAttributes = true; // User clicked gallery, so allow attribute images
+                    handleAttributeOptionSelection($(this), attributeId, false);
                     foundOption = true;
                     return false;
                 }
@@ -1601,9 +1654,12 @@ $(document).ready(function() {
         // Reset sync flag to allow updates
         isSyncingFromGallery = false;
         
+        // Mark that user has interacted
+        userHasInteractedWithAttributes = true;
+        
         var selectedOption = $(this).find(':selected');
         var attributeId = $(this).data('attribute-id');
-        handleAttributeOptionSelection(selectedOption, attributeId);
+        handleAttributeOptionSelection(selectedOption, attributeId, false); // false = not initial load
         return false;
     });
     
@@ -1615,6 +1671,9 @@ $(document).ready(function() {
         // Reset sync flag to allow updates
         isSyncingFromGallery = false;
         
+        // Mark that user has interacted
+        userHasInteractedWithAttributes = true;
+        
         var attributeId = $(this).data('type');
         
         // Remove active class from all buttons in this attribute group
@@ -1623,7 +1682,7 @@ $(document).ready(function() {
         // Add active class to clicked button
         $(this).addClass('active').css('border-color', '#007bff');
         
-        handleAttributeOptionSelection($(this), attributeId);
+        handleAttributeOptionSelection($(this), attributeId, false); // false = not initial load
         return false;
     });
     
@@ -1635,6 +1694,9 @@ $(document).ready(function() {
         // Reset sync flag to allow updates
         isSyncingFromGallery = false;
         
+        // Mark that user has interacted
+        userHasInteractedWithAttributes = true;
+        
         var attributeId = $(this).data('type');
         
         // Remove active class from all buttons in this attribute group
@@ -1643,30 +1705,36 @@ $(document).ready(function() {
         // Add active class to clicked button
         $(this).addClass('active').css('border-color', '#007bff');
         
-        handleAttributeOptionSelection($(this), attributeId);
+        handleAttributeOptionSelection($(this), attributeId, false); // false = not initial load
         return false;
     });
     
     // Initialize attribute selections on page load
-    // Initialize color swatches - trigger first active button
+    // Initialize color swatches - trigger first active button (but don't update featured image)
     $('.color-swatch-btn.active').each(function() {
         var attributeId = $(this).data('type');
-        handleAttributeOptionSelection($(this), attributeId);
+        handleAttributeOptionSelection($(this), attributeId, true); // true = isInitialLoad
     });
     
-    // Initialize image selectors - trigger first active button
+    // Initialize image selectors - trigger first active button (but don't update featured image)
     $('.image-selector-btn.active').each(function() {
         var attributeId = $(this).data('type');
-        handleAttributeOptionSelection($(this), attributeId);
+        handleAttributeOptionSelection($(this), attributeId, true); // true = isInitialLoad
     });
     
-    // Initialize dropdowns - trigger change event
+    // Initialize dropdowns - manually call handler for initial load (don't trigger change event)
     $('.attribute_option').each(function() {
-        $(this).trigger('change');
+        var select = $(this);
+        var selectedOption = select.find(':selected');
+        var attributeId = select.data('attribute-id');
+        // Call handler directly with isInitialLoad = true to avoid triggering change event
+        if (selectedOption.length) {
+            handleAttributeOptionSelection(selectedOption, attributeId, true); // true = isInitialLoad
+        }
     });
     
-    // Update product image on initial load
-    updateProductFeaturedImage();
+    // Ensure featured image is displayed on initial load (don't use attribute images)
+    updateProductFeaturedImage(false);
     
     // Handle gallery thumbnail clicks - sync with attribute options
     $(document).on('click', '.owl-thumb-item:visible', function(e) {
