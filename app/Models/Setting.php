@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
+    protected $casts = [
+        'hero_section_settings' => 'array',
+    ];
+
     protected $fillable = [
         'title',
         'home_page_title',
@@ -135,7 +139,38 @@ class Setting extends Model
         'is_gtm',
         'gtm_head_code',
         'gtm_body_code',
+        // Hero Section settings (stored as JSON)
+        'hero_section_settings',
+        // Purchase popup interval (in milliseconds)
+        'purchase_popup_interval',
+        // Purchase popup break interval (in milliseconds)
+        'purchase_popup_break_interval',
+        // Footer settings
+        'footer_quick_links',
+        // Header/Footer visibility settings
+        'show_header_footer_product_page',
+        'show_header_footer_shop_page',
     ];
 
     public $timestamps = false;
+
+    /**
+     * Get hero section setting value
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getHeroSetting($key, $default = null)
+    {
+        if (!$this->hero_section_settings) {
+            return $default;
+        }
+        
+        $settings = is_string($this->hero_section_settings) 
+            ? json_decode($this->hero_section_settings, true) 
+            : $this->hero_section_settings;
+            
+        return $settings[$key] ?? $default;
+    }
 }

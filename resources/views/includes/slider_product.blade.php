@@ -13,7 +13,7 @@
                         ">{{__('out of stock')}}</div>
                     @endif
                     @if($item->previous_price && $item->previous_price !=0)
-                    <div class="product-badge product-badge2 bg-info"> -{{PriceHelper::DiscountPercentage($item)}}</div>
+                    <div class="product-badge product-badge2 text-white" style="background: linear-gradient(135deg, #ed213a 0%, #93291e 100%);"> -{{PriceHelper::DiscountPercentage($item)}}</div>
                     @endif
                         <img class="lazy" data-src="{{asset('storage/images/'.$item->thumbnail)}}" alt="Product">
                         <div class="product-button-group"><a class="product-button wishlist_store" href="{{route('user.wishlist.store',$item->id)}}" title="{{__('Wishlist')}}"><i class="icon-heart"></i></a>
@@ -22,7 +22,7 @@
                         </div>
                 </div>
                 <div class="product-card-body">
-                    <div class="product-category"><a href="{{route('front.catalog').'?category='.$item->category->slug}}">{{$item->category->name}}</a></div>
+                    <div class="product-category"><a href="{{route('front.products').'?category='.$item->category->slug}}">{{$item->category->name}}</a></div>
                     <h3 class="product-title"><a href="{{route('front.product',$item->slug)}}">
                         {{ Str::limit($item->name, 35) }}
                     </a></h3>

@@ -172,6 +172,15 @@ Route::group(['middleware' => ['adminlocalize', 'demo']], function () {
             Route::get('/setting/menu', 'Back\SettingController@menu')->name('back.setting.menu');
             Route::post('/setting/update/visiable', 'Back\SettingController@visiable')->name('back.setting.visible.update');
             Route::get('/maintainance', 'Back\SettingController@maintainance')->name('back.setting.maintainance');
+            Route::get('/setting/homepage', 'Back\SettingController@homePage')->name('back.setting.homepage');
+            Route::post('/setting/homepage/update', 'Back\SettingController@updateHomePage')->name('back.setting.homepage.update');
+            Route::get('/setting/footer', 'Back\SettingController@footer')->name('back.setting.footer');
+            Route::post('/setting/footer/update', 'Back\SettingController@updateFooter')->name('back.setting.footer.update');
+            
+            // Purchase Notifications
+            Route::resource('purchase-notification', 'Back\PurchaseNotificationController', ['as' => 'back']);
+            Route::get('/purchase-notification/status/{id}/{status}', 'Back\PurchaseNotificationController@status')->name('back.purchase-notification.status');
+            Route::post('/purchase-notification/update-interval', 'Back\PurchaseNotificationController@updateInterval')->name('back.purchase-notification.update-interval');
 
             // ------ Menu Builder 
             Route::get('/menu', 'Back\MenuController@index')->name('back.menu.index');
@@ -293,8 +302,10 @@ Route::group(['middleware' => 'maintainance'], function () {
         // ************************************ FRONTEND **********************************************
 
         //------------ FRONT ------------
-        // Redirect home page to a simple landing or product catalog
-        Route::get('/', 'Front\CatalogController@index')->name('front.index');
+        // Home page with hero section, offers, best sellers, and reviews
+        Route::get('/', 'Front\HomeController@index')->name('front.index');
+        // Products catalog page
+        Route::get('/products', 'Front\CatalogController@index')->name('front.products');
         Route::get('/product/{slug}', 'Front\FrontendController@product')->name('front.product');
 
 
@@ -318,6 +329,13 @@ Route::group(['middleware' => 'maintainance'], function () {
         Route::post('/review/verify-order', 'ReviewController@verifyOrder')->name('front.review.verify');
         Route::post('/review/submit', 'ReviewController@submitReview')->name('front.review.submit');
         Route::get('/review/get/{item_id}', 'ReviewController@getReviews')->name('front.review.get');
+
+        //------------ TRACK ORDER ------------
+        Route::get('/track-order', 'Front\FrontendController@trackOrder')->name('front.order.track');
+        Route::get('/track-order/submit', 'Front\FrontendController@track')->name('front.order.track.submit');
+
+        //------------ SEARCH SUGGEST ------------
+        Route::get('/search/suggest', 'Front\CatalogController@suggestSearch')->name('front.search.suggest');
 
         //------------ CATCH-ALL ROUTE ------------
         // Redirect any other URL to the root (shop page)

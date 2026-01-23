@@ -25,14 +25,14 @@
                     @endif
 
                 @if($item->previous_price && $item->previous_price !=0)
-                <div class="product-badge product-badge2 bg-info"> -{{PriceHelper::DiscountPercentage($item)}}</div>
+                <div class="product-badge product-badge2 text-white" style="background: linear-gradient(135deg, #ed213a 0%, #93291e 100%);"> -{{PriceHelper::DiscountPercentage($item)}}</div>
                 @endif
                 <div class="product-thumb">
                     <img class="lazy" data-src="{{asset('storage/images/'.$item->thumbnail)}}" alt="Product">
                 </div>
                 <div class="product-card-body">
                     <div class="product-category">
-                        <a href="{{route('front.index').'?category='.$item->category->slug}}">{{$item->category->name}}</a>
+                        <a href="{{route('front.products').'?category='.$item->category->slug}}">{{$item->category->name}}</a>
                     </div>
                     <h3 class="product-title"><a href="{{route('front.product',$item->slug)}}">
                         {{ Str::limit($item->name, 38) }}
@@ -77,7 +77,7 @@
                             ">{{__('out of stock')}}</div>
                             @endif
                             @if($item->previous_price && $item->previous_price !=0)
-                            <div class="product-badge product-badge2 bg-info"> -{{PriceHelper::DiscountPercentage($item)}}</div>
+                            <div class="product-badge product-badge2 text-white" style="background: linear-gradient(135deg, #ed213a 0%, #93291e 100%);"> -{{PriceHelper::DiscountPercentage($item)}}</div>
                             @endif
 
                             <img class="lazy" data-src="{{asset('storage/images/'.$item->thumbnail)}}" alt="Product">
@@ -89,7 +89,7 @@
                         </div>
                             <div class="product-card-inner">
                                 <div class="product-card-body">
-                                    <div class="product-category"><a href="{{route('front.catalog').'?category='.$item->category->slug}}">{{$item->category->name}}</a></div>
+                                    <div class="product-category"><a href="{{route('front.products').'?category='.$item->category->slug}}">{{$item->category->name}}</a></div>
                                     <h3 class="product-title"><a href="{{route('front.product',$item->slug)}}">
                                         {{ Str::limit($item->name, 52) }}
                                     </a></h3>

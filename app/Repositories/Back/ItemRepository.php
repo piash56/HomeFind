@@ -111,7 +111,18 @@ class ItemRepository
             $input['related_products'] = null;
         }
 
-        $input['is_type'] = 'undefine';
+        // Handle featured and best selling selection - both can be selected independently
+        $input['is_featured'] = $request->has('is_featured') && $request->is_featured == 1 ? 1 : 0;
+        $input['is_best_selling'] = $request->has('is_best_selling') && $request->is_best_selling == 1 ? 1 : 0;
+        
+        // Keep is_type for backward compatibility (prioritize featured, then best selling, then undefined)
+        if ($input['is_featured'] == 1) {
+            $input['is_type'] = 'feature';
+        } elseif ($input['is_best_selling'] == 1) {
+            $input['is_type'] = 'best';
+        } else {
+            $input['is_type'] = 'undefine';
+        }
 
         $item_id = Item::create($input)->id;
 
@@ -228,6 +239,22 @@ class ItemRepository
             $input['related_products'] = !empty($relatedProducts) ? json_encode($relatedProducts) : null;
         } else {
             $input['related_products'] = null;
+        }
+
+        // Handle featured and best selling selection - both can be selected independently
+        $input['is_featured'] = $request->has('is_featured') && $request->is_featured == 1 ? 1 : 0;
+        $input['is_best_selling'] = $request->has('is_best_selling') && $request->is_best_selling == 1 ? 1 : 0;
+        
+        // Keep is_type for backward compatibility (prioritize featured, then best selling, then undefined)
+        if ($input['is_featured'] == 1) {
+            $input['is_type'] = 'feature';
+        } elseif ($input['is_best_selling'] == 1) {
+            $input['is_type'] = 'best';
+        } else {
+            // Only reset if neither is checked
+            if ($input['is_featured'] == 0 && $input['is_best_selling'] == 0) {
+                $input['is_type'] = 'undefine';
+            }
         }
 
         $item->update($input);

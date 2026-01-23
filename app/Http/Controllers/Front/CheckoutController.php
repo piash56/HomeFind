@@ -936,7 +936,20 @@ class CheckoutController extends Controller
             }
 
             $tax = $item->tax ? $item::taxCalculate($item) * $quantity : 0;
-            $shipping_price = 0; // Free shipping
+            
+            // Get delivery fee if separate delivery is enabled
+            $shipping_price = 0; // Default free shipping
+            $delivery_area_title = 'Free Shipping';
+            
+            if ($request->has('delivery_area') && $request->has('delivery_fee')) {
+                $shipping_price = (float) $request->delivery_fee;
+                if ($request->delivery_area === 'inside_dhaka') {
+                    $delivery_area_title = 'Inside Dhaka Delivery';
+                } else if ($request->delivery_area === 'outside_dhaka') {
+                    $delivery_area_title = 'Outside Dhaka Delivery';
+                }
+            }
+            
             $discount = 0; // No discount
             $state_price = 0; // No state tax
             $grand_total = $cart_total + $tax + $shipping_price - $discount + $state_price;
@@ -1012,7 +1025,7 @@ class CheckoutController extends Controller
                 'state' => null,
                 'cart' => json_encode($cart),
                 'discount' => json_encode([]),
-                'shipping' => json_encode(['title' => 'Free Shipping', 'price' => 0]),
+                'shipping' => json_encode(['title' => $delivery_area_title, 'price' => $shipping_price]),
                 'tax' => $tax,
                 'state_price' => $state_price,
                 'shipping_info' => json_encode($shipping_address),

@@ -111,6 +111,26 @@
                                         <small class="form-text text-muted">{{ __('This will be injected immediately after the opening <body>.') }}</small>
                                     </div>
                                 </div>
+                                
+                                <div class="col-md-12">
+                                    <hr>
+                                    <h5 class="mb-3">{{ __('Header & Footer Visibility') }}</h5>
+                                    <p class="text-muted mb-3">{{ __('Control whether header and footer are displayed on specific pages.') }}</p>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group d-flex align-items-center">
+                                        <input type="checkbox" id="show_header_footer_product_page" name="show_header_footer_product_page" value="1" {{ $setting->show_header_footer_product_page ? 'checked' : '' }} style="margin-right:10px;">
+                                        <label class="mb-0" for="show_header_footer_product_page">{{ __('Show Header & Footer on Single Product Page') }}</label>
+                                    </div>
+                                    <small class="form-text text-muted">{{ __('When enabled, the header and footer will be displayed on individual product pages.') }}</small>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group d-flex align-items-center">
+                                        <input type="checkbox" id="show_header_footer_shop_page" name="show_header_footer_shop_page" value="1" {{ $setting->show_header_footer_shop_page ? 'checked' : '' }} style="margin-right:10px;">
+                                        <label class="mb-0" for="show_header_footer_shop_page">{{ __('Show Header & Footer on Shop Page') }}</label>
+                                    </div>
+                                    <small class="form-text text-muted">{{ __('When enabled, the header and footer will be displayed on the shop/catalog page.') }}</small>
+                                </div>
                             </div>
                             <div class="text-right">
                                 <button type="submit" class="btn btn-primary">{{ __('Save Changes') }}</button>

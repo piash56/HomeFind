@@ -111,6 +111,16 @@
                     </a>
                 </li>
                 <li>
+                    <a class="sub-link" href="{{ route('back.setting.homepage') }}">
+                        <span class="sub-item">{{ __('Home Page') }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="sub-link" href="{{ route('back.purchase-notification.index') }}">
+                        <span class="sub-item">{{ __('Purchase Notifications') }}</span>
+                    </a>
+                </li>
+                <li>
                     <a class="sub-link" href="{{ route('back.setting.email') }}">
                         <span class="sub-item">{{ __('Email Settings') }}</span>
                     </a>
@@ -123,6 +133,11 @@
                 <li>
                     <a class="sub-link" href="{{ route('back.setting.cta') }}">
                         <span class="sub-item">{{ __('Call to Action') }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="sub-link" href="{{ route('back.setting.footer') }}">
+                        <span class="sub-item">{{ __('Footer') }}</span>
                     </a>
                 </li>
                 <li>

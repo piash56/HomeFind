@@ -28,6 +28,114 @@
 
 @section('styles')
 <style>
+/* Hide undefined text in owl carousel dots */
+.relatedproductslider .owl-dots .owl-dot span {
+    font-size: 0 !important;
+    line-height: 0 !important;
+    width: 10px !important;
+    height: 10px !important;
+    display: inline-block !important;
+    text-indent: -9999px !important;
+    overflow: hidden !important;
+}
+
+/* Hide dots that show undefined - More aggressive hiding */
+.relatedproductslider .owl-dots .owl-dot:has(span:empty),
+.relatedproductslider .owl-dots .owl-dot span:empty {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Hide any element containing undefined text in related products section */
+.relatedproduct-section .owl-dots .owl-dot span:empty,
+.relatedproduct-section *[text*="undefined"],
+.relatedproduct-section *:empty:not(input):not(textarea):not(br):not(hr):not(img):not(meta):not(link):not(script):not(style) {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Button styles - Match Request A Product button */
+.btn-primary,
+#but_to_cart,
+.related-buy-now-btn,
+#order_now_btn,
+#review-login-btn,
+button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"],
+.btn-outline-primary[data-target="#all-reviews-modal"] {
+    background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%) !important;
+    border: none !important;
+    border: 2px solid transparent !important;
+    color: #fff !important;
+    box-shadow: 0 2px 8px rgba(24, 40, 72, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+#but_to_cart:hover,
+#but_to_cart:focus,
+#but_to_cart:active,
+.related-buy-now-btn:hover,
+.related-buy-now-btn:focus,
+.related-buy-now-btn:active,
+#order_now_btn:hover,
+#order_now_btn:focus,
+#order_now_btn:active,
+#review-login-btn:hover,
+#review-login-btn:focus,
+#review-login-btn:active,
+button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"]:hover,
+button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"]:focus,
+button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"]:active,
+.btn-outline-primary[data-target="#all-reviews-modal"]:hover,
+.btn-outline-primary[data-target="#all-reviews-modal"]:focus,
+.btn-outline-primary[data-target="#all-reviews-modal"]:active {
+    background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%) !important;
+    box-shadow: 0 4px 15px rgba(24, 40, 72, 0.4) !important;
+    transform: translateY(-1px);
+    border-color: transparent !important;
+    color: #fff !important; /* Ensure text stays white on hover */
+}
+
+/* Ensure Buy Now button text stays white on hover - override any conflicting styles */
+a.related-buy-now-btn,
+a.related-buy-now-btn:hover,
+a.related-buy-now-btn:focus,
+a.related-buy-now-btn:active,
+.related-buy-now-btn:hover,
+.related-buy-now-btn:focus,
+.related-buy-now-btn:active,
+.related-buy-now-btn:hover span,
+.related-buy-now-btn:focus span,
+.related-buy-now-btn:active span,
+.related-buy-now-btn:hover *,
+.related-buy-now-btn:focus *,
+.related-buy-now-btn:active *,
+.product-card .related-buy-now-btn:hover,
+.product-card .related-buy-now-btn:focus,
+.product-card .related-buy-now-btn:active {
+    color: #fff !important;
+    background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%) !important;
+    background-color: transparent !important;
+    border-color: transparent !important;
+}
+
+/* Override any black background on hover for related buy now button - highest priority */
+a.btn.related-buy-now-btn:hover,
+a.btn-primary.related-buy-now-btn:hover,
+a.btn-sm.related-buy-now-btn:hover {
+    background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%) !important;
+    background-color: transparent !important;
+    color: #fff !important;
+    border-color: transparent !important;
+}
+
 .bulk-pricing-section {
     margin-top: 15px;
 }
@@ -101,8 +209,8 @@
 .bulk-price-option .btn-primary:hover,
 .bulk-price-option .btn-primary:focus,
 .bulk-price-option .btn-primary:active {
-    background-color: #000 !important;
-    border-color: #000 !important;
+    background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%) !important;
+    border-color: transparent !important;
     color: #fff !important;
 }
 
@@ -124,13 +232,7 @@
     cursor: not-allowed;
 }
 
-.related-buy-now-btn:hover,
-.related-buy-now-btn:focus,
-.related-buy-now-btn:active {
-    background-color: #000 !important;
-    border-color: #000 !important;
-    color: #fff !important;
-}
+/* Related buy now button already styled above with gradient */
 
 @media (max-width: 767px) {
     .bulk-pricing-section .col-md-6 {
@@ -141,6 +243,39 @@
 /* Hide the first thumbnail (featured image) from gallery */
 .product-thumbnails .owl-thumbs .owl-thumb-item:first-child {
     display: none !important;
+}
+
+/* Delivery Options Styling */
+.delivery-options-container {
+    margin-top: 10px;
+}
+
+.delivery-option-item {
+    transition: all 0.3s ease;
+}
+
+.delivery-option-item:hover {
+    border-color: #237a57 !important;
+    background: rgba(35, 122, 87, 0.05) !important;
+}
+
+.delivery-option-item input[type="radio"]:checked + span {
+    color: #237a57;
+    font-weight: 600;
+}
+
+.delivery-option-item:has(input[type="radio"]:checked) {
+    border-color: #237a57 !important;
+    background: rgba(35, 122, 87, 0.1) !important;
+}
+
+.delivery-option-item label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.delivery-option-item label span {
+    flex: 1;
 }
 </style>
 @endsection
@@ -622,7 +757,7 @@
                                 @if ($item->brand_id)
                                     <div class="pt-1 mb-1"><span class="text-medium">{{ __('Brand') }}:</span>
                                         <a
-                                            href="{{ route('front.index') . '?brand=' . $item->brand->slug }}">{{ $item->brand->name }}</a>
+                                            href="{{ route('front.products') . '?brand=' . $item->brand->slug }}">{{ $item->brand->name }}</a>
                                     </div>
                                 @endif
                                 <div class="pt-1 mb-1"><span class="text-medium">{{ __('Tags') }}:</span>
@@ -630,10 +765,10 @@
                                         @foreach (explode(',', $item->tags) as $tag)
                                             @if ($loop->last)
                                                 <a
-                                                    href="{{ route('front.index') . '?tag=' . $tag }}">{{ $tag }}</a>
+                                                    href="{{ route('front.products') . '?tag=' . $tag }}">{{ $tag }}</a>
                                             @else
                                                 <a
-                                                    href="{{ route('front.index') . '?tag=' . $tag }}">{{ $tag }}</a>,
+                                                    href="{{ route('front.products') . '?tag=' . $tag }}">{{ $tag }}</a>,
                                             @endif
                                         @endforeach
                                     @endif
@@ -904,7 +1039,7 @@
 
                                     @if ($related->is_stock())
                                         @if ($related->is_type == 'new')
-                                        @else
+                                        @elseif(!empty($related->is_type) && $related->is_type != 'undefine')
                                             <div
                                                 class="product-badge
                                     @if ($related->is_type == 'feature') bg-warning
@@ -916,7 +1051,7 @@
                                     @elseif($related->is_type == 'flash_deal')
                                     bg-success @endif
                                     ">
-                                                {{ $related->is_type != 'undefine' ? ucfirst(str_replace('_', ' ', $related->is_type)) : '' }}
+                                                {{ ucfirst(str_replace('_', ' ', $related->is_type)) }}
                                             </div>
                                         @endif
                                     @else
@@ -941,7 +1076,7 @@
                                     </div>
                                     <div class="product-card-body">
                                         <div class="product-category"><a
-                                                href="{{ route('front.index') . '?category=' . $related->category->slug }}">{{ $related->category->name }}</a>
+                                                href="{{ route('front.products') . '?category=' . $related->category->slug }}">{{ $related->category->name }}</a>
                                         </div>
                                         <h3 class="product-title"><a
                                                 href="{{ route('front.product', $related->slug) }}">
@@ -1003,6 +1138,35 @@
                                             id="checkout-address1" rows="3" placeholder="আপনার ডেলিভারি ঠিকানা লিখুন">{{ isset($user) ? $user->bill_address1 : '' }}</textarea>
                                     </div>
                                 </div>
+                                
+                                @if($item->has_separate_delivery)
+                                <!-- Separate Delivery Options -->
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label class="mb-2">{{ __('আপনার ডেলিভারি এরিয়া') }}</label>
+                                        <div class="delivery-options-container" style="display: flex; flex-direction: column; gap: 10px; border: none;">
+                                            <div class="delivery-option-item" style="padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; background: #fff;">
+                                                <label style="display: flex; align-items: center; cursor: pointer; margin: 0; font-weight: 500;">
+                                                    <input type="radio" name="delivery_area" value="inside_dhaka" id="delivery_inside_dhaka" class="delivery-area-radio" style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer;">
+                                                    <span>{{ __('Inside Dhaka') }} - {{ PriceHelper::setCurrencyPrice($item->inside_dhaka_delivery_fee ?? 70) }}</span>
+                                                </label>
+                                            </div>
+                                            <div class="delivery-option-item" style="padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; background: #fff;">
+                                                <label style="display: flex; align-items: center; cursor: pointer; margin: 0; font-weight: 500;">
+                                                    <input type="radio" name="delivery_area" value="outside_dhaka" id="delivery_outside_dhaka" class="delivery-area-radio" style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer;">
+                                                    <span>{{ __('Outside Dhaka') }} - {{ PriceHelper::setCurrencyPrice($item->outside_dhaka_delivery_fee ?? 130) }}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <small class="form-text text-danger d-block mt-2" id="delivery-area-error" style="display: none;">{{ __('অনুগ্রহ করে ডেলিভারি এরিয়া নির্বাচন করুন') }}</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Hidden fields for delivery fees -->
+                                <input type="hidden" id="inside-dhaka-fee" value="{{ $item->inside_dhaka_delivery_fee ?? 70 }}">
+                                <input type="hidden" id="outside-dhaka-fee" value="{{ $item->outside_dhaka_delivery_fee ?? 130 }}">
+                                @endif
+                                
                                 <!-- Hidden fields for required data -->
                                 <input type="hidden" name="bill_email" value="{{ isset($user) ? $user->email : 'customer@example.com' }}">
                                 <input type="hidden" name="bill_last_name" value="">
@@ -1040,7 +1204,7 @@
 
                             <tr>
                                 <td>{{ __('ডেলিভারি ফি') }}:</td>
-                                <td class="text-gray-dark">{{ PriceHelper::setCurrencyPrice(0) }}</td>
+                                <td class="text-gray-dark" id="delivery-fee-display">{{ PriceHelper::setCurrencyPrice(0) }}</td>
                             </tr>
                             <tr>
                                 <td class="text-lg text-primary">{{ __('মোট টাকা') }}</td>
@@ -1184,6 +1348,23 @@ $(document).ready(function() {
         return totalAttributePrice;
     }
     
+    // Function to get delivery fee
+    function getDeliveryFee() {
+        var deliveryFee = 0;
+        
+        // Check if product has separate delivery
+        @if($item->has_separate_delivery)
+        var selectedArea = $('input[name="delivery_area"]:checked').val();
+        if (selectedArea === 'inside_dhaka') {
+            deliveryFee = parseFloat($('#inside-dhaka-fee').val()) || 70;
+        } else if (selectedArea === 'outside_dhaka') {
+            deliveryFee = parseFloat($('#outside-dhaka-fee').val()) || 130;
+        }
+        @endif
+        
+        return deliveryFee;
+    }
+    
     // Function to update order summary
     function updateOrderSummary() {
         var quantity = parseInt($('.cart-amount').val()) || 1;
@@ -1201,21 +1382,26 @@ $(document).ready(function() {
             subtotal = (basePrice + attributePrice) * quantity;
         }
         
-        var total = subtotal; // Delivery fee is 0
+        // Get delivery fee
+        var deliveryFee = getDeliveryFee();
+        var total = subtotal + deliveryFee;
         
         // Format price based on currency direction with proper decimal handling
-        var formattedSubtotal, formattedTotal;
+        var formattedSubtotal, formattedTotal, formattedDeliveryFee;
         var decimalPlaces = (subtotal % 1 === 0) ? 0 : 2; // Use 0 decimals for whole numbers
         
         if (currencyDirection == 1) {
             formattedSubtotal = currencySign + subtotal.toFixed(decimalPlaces);
+            formattedDeliveryFee = currencySign + deliveryFee.toFixed(decimalPlaces);
             formattedTotal = currencySign + total.toFixed(decimalPlaces);
         } else {
             formattedSubtotal = subtotal.toFixed(decimalPlaces) + currencySign;
+            formattedDeliveryFee = deliveryFee.toFixed(decimalPlaces) + currencySign;
             formattedTotal = total.toFixed(decimalPlaces) + currencySign;
         }
         
         $('#cart-subtotal').text(formattedSubtotal);
+        $('#delivery-fee-display').text(formattedDeliveryFee);
         $('#order-total').text(formattedTotal);
         
         // Also update the main product price display
@@ -1913,10 +2099,74 @@ $(document).ready(function() {
             formattedPrice = parseFloat(price).toFixed(decimalPlaces) + currencySign;
         }
         
-        // Update cart subtotal and order total
+        // Get delivery fee
+        var deliveryFee = getDeliveryFee();
+        var total = price + deliveryFee;
+        
+        // Format delivery fee
+        var formattedDeliveryFee;
+        if (currencyDirection == 0) {
+            formattedDeliveryFee = currencySign + deliveryFee.toFixed(decimalPlaces);
+            formattedTotal = currencySign + total.toFixed(decimalPlaces);
+        } else {
+            formattedDeliveryFee = deliveryFee.toFixed(decimalPlaces) + currencySign;
+            formattedTotal = total.toFixed(decimalPlaces) + currencySign;
+        }
+        
+        // Update cart subtotal, delivery fee, and order total
         $('#cart-subtotal').text(formattedPrice);
-        $('#order-total').text(formattedPrice);
+        $('#delivery-fee-display').text(formattedDeliveryFee);
+        $('#order-total').text(formattedTotal);
     }
+    
+    // Handle delivery area selection
+    @if($item->has_separate_delivery)
+    $(document).on('change', 'input[name="delivery_area"]', function() {
+        // Update visual feedback
+        $('.delivery-option-item').css({
+            'border-color': '#e0e0e0',
+            'background': '#fff'
+        });
+        
+        $(this).closest('.delivery-option-item').css({
+            'border-color': '#237a57',
+            'background': 'rgba(35, 122, 87, 0.05)'
+        });
+        
+        // Hide error message
+        $('#delivery-area-error').hide();
+        
+        // Update order summary with delivery fee
+        updateOrderSummary();
+    });
+    
+    // Add hover effect to delivery options
+    $('.delivery-option-item').hover(
+        function() {
+            if (!$(this).find('input[type="radio"]').is(':checked')) {
+                $(this).css({
+                    'border-color': '#237a57',
+                    'background': 'rgba(35, 122, 87, 0.02)'
+                });
+            }
+        },
+        function() {
+            if (!$(this).find('input[type="radio"]').is(':checked')) {
+                $(this).css({
+                    'border-color': '#e0e0e0',
+                    'background': '#fff'
+                });
+            }
+        }
+    );
+    
+    // Click on delivery option item to select radio
+    $('.delivery-option-item').on('click', function(e) {
+        if (!$(e.target).is('input') && !$(e.target).is('label')) {
+            $(this).find('input[type="radio"]').prop('checked', true).trigger('change');
+        }
+    });
+    @endif
     
     // Handle Buy Now button click (scroll to checkout section)
     $(document).on("click", "#but_to_cart", function(e) {
@@ -1987,12 +2237,34 @@ $(document).ready(function() {
             hasErrors = true;
         }
         
+        @if($item->has_separate_delivery)
+        // Validate delivery area selection
+        var deliveryArea = $('input[name="delivery_area"]:checked').val();
+        if (!deliveryArea) {
+            $('#delivery-area-error').show();
+            $('.delivery-options-container').css('border', '2px solid #dc3545');
+            hasErrors = true;
+        } else {
+            $('#delivery-area-error').hide();
+            $('.delivery-options-container').css('border', 'none');
+        }
+        @endif
+        
         if (hasErrors) {
             // Scroll to first error field
             var firstError = $('.is-invalid').first();
-            $('html, body').animate({
-                scrollTop: firstError.offset().top - 150
-            }, 500);
+            if (firstError.length === 0) {
+                // If no form field error, scroll to delivery area
+                @if($item->has_separate_delivery)
+                $('html, body').animate({
+                    scrollTop: $('.delivery-options-container').offset().top - 150
+                }, 500);
+                @endif
+            } else {
+                $('html, body').animate({
+                    scrollTop: firstError.offset().top - 150
+                }, 500);
+            }
             return;
         }
         
@@ -2072,6 +2344,15 @@ $(document).ready(function() {
             bill_address1: $('textarea[name="bill_address1"]').val(),
             selected_attributes: JSON.stringify(selectedAttributes)
         };
+        
+        // Add delivery area and fee if separate delivery is enabled
+        @if($item->has_separate_delivery)
+        var deliveryArea = $('input[name="delivery_area"]:checked').val();
+        if (deliveryArea) {
+            orderData.delivery_area = deliveryArea;
+            orderData.delivery_fee = getDeliveryFee();
+        }
+        @endif
         
         // Add bulk pricing info if available
         if (window.bulkPricingSelection) {
@@ -2248,7 +2529,7 @@ $(document).ready(function() {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #093028 0%, #237a57 100%);
     color: white;
     display: flex;
     align-items: center;
@@ -3163,6 +3444,106 @@ $(document).ready(function() {
             $('#image-slider-modal').modal('hide');
         }
     });
+    
+    // Remove undefined dots and text from related products slider - More aggressive
+    function removeUndefinedDots() {
+        // Remove dots with undefined text
+        $('.relatedproductslider .owl-dots .owl-dot').each(function() {
+            var $dot = $(this);
+            var $span = $dot.find('span');
+            var text = $span.text().trim();
+            
+            // Remove dots with undefined text or empty text
+            if (text === 'undefined' || text === '' || text.toLowerCase() === 'undefined' || text.indexOf('undefined') !== -1) {
+                $dot.remove();
+            } else {
+                // Hide the text but keep the dot
+                $span.css({
+                    'font-size': '0',
+                    'line-height': '0',
+                    'width': '10px',
+                    'height': '10px',
+                    'text-indent': '-9999px',
+                    'overflow': 'hidden'
+                });
+            }
+        });
+        
+        // Remove any elements containing "undefined" text in the related products section
+        $('.relatedproduct-section *').each(function() {
+            var $el = $(this);
+            var text = $el.text().trim();
+            
+            // Skip if it's a script or style tag
+            if ($el.is('script') || $el.is('style')) {
+                return;
+            }
+            
+            // If element contains only "undefined" text, hide it
+            if (text === 'undefined' || text.toLowerCase() === 'undefined') {
+                $el.css({
+                    'display': 'none',
+                    'visibility': 'hidden',
+                    'opacity': '0',
+                    'width': '0',
+                    'height': '0',
+                    'margin': '0',
+                    'padding': '0'
+                });
+            }
+        });
+        
+        // Also check for elements with "undefined" in their HTML
+        $('.relatedproduct-section').find('*').filter(function() {
+            return $(this).html() && $(this).html().trim() === 'undefined';
+        }).hide();
+    }
+    
+    // Run immediately and multiple times to catch all instances
+    removeUndefinedDots();
+    
+    // Run after owl carousel is initialized
+    setTimeout(function() {
+        removeUndefinedDots();
+        
+        // Also run after any carousel updates
+        $('.relatedproductslider').on('initialized.owl.carousel', function() {
+            removeUndefinedDots();
+        });
+        
+        $('.relatedproductslider').on('refreshed.owl.carousel', function() {
+            removeUndefinedDots();
+        });
+        
+        // Watch for changes in the entire related products section
+        var observer = new MutationObserver(function(mutations) {
+            removeUndefinedDots();
+        });
+        
+        var relatedSection = document.querySelector('.relatedproduct-section');
+        if (relatedSection) {
+            observer.observe(relatedSection, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+        }
+        
+        // Also watch dots container specifically
+        var dotsContainer = document.querySelector('.relatedproductslider .owl-dots');
+        if (dotsContainer) {
+            observer.observe(dotsContainer, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+        }
+    }, 500);
+    
+    // Run again after a longer delay to catch late-loading content
+    setTimeout(function() {
+        removeUndefinedDots();
+    }, 2000);
 });
 </script>
 

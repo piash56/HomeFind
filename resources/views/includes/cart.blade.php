@@ -113,7 +113,7 @@
 
         </div>
         <div class="shopping-cart-footer">
-            <div class="column"><a class="btn btn-primary " href="{{ route('front.catalog') }}"><span><i
+            <div class="column"><a class="btn btn-primary " href="{{ route('front.products') }}"><span><i
                             class="icon-arrow-left"></i> {{ __('Back to Shopping') }}</span></a></div>
             <div class="column"><a class="btn btn-primary"
                     href="{{ route('front.checkout.billing') }}"><span>{{ __('Checkout') }}</span></a></div>

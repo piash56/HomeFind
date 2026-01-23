@@ -184,17 +184,28 @@
                                         @if(json_decode($order->shipping,true))
                                         @php
                                             $shipping = json_decode($order->shipping,true);
+                                            // Determine delivery area label from shipping title
+                                            $deliveryLabel = __('Shipping');
+                                            if (isset($shipping['title'])) {
+                                                if (stripos($shipping['title'], 'Inside Dhaka') !== false) {
+                                                    $deliveryLabel = __('Delivery Fee') . ' (' . __('Inside Dhaka') . ')';
+                                                } elseif (stripos($shipping['title'], 'Outside Dhaka') !== false) {
+                                                    $deliveryLabel = __('Delivery Fee') . ' (' . __('Outside Dhaka') . ')';
+                                                } else {
+                                                    $deliveryLabel = __('Delivery Fee');
+                                                }
+                                            }
                                         @endphp
                                         <tr>
                                         <td class="px-0 border-top border-top-2">
-                                        <span class="text-muted">{{__('Shipping')}}</span>
+                                        <span class="text-muted">{{ $deliveryLabel }}</span>
                                         </td>
                                         <td class="px-0 text-right border-top border-top-2" colspan="5">
                                             <span >
                                             @if ($setting->currency_direction == 1)
-                                                {{$order->currency_sign}}{{round($shipping['price']*$order->currency_value,2)}}
+                                                {{$order->currency_sign}}{{round($shipping['price'],2)}}
                                             @else
-                                                {{round($shipping['price']*$order->currency_value,2)}}{{$order->currency_sign}}
+                                                {{round($shipping['price'],2)}}{{$order->currency_sign}}
                                             @endif
 
                                             </span>

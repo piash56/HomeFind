@@ -205,4 +205,122 @@ class SettingController extends Controller
     {
         return view('back.settings.maintainance');
     }
+
+    /**
+     * Show the form for editing home page hero section.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function homePage()
+    {
+        $setting = Setting::first();
+        return view('back.settings.homepage', compact('setting'));
+    }
+
+    /**
+     * Update home page hero section settings.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateHomePage(SettingRequest $request)
+    {
+        $setting = Setting::first();
+
+        // Store hero section settings as JSON
+        $heroSettings = [
+            'badge_text' => $request->hero_badge_text,
+            'badge_icon' => $request->hero_badge_icon,
+            'headline_line1' => $request->hero_headline_line1,
+            'headline_line2' => $request->hero_headline_line2,
+            'description' => $request->hero_description,
+            'button1_text' => $request->hero_button1_text,
+            'button1_link' => $request->hero_button1_link,
+            'button1_icon' => $request->hero_button1_icon,
+            'button2_text' => $request->hero_button2_text,
+            'button2_link' => $request->hero_button2_link,
+            'button2_icon' => $request->hero_button2_icon,
+            'stat1_number' => $request->hero_stat1_number,
+            'stat1_label' => $request->hero_stat1_label,
+            'stat2_number' => $request->hero_stat2_number,
+            'stat2_label' => $request->hero_stat2_label,
+            'stat3_number' => $request->hero_stat3_number,
+            'stat3_label' => $request->hero_stat3_label,
+        ];
+
+        $setting->hero_section_settings = json_encode($heroSettings);
+        $setting->save();
+        
+        return redirect()->back()->withSuccess(__('Home Page Settings Updated Successfully.'));
+    }
+
+    /**
+     * Show the form for editing footer settings.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function footer()
+    {
+        $setting = Setting::first();
+        return view('back.settings.footer', compact('setting'));
+    }
+
+    /**
+     * Update footer settings.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateFooter(Request $request)
+    {
+        $setting = Setting::first();
+        $input = $request->all();
+
+        // Store quick links as JSON (3 links)
+        $quickLinks = [];
+        for ($i = 1; $i <= 3; $i++) {
+            if (!empty($request->input("quick_link_label_{$i}")) && !empty($request->input("quick_link_url_{$i}"))) {
+                $quickLinks[] = [
+                    'label' => $request->input("quick_link_label_{$i}"),
+                    'url' => $request->input("quick_link_url_{$i}"),
+                ];
+            }
+        }
+        $input['footer_quick_links'] = json_encode($quickLinks);
+
+        // Handle social links (same as existing)
+        if ($request->social_icons && $request->social_links) {
+            $links = ['icons' => $request->social_icons, 'links' => $request->social_links];
+            $input['social_link'] = json_encode($links, true);
+        }
+
+        // Update copyright
+        if ($request->has('copy_right')) {
+            $input['copy_right'] = $request->copy_right;
+        }
+
+        // Update footer contact info
+        if ($request->has('footer_address')) {
+            $input['footer_address'] = $request->footer_address;
+        }
+        if ($request->has('footer_phone')) {
+            $input['footer_phone'] = $request->footer_phone;
+        }
+        if ($request->has('footer_email')) {
+            $input['footer_email'] = $request->footer_email;
+        }
+        if ($request->has('working_days_from_to')) {
+            $input['working_days_from_to'] = $request->working_days_from_to;
+        }
+        if ($request->has('friday_start')) {
+            $input['friday_start'] = $request->friday_start;
+        }
+        if ($request->has('friday_end')) {
+            $input['friday_end'] = $request->friday_end;
+        }
+
+        $setting->update($input);
+        
+        return redirect()->back()->withSuccess(__('Footer Settings Updated Successfully.'));
+    }
 }

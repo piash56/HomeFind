@@ -186,10 +186,14 @@ class CatalogController extends Controller
             'subcategory' => $subcategory,
             'childcategory' => $childcategory,
             'checkType'  => $checkType,
-            'brands' => Brand::withCount('items')->whereStatus(1)->get(),
-            'categories' => Category::whereStatus(1)->orderby('serial','asc')->withCount(['items' => function($query) {
-                $query->where('status',1);
-            }])->get(),
+            // Only show brands that have at least one published product
+            'brands' => Brand::whereStatus(1)->whereHas('items', function($query) {
+                $query->where('status', 1);
+            })->get(),
+            // Only show categories that have at least one published product
+            'categories' => Category::whereStatus(1)->orderby('serial','asc')->whereHas('items', function($query) {
+                $query->where('status', 1);
+            })->get(),
         ]);
 	}
 

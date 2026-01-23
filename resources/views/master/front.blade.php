@@ -1,15 +1,30 @@
 @php
-    // Define pages where header and footer should be hidden
-    $hideHeaderFooter = [
-        'front.index',             // Root page (shop page)
-        'front.product',           // Single product page
+    // Define pages where header and footer should always be hidden
+    $alwaysHideHeaderFooter = [
         'front.checkout.billing',  // Checkout page
         'front.checkout.success',  // Order success page
         'front.order.track',       // Track order page
     ];
     
     $currentRoute = Route::currentRouteName();
-    $shouldHideHeaderFooter = in_array($currentRoute, $hideHeaderFooter);
+    
+    // Start with default: show header/footer
+    $shouldHideHeaderFooter = false;
+    
+    // Check if route is in always-hide list
+    if (in_array($currentRoute, $alwaysHideHeaderFooter)) {
+        $shouldHideHeaderFooter = true;
+    }
+    // Check product page setting
+    elseif ($currentRoute == 'front.product') {
+        // Hide if setting is disabled (default 0), show if enabled (1)
+        $shouldHideHeaderFooter = !$setting->show_header_footer_product_page;
+    }
+    // Check shop page setting
+    elseif ($currentRoute == 'front.products') {
+        // Hide if setting is disabled (default 0), show if enabled (1)
+        $shouldHideHeaderFooter = !$setting->show_header_footer_shop_page;
+    }
 @endphp
 
 <!DOCTYPE html>
@@ -121,6 +136,194 @@
         }
         @endif
         @endif
+
+        /* Override button colors with gradient - Replace #FF6A00 */
+        .btn-primary,
+        .btn-primary:hover,
+        .btn-primary:focus,
+        .btn-primary:active,
+        button.btn-primary,
+        a.btn-primary,
+        .btn:not(.btn-secondary):not(.btn-outline-primary):not(.btn-outline-success):not(.btn-outline-danger):not(.btn-outline-info):not(.btn-outline-warning):not(.btn-outline-white) {
+            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%) !important;
+            border: none !important;
+            color: white !important;
+        }
+        
+        .btn-success,
+        .btn-success:hover,
+        .btn-success:focus,
+        .btn-success:active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+            border: none !important;
+            color: white !important;
+        }
+        
+        .btn-danger,
+        .btn-danger:hover,
+        .btn-danger:focus,
+        .btn-danger:active {
+            background: linear-gradient(135deg, #ed213a 0%, #93291e 100%) !important;
+            border: none !important;
+            color: white !important;
+        }
+        
+        .btn-info,
+        .btn-info:hover,
+        .btn-info:focus,
+        .btn-info:active {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
+            border: none !important;
+            color: white !important;
+        }
+        
+        .btn-warning,
+        .btn-warning:hover,
+        .btn-warning:focus,
+        .btn-warning:active {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important;
+            border: none !important;
+            color: white !important;
+        }
+        
+        /* Override other elements that use #FF6A00 with gradient text */
+        .product-card .product-price,
+        .text-primary:not(.header-menu-item a):not(.header-menu-item),
+        .product-card .product-title > a:hover,
+        .product-card .product-category > a:hover {
+            background: linear-gradient(135deg, #093028 0%, #237a57 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+        }
+
+        /* Custom styles for new header */
+        .top-tagline-bar {
+            font-size: 13px;
+        }
+        .top-tagline-bar .tagline-item {
+            display: inline-block;
+        }
+        .main-header-area {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .search-box-wrapper .input-group {
+            display: flex;
+            align-items: stretch;
+        }
+        .search-box-wrapper .form-control {
+            flex: 1;
+        }
+        .search-box-wrapper button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .search-suggestions {
+            top: 100%;
+            left: 0;
+        }
+        .search-suggestions .s-r-inner {
+            padding: 10px;
+        }
+        .search-suggestions .product-card {
+            border-bottom: 1px solid #e9ecef;
+            padding: 10px;
+            margin-bottom: 0;
+        }
+        .search-suggestions .product-card:hover {
+            background: #f8f9fa;
+        }
+        .search-suggestions .bottom-area {
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            background: #f8f9fa;
+        }
+        .search-suggestions .bottom-area a {
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .header-menu-items .header-menu-item a:hover {
+            color: #667eea !important;
+        }
+        
+        /* Phone number styling */
+        .header-phone-number {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        
+        .header-phone-number a {
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 991px) {
+            /* Hide main header area on mobile */
+            .main-header-area {
+                display: none !important;
+            }
+            
+            /* Show only first top bar on mobile - hide others */
+            .top-tagline-bar {
+                display: block !important;
+            }
+            
+            /* Mobile header layout */
+            .mobile-header-layout {
+                display: block !important;
+            }
+            
+            /* Ensure mobile menu items are properly styled */
+            .mobile-menu .slideable-menu ul li a {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px 15px;
+                font-size: 15px;
+                width: 100%;
+            }
+            
+            .mobile-menu .slideable-menu ul li a span {
+                flex: 1;
+            }
+            
+            .mobile-menu .slideable-menu ul li a i.fas {
+                margin-right: 10px;
+                width: 20px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            
+            .mobile-menu .slideable-menu ul li a i.icon-chevron-right {
+                flex-shrink: 0;
+                margin-left: auto;
+            }
+            
+        }
+        
+        @media (min-width: 992px) {
+            /* Hide mobile header layout on desktop */
+            .mobile-header-layout {
+                display: none !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .top-tagline-bar .tagline-item {
+                font-size: 11px;
+            }
+            .header-menu-items {
+                justify-content: center !important;
+            }
+            .header-phone-number {
+                justify-content: center !important;
+                margin-top: 10px;
+            }
+        }
     </style>
     {{-- Google AdSense Start --}}
     @if ($setting->is_google_adsense == '1')
@@ -180,203 +383,531 @@ body_theme4 @endif
     <!-- Header-->
     @if (!$shouldHideHeaderFooter)
     <header class="site-header navbar-sticky">
-        <div class="menu-top-area">
+        <!-- Top Bar with Taglines -->
+        <div class="top-tagline-bar" style="background: linear-gradient(135deg, #093028 0%, #237a57 100%); padding: 10px 0;">
             <div class="container">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="t-m-s-a">
-                            <a class="track-order-link" href="{{ route('front.order.track') }}"><i
-                                    class="icon-map-pin"></i>{{ __('Track Order') }}</a>
-                        </div>
+                <div class="row align-items-center">
+                    <div class="col-lg-4 col-md-4 col-12 text-center text-md-start mb-2 mb-md-0">
+                        <span class="tagline-item text-white" style="font-size: 13px; font-weight: 500;">
+                            <i class="fas fa-truck me-1"></i>{{__('Free delivery over 500tk')}}
+                        </span>
                     </div>
-                    <div class="col-md-8">
-                        <div class="right-area">
-
-                            <a class="track-order-link wishlist-mobile d-inline-block d-lg-none"
-                                href="{{ route('user.wishlist.index') }}"><i
-                                    class="icon-heart"></i>{{ __('Wishlist') }}</a>
-
-                            {{-- <div class="t-h-dropdown ">
-                                <a class="main-link" href="#">{{ __('Language') }}<i
-                                        class="icon-chevron-down"></i></a>
-                                <div class="t-h-dropdown-menu">
-                                    @foreach (DB::table('languages')->whereType('Website')->get() as $language)
-                                        <a class="{{ Session::get('language') == $language->id ? 'active' : ($language->is_default == 1 && !Session::has('language') ? 'active' : '') }}"
-                                            href="{{ route('front.language.setup', $language->id) }}"><i
-                                                class="icon-chevron-right pr-2"></i>{{ $language->language }}</a>
-                                    @endforeach
-                                </div>
-                            </div> --}}
-
-
-                            <div class="login-register ">
-                                @if (!Auth::user())
-                                    <a class="track-order-link mr-0" href="{{ route('user.login') }}">
-                                        {{ __('Login') }}
-                                    </a>
-                                @else
-                                    <div class="t-h-dropdown">
-                                        <div class="main-link">
-                                            <i class="icon-user pr-2"></i> <span
-                                                class="text-label">{{ Auth::user()->first_name }}</span>
-                                        </div>
-                                        <div class="t-h-dropdown-menu">
-                                            <a href="{{ route('user.dashboard') }}"><i
-                                                    class="icon-chevron-right pr-2"></i>{{ __('Dashboard') }}</a>
-                                            <a href="{{ route('user.logout') }}"><i
-                                                    class="icon-chevron-right pr-2"></i>{{ __('Logout') }}</a>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
+                    <div class="col-lg-4 col-md-4 col-12 text-center mb-2 mb-md-0 d-none d-md-block">
+                        <span class="tagline-item text-white" style="font-size: 13px; font-weight: 500;">
+                            <i class="fas fa-percent me-1"></i>{{__('5% off for website order')}}
+                        </span>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-12 text-center text-md-end d-none d-md-block">
+                        <span class="tagline-item text-white" style="font-size: 13px; font-weight: 500;">
+                            <i class="fas fa-gift me-1"></i>{{__('2nd time? get your 15% voucher')}}
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Topbar-->
-        <div class="topbar">
+
+        <!-- Main Header (Desktop Only) -->
+        <div class="main-header-area d-none d-lg-block" style="background: #fff; border-bottom: 1px solid #e9ecef;">
             <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="d-flex justify-content-between">
-                            <!-- Logo-->
-                            <div class="site-branding"><a class="site-logo align-self-center"
-                                    href="{{ route('front.index') }}"><img
-                                        src="{{ asset('storage/images/' . $setting->logo) }}"
-                                        alt="{{ $setting->title }}"></a></div>
-                            <!-- Search / Categories-->
-                            <div class="search-box-wrap d-none d-lg-block d-flex">
-                                <div class="search-box-inner align-self-center">
-                                    <div class="search-box d-flex">
-                                        <select name="category" id="category_select" class="categoris">
-                                            <option value="">{{ __('All') }}</option>
-                                            @foreach (DB::table('categories')->whereStatus(1)->get() as $category)
-                                                <option value="{{ $category->slug }}">{{ $category->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        <form class="input-group" id="header_search_form"
-                                            action="{{ route('front.catalog') }}" method="get">
-                                            <input type="hidden" name="category" value=""
-                                                id="search__category">
-                                            <span class="input-group-btn">
-                                                <button type="submit"><i class="icon-search"></i></button>
-                                            </span>
-                                            <input class="form-control" type="text"
-                                                data-target="{{ route('front.search.suggest') }}"
-                                                id="__product__search" name="search"
-                                                placeholder="{{ __('Search by product name') }}">
-                                            <div class="serch-result d-none">
-                                                {{-- search result --}}
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <span class="d-block d-lg-none close-m-serch"><i class="icon-x"></i></span>
-                            </div>
-                            <!-- Toolbar-->
-                            <div class="toolbar d-flex">
+                <div class="row align-items-center">
+                    <!-- Logo -->
+                    <div class="col-lg-2 col-md-2 col-6">
+                        <div class="site-branding">
+                            <a class="site-logo" href="{{ route('front.index') }}" style="width: 170px">
+                                <img src="{{ asset('storage/images/' . $setting->logo) }}" alt="{{ $setting->title }}" style="max-height: 60px; width: auto;">
+                            </a>
+                        </div>
+                    </div>
 
-                                <div class="toolbar-item close-m-serch visible-on-mobile"><a href="#">
-                                        <div>
-                                            <i class="icon-search"></i>
-                                        </div>
-                                    </a>
+                    <!-- Search Bar -->
+                    <div class="col-lg-4 col-md-5 col-12 mt-3 mt-md-0">
+                        <div class="search-box-wrapper position-relative">
+                            <form class="search-form" id="header_search_form" action="{{ route('front.products') }}" method="get">
+                                <div class="input-group" style="max-width: 350px; height: 42px;">
+                                    <input type="text" 
+                                           class="form-control border-end-0" 
+                                           id="__product__search" 
+                                           name="search"
+                                           data-target="{{ route('front.search.suggest') }}"
+                                           placeholder="{{ __('Search by product name') }}"
+                                           autocomplete="off"
+                                           style="border-radius: 21px 0 0 21px; padding: 10px 20px; font-size: 14px; border-image-source: linear-gradient(rgba(19, 117, 215, 0.1), rgba(20, 156, 178, 0.21)); border-width: 1pt; border-image-slice: 1; background: #f8f9fa; height: 42px; line-height: 22px;">
+                                    <button type="submit" class="btn d-flex align-items-center justify-content-center border-start-0" 
+                                            style="border-radius: 0 21px 21px 0; 
+                                                   padding: 0 20px; 
+                                                   width: 42px;
+                                                   height: 42px;
+                                                   background: linear-gradient(135deg, #182848  0%, #4b6cb7 100%) !important;
+                                                   border: 2px solid transparent;
+                                                   color: white;">
+                                        <i class="icon-search" style="font-size: 18px; line-height: 1;"></i>
+                                    </button>
                                 </div>
-                                <div class="toolbar-item visible-on-mobile mobile-menu-toggle"><a href="#">
-                                        <div><i class="icon-menu"></i><span
-                                                class="text-label">{{ __('Menu') }}</span></div>
-                                    </a>
+                                <div class="search-suggestions position-absolute w-100 bg-white shadow-lg rounded mt-1 d-none" id="search_suggestions" style="z-index: 1000; max-height: 400px; overflow-y: auto; border: 1px solid #e9ecef; max-width: 350px;">
+                                    <!-- Search suggestions will appear here -->
                                 </div>
+                            </form>
+                        </div>
+                    </div>
 
-                                @if (Auth::check())
-                                    <div class="toolbar-item hidden-on-mobile"><a
-                                            href="{{ route('user.wishlist.index') }}">
-                                            <div><span class="compare-icon"><i class="icon-heart"></i><span
-                                                        class="count-label wishlist_count">{{ Auth::user()->wishlists->count() }}</span></span><span
-                                                    class="text-label">{{ __('Wishlist') }}</span></div>
-                                        </a>
-                                    </div>
-                                @else
-                                    <div class="toolbar-item hidden-on-mobile"><a
-                                            href="{{ route('user.wishlist.index') }}">
-                                            <div><span class="compare-icon"><i class="icon-heart"></i></span><span
-                                                    class="text-label">{{ __('Wishlist') }}</span></div>
-                                        </a>
-                                    </div>
-                                @endif
+                    <!-- Menu Items -->
+                    <div class="col-lg-4 col-md-3 col-6">
+                        <div class="header-menu-items d-flex justify-content-end align-items-center flex-wrap">
+                            <!-- Categories -->
+                            <div class="header-menu-item me-3 mb-2 mb-md-0">
+                                <a href="{{ route('front.products') }}" class="text-dark text-decoration-none d-flex align-items-center" style="font-size: 14px; font-weight: 500;">
+                                    <i class="fas fa-th-large me-1"></i>{{__('Categories')}}
+                                </a>
                             </div>
 
-                            <!-- Mobile Menu-->
-                            <div class="mobile-menu">
-                                <!-- Slideable (Mobile) Menu-->
-                                <div class="mm-heading-area">
-                                    <h4>{{ __('Navigation') }}</h4>
-                                    <div class="toolbar-item visible-on-mobile mobile-menu-toggle mm-t-two">
-                                        <a href="#">
-                                            <div> <i class="icon-x"></i></div>
-                                        </a>
-                                    </div>
-                                </div>
-                                <ul class="nav nav-tabs" role="tablist">
-                                    <li class="nav-item" role="presentation99">
-                                        <span class="active" id="mmenu-tab" data-bs-toggle="tab"
-                                            data-bs-target="#mmenu" role="tab" aria-controls="mmenu"
-                                            aria-selected="true">{{ __('Menu') }}</span>
-                                    </li>
-                                    <li class="nav-item" role="presentation99">
-                                        <span class="" id="mcat-tab" data-bs-toggle="tab"
-                                            data-bs-target="#mcat" role="tab" aria-controls="mcat"
-                                            aria-selected="false">{{ __('Category') }}</span>
-                                    </li>
+                            <!-- Shop -->
+                            <div class="header-menu-item me-3 mb-2 mb-md-0">
+                                <a href="{{ route('front.products') }}" class="text-dark text-decoration-none d-flex align-items-center" style="font-size: 14px; font-weight: 500;">
+                                    <i class="fas fa-shopping-bag me-1"></i>{{__('Shop')}}
+                                </a>
+                            </div>
 
-                                </ul>
-                                <div class="tab-content p-0">
-                                    <div class="tab-pane fade show active" id="mmenu" role="tabpanel"
-                                        aria-labelledby="mmenu-tab">
-                                        <nav class="slideable-menu">
-                                            <ul>
-                                                <li class="{{ request()->routeIs('front.index') ? 'active' : '' }}"><a
-                                                        href="{{ route('front.index') }}"><i
-                                                            class="icon-chevron-right"></i>{{ __('Home') }}</a>
-                                                </li>
-                                                @if ($setting->is_shop == 1)
-                                                    <li
-                                                        class="{{ request()->routeIs('front.catalog*') ? 'active' : '' }}">
-                                                        <a href="{{ route('front.catalog') }}"><i
-                                                                class="icon-chevron-right"></i>{{ __('Shop') }}</a>
-                                                    </li>
-                                                @endif
-                                            </ul>
-                                        </nav>
-                                    </div>
-                                    <div class="tab-pane fade" id="mcat" role="tabpanel"
-                                        aria-labelledby="mcat-tab">
-                                        <nav class="slideable-menu">
-                                            @include('includes.mobile-category')
+                            <!-- Reviews -->
+                            <div class="header-menu-item me-3 mb-2 mb-md-0">
+                                <a href="{{ route('front.index') }}#reviews-section" class="text-dark text-decoration-none d-flex align-items-center" style="font-size: 14px; font-weight: 500;">
+                                    <i class="fas fa-star me-1"></i>{{__('Reviews')}}
+                                </a>
+                            </div>
 
-                                        </nav>
-                                    </div>
-                                </div>
+                            <!-- Best Selling -->
+                            <div class="header-menu-item mb-2 mb-md-0">
+                                <a href="{{ route('front.index') }}#best-selling-section" class="text-dark text-decoration-none d-flex align-items-center" style="font-size: 14px; font-weight: 500;">
+                                    <i class="fas fa-fire me-1"></i>{{__('Best Selling')}}
+                                </a>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <!-- Navbar-->
-        <div class="navbar">
-            <div class="container">
-                <div class="row g-3 w-100">
-                    @if ($setting->is_show_category == 1)
-                        <div class="col-lg-3">
-                            @include('includes.categories')
-                        </div>
+
+                    <!-- Phone Number (Separate) -->
+                    @if($setting->footer_phone)
+                    <div class="col-lg-2 col-md-2 col-6 header-phone-number">
+                        <a href="tel:{{$setting->footer_phone}}" class="text-decoration-none d-flex align-items-center justify-content-end fw-bold text-dark" style="font-size: 14px; font-weight: 500;">
+                            <i class="fas fa-phone-alt me-1"></i>{{$setting->footer_phone}}
+                        </a>
+                    </div>
                     @endif
-                    <div class="col-lg-9 d-flex justify-content-between">
-                        <div class="nav-inner">
-                            @include('master.inc.site-menu')
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Header Layout -->
+        <div class="mobile-header-layout d-lg-none" style="background: #fff; border-bottom: 1px solid #e9ecef;">
+            <!-- Mobile Top Bar: Menu, Logo -->
+            <div class="container">
+                <div class="row align-items-center py-2">
+                    <!-- Menu Button -->
+                    <div class="col-6">
+                        <button class="mobile-menu-toggle" style="background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%); border: none; border-radius: 8px; padding: 10px 18px; color: #fff; font-size: 16px; font-weight: 600; box-shadow: 0 2px 8px rgba(24, 40, 72, 0.3); transition: all 0.3s ease; display: inline-flex; align-items: center; cursor: pointer;">
+                            <i class="icon-menu me-2"></i>{{__('Menu')}}
+                        </button>
+                    </div>
+                    
+                    <!-- Logo (Center) -->
+                    <div class="col-6 text-center">
+                        <a class="site-logo" href="{{ route('front.index') }}">
+                            <img src="{{ asset('storage/images/' . $setting->logo) }}" alt="{{ $setting->title }}" style="max-height: 45px; width: auto;">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Bar Below -->
+            <div class="container pb-2">
+                <div class="search-box-wrapper position-relative">
+                    <form class="search-form" id="header_search_form_mobile" action="{{ route('front.products') }}" method="get">
+                        <div class="input-group" style="height: 42px;">
+                            <input type="text" 
+                                   class="form-control border-end-0" 
+                                   id="__product__search_mobile" 
+                                   name="search"
+                                   data-target="{{ route('front.search.suggest') }}"
+                                   placeholder="{{ __('Search by product name') }}"
+                                   autocomplete="off"
+                                   style="border-radius: 21px 0 0 21px; padding: 10px 20px; font-size: 14px; border-image-source: linear-gradient(rgba(19, 117, 215, 0.1), rgba(20, 156, 178, 0.21)); border-width: 1pt; border-image-slice: 1; background: #f8f9fa; height: 42px; line-height: 22px;">
+                            <button type="submit" class="btn d-flex align-items-center justify-content-center border-start-0" 
+                                    style="border-radius: 0 21px 21px 0; 
+                                           padding: 0 20px; 
+                                           width: 42px;
+                                           height: 42px;
+                                           background: linear-gradient(135deg, #182848  0%, #4b6cb7 100%) !important;
+                                           border: 2px solid transparent;
+                                           color: white;">
+                                <i class="icon-search" style="font-size: 18px; line-height: 1;"></i>
+                            </button>
                         </div>
+                        <div class="search-suggestions position-absolute w-100 bg-white shadow-lg rounded mt-1 d-none" id="search_suggestions_mobile" style="z-index: 1000; max-height: 400px; overflow-y: auto; border: 1px solid #e9ecef;">
+                            <!-- Search suggestions will appear here -->
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Backdrop (separate element) -->
+        <div class="mobile-menu-backdrop"></div>
+        
+        <!-- Mobile Menu - New Design -->
+        <div class="mobile-menu-new">
+            <div class="mobile-menu-container">
+                <!-- Header -->
+                <div class="mobile-menu-header">
+                    <h4 class="mb-0 fw-bold text-white">{{ __('Navigation') }}</h4>
+                    <button class="mobile-menu-close-btn" type="button">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <!-- Menu Items -->
+                <nav class="mobile-menu-nav">
+                    <ul class="mobile-menu-list">
+                        <!-- Categories -->
+                        <li class="mobile-menu-item">
+                            <a href="{{ route('front.products') }}" class="mobile-menu-link">
+                                <div class="menu-icon-wrapper">
+                                    <i class="fas fa-th-large"></i>
+                                </div>
+                                <span class="menu-text">{{ __('Categories') }}</span>
+                                <i class="fas fa-chevron-right menu-arrow"></i>
+                            </a>
+                        </li>
+                        
+                        <!-- Shop -->
+                        <li class="mobile-menu-item">
+                            <a href="{{ route('front.products') }}" class="mobile-menu-link">
+                                <div class="menu-icon-wrapper">
+                                    <i class="fas fa-shopping-bag"></i>
+                                </div>
+                                <span class="menu-text">{{ __('Shop') }}</span>
+                                <i class="fas fa-chevron-right menu-arrow"></i>
+                            </a>
+                        </li>
+                        
+                        <!-- Reviews -->
+                        <li class="mobile-menu-item">
+                            <a href="{{ route('front.index') }}#reviews-section" class="mobile-menu-link">
+                                <div class="menu-icon-wrapper">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <span class="menu-text">{{ __('Reviews') }}</span>
+                                <i class="fas fa-chevron-right menu-arrow"></i>
+                            </a>
+                        </li>
+                        
+                        <!-- Best Selling -->
+                        <li class="mobile-menu-item">
+                            <a href="{{ route('front.index') }}#best-selling-section" class="mobile-menu-link">
+                                <div class="menu-icon-wrapper">
+                                    <i class="fas fa-fire"></i>
+                                </div>
+                                <span class="menu-text">{{ __('Best Selling') }}</span>
+                                <i class="fas fa-chevron-right menu-arrow"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        
+        <style>
+        /* Hide mobile menu on desktop */
+        @media (min-width: 992px) {
+            .mobile-menu-new {
+                display: none !important;
+            }
+            .mobile-menu-backdrop {
+                display: none !important;
+            }
+        }
+        
+        /* Menu Button Styling */
+        @media (max-width: 991px) {
+            .mobile-menu-toggle {
+                background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%) !important;
+                border: none !important;
+                border-radius: 8px !important;
+                padding: 10px 18px !important;
+                color: #fff !important;
+                font-size: 16px !important;
+                font-weight: 600 !important;
+                box-shadow: 0 2px 8px rgba(24, 40, 72, 0.3) !important;
+                transition: all 0.3s ease !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                cursor: pointer !important;
+            }
+            
+            .mobile-menu-toggle:hover {
+                box-shadow: 0 4px 15px rgba(24, 40, 72, 0.4) !important;
+                transform: translateY(-1px);
+            }
+            
+            .mobile-menu-toggle:active {
+                transform: translateY(0);
+            }
+        }
+        
+        /* New Mobile Menu Design with Fade Transition */
+        @media (max-width: 991px) {
+            /* Hide old mobile menu */
+            .mobile-menu {
+                display: none !important;
+            }
+            
+            /* New Mobile Menu - Container only, no backdrop here */
+            .mobile-menu-new {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 320px;
+                max-width: 85vw;
+                height: 100%;
+                z-index: 10000;
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                pointer-events: none;
+            }
+            
+            .mobile-menu-new.active {
+                transform: translateX(0);
+                pointer-events: all;
+            }
+            
+            /* Menu Container - Sharp and clickable */
+            .mobile-menu-new .mobile-menu-container {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                background: #fff;
+                box-shadow: 2px 0 20px rgba(0, 0, 0, 0.15);
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                pointer-events: all;
+                will-change: transform;
+            }
+            
+            /* Header */
+            .mobile-menu-header {
+                background: linear-gradient(135deg, #093028 0%, #237a57 100%);
+                padding: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            }
+            
+            .mobile-menu-header h4 {
+                color: #fff;
+                font-size: 20px;
+                margin: 0;
+            }
+            
+            .mobile-menu-close-btn {
+                background: rgba(255, 255, 255, 0.2);
+                border: none;
+                color: #fff;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                padding: 0;
+            }
+            
+            .mobile-menu-close-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: rotate(90deg);
+            }
+            
+            .mobile-menu-close-btn i {
+                font-size: 18px;
+            }
+            
+            /* Menu Navigation */
+            .mobile-menu-nav {
+                flex: 1;
+                padding: 0;
+                overflow-y: auto;
+            }
+            
+            .mobile-menu-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .mobile-menu-item {
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .mobile-menu-item:last-child {
+                border-bottom: none;
+            }
+            
+            .mobile-menu-link {
+                display: flex;
+                align-items: center;
+                padding: 18px 20px;
+                text-decoration: none;
+                color: #232323;
+                font-size: 16px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                position: relative;
+            }
+            
+            .mobile-menu-link:hover,
+            .mobile-menu-link:active {
+                background: linear-gradient(90deg, rgba(9, 48, 40, 0.05) 0%, rgba(35, 122, 87, 0.05) 100%);
+                color: #237a57;
+                text-decoration: none;
+            }
+            
+            .menu-icon-wrapper {
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(135deg, rgba(9, 48, 40, 0.1) 0%, rgba(35, 122, 87, 0.1) 100%);
+                border-radius: 10px;
+                margin-right: 15px;
+                transition: all 0.3s ease;
+            }
+            
+            .mobile-menu-link:hover .menu-icon-wrapper,
+            .mobile-menu-link:active .menu-icon-wrapper {
+                background: linear-gradient(135deg, #093028 0%, #237a57 100%);
+                transform: scale(1.1);
+            }
+            
+            .menu-icon-wrapper i {
+                font-size: 18px;
+                color: #237a57;
+                transition: color 0.3s ease;
+            }
+            
+            .mobile-menu-link:hover .menu-icon-wrapper i,
+            .mobile-menu-link:active .menu-icon-wrapper i {
+                color: #fff;
+            }
+            
+            .menu-text {
+                flex: 1;
+                font-weight: 500;
+            }
+            
+            .menu-arrow {
+                font-size: 14px;
+                color: #999;
+                transition: all 0.3s ease;
+            }
+            
+            .mobile-menu-link:hover .menu-arrow,
+            .mobile-menu-link:active .menu-arrow {
+                color: #237a57;
+                transform: translateX(5px);
+            }
+            
+            /* Backdrop - Separate element, behind menu, NO BLUR */
+            .mobile-menu-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 9999;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease, visibility 0.3s ease;
+                pointer-events: none;
+                /* NO backdrop-filter - this causes the blurry screen issue */
+            }
+            
+            .mobile-menu-backdrop.active {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+            }
+            
+            /* Ensure menu is above backdrop */
+            .mobile-menu-new {
+                z-index: 10000 !important;
+            }
+            
+            /* Ensure menu content is sharp and clickable */
+            .mobile-menu-container,
+            .mobile-menu-header,
+            .mobile-menu-nav,
+            .mobile-menu-list,
+            .mobile-menu-item,
+            .mobile-menu-link {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                text-rendering: optimizeLegibility;
+            }
+            
+            /* Ensure menu links are fully clickable */
+            .mobile-menu-link {
+                pointer-events: auto !important;
+                cursor: pointer;
+            }
+            
+            .mobile-menu-item {
+                pointer-events: auto !important;
+            }
+            
+            body.mobile-menu-open {
+                overflow: hidden !important;
+                /* Ensure no blur effects on body */
+                filter: none !important;
+                -webkit-filter: none !important;
+            }
+            
+            /* Prevent any blur on page content when menu is open */
+            body.mobile-menu-open * {
+                filter: none !important;
+                -webkit-filter: none !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+            }
+            
+            /* Exception: allow backdrop to have its own styling */
+            body.mobile-menu-open .mobile-menu-backdrop {
+                filter: none !important;
+                -webkit-filter: none !important;
+            }
+            
+            /* Scrollbar styling */
+            .mobile-menu-nav::-webkit-scrollbar {
+                width: 6px;
+            }
+            
+            .mobile-menu-nav::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+            
+            .mobile-menu-nav::-webkit-scrollbar-thumb {
+                background: linear-gradient(135deg, #093028 0%, #237a57 100%);
+                border-radius: 3px;
+            }
+            
+            .mobile-menu-nav::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(135deg, #237a57 0%, #093028 100%);
+            }
+        }
+        </style>
                         @php
                             $free_shipping = DB::table('shipping_services')
                                 ->whereStatus(1)
@@ -397,38 +928,154 @@ body_theme4 @endif
 
     <!-- Site Footer-->
     @if (!$shouldHideHeaderFooter)
-    <footer class="site-footer">
+    <footer class="site-footer" style="background: #232323; color: #fff; padding: 50px 0 20px;">
         <div class="container">
-            <div class="row">
+            <div class="row g-4 mb-4">
+                <!-- Company Info -->
                 <div class="col-lg-4 col-md-6">
-                    <!-- Contact Info-->
-                    <section class="widget widget-light-skin">
-                        <h3 class="widget-title">{{ __('Get In Touch') }}</h3>
-                        <p class="mb-1"><strong>{{ __('Address') }}: </strong> {{ $setting->footer_address }}</p>
-                        <p class="mb-1"><strong>{{ __('Phone') }}: </strong> {{ $setting->footer_phone }}</p>
-                        <p class="mb-1"><strong>{{ __('Email') }}: </strong> {{ $setting->footer_email }}</p>
-                        <ul class="list-unstyled text-sm">
-                            <li><span class=""><strong>{{ $setting->working_days_from_to }}:
-                                    </strong></span>{{ $setting->friday_start }} - {{ $setting->friday_end }}</li>
+                    <div class="footer-widget">
+                        <h5 class="mb-3 fw-bold" style="color: #fff; font-size: 18px;">{{ $setting->title ?? __('Home Find') }}</h5>
+                        @if($setting->footer_address)
+                        <p class="mb-2" style="color: #ccc; font-size: 14px; line-height: 1.6;">
+                            <i class="fas fa-map-marker-alt me-2" style="color: #237a57;"></i>{{ $setting->footer_address }}
+                        </p>
+                        @endif
+                        @if($setting->footer_phone)
+                        <p class="mb-2" style="color: #ccc; font-size: 14px;">
+                            <i class="fas fa-phone me-2" style="color: #237a57;"></i>
+                            <a href="tel:{{ $setting->footer_phone }}" style="color: #ccc; text-decoration: none;">{{ $setting->footer_phone }}</a>
+                        </p>
+                        @endif
+                        @if($setting->footer_email)
+                        <p class="mb-3" style="color: #ccc; font-size: 14px;">
+                            <i class="fas fa-envelope me-2" style="color: #237a57;"></i>
+                            <a href="mailto:{{ $setting->footer_email }}" style="color: #ccc; text-decoration: none;">{{ $setting->footer_email }}</a>
+                        </p>
+                        @endif
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="col-lg-2 col-md-6">
+                    <div class="footer-widget">
+                        <h5 class="mb-3 fw-bold" style="color: #fff; font-size: 18px;">{{ __('Quick Links') }}</h5>
+                        <ul class="list-unstyled" style="margin: 0; padding: 0;">
+                            @php
+                                $quickLinks = $setting->footer_quick_links ? json_decode($setting->footer_quick_links, true) : [];
+                            @endphp
+                            @if(!empty($quickLinks))
+                                @foreach($quickLinks as $link)
+                                <li class="mb-2">
+                                    @php
+                                        // Check if URL is a route name or full URL
+                                        $url = $link['url'];
+                                        if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0) {
+                                            $linkUrl = $url;
+                                        } elseif (strpos($url, '/') === 0) {
+                                            $linkUrl = $url;
+                                        } else {
+                                            // Try to resolve as route
+                                            try {
+                                                $linkUrl = route($url);
+                                            } catch (\Exception $e) {
+                                                $linkUrl = url($url);
+                                            }
+                                        }
+                                    @endphp
+                                    <a href="{{ $linkUrl }}" style="color: #ccc; text-decoration: none; font-size: 14px; transition: color 0.3s ease;">
+                                        <i class="fas fa-chevron-right me-2" style="font-size: 10px;"></i>{{ $link['label'] }}
+                                    </a>
+                                </li>
+                                @endforeach
+                            @else
+                                <!-- Default links if none configured -->
+                                <li class="mb-2">
+                                    <a href="{{ route('front.index') }}" style="color: #ccc; text-decoration: none; font-size: 14px; transition: color 0.3s ease;">
+                                        <i class="fas fa-chevron-right me-2" style="font-size: 10px;"></i>{{ __('Home') }}
+                                    </a>
+                                </li>
+                                <li class="mb-2">
+                                    <a href="{{ route('front.products') }}" style="color: #ccc; text-decoration: none; font-size: 14px; transition: color 0.3s ease;">
+                                        <i class="fas fa-chevron-right me-2" style="font-size: 10px;"></i>{{ __('Products') }}
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
+                    </div>
+                </div>
+                
+                <!-- Contact & Hours -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-widget">
+                        <h5 class="mb-3 fw-bold" style="color: #fff; font-size: 18px;">{{ __('Contact') }}</h5>
+                        @if($setting->working_days_from_to)
+                        <p class="mb-2" style="color: #ccc; font-size: 14px;">
+                            <i class="fas fa-clock me-2" style="color: #237a57;"></i>
+                            <strong>{{ $setting->working_days_from_to }}:</strong><br>
+                            <span class="ms-4">{{ $setting->friday_start }} - {{ $setting->friday_end }}</span>
+                        </p>
+                        @endif
+                    </div>
+                </div>
+                
+                <!-- Social Media -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-widget">
+                        <h5 class="mb-3 fw-bold" style="color: #fff; font-size: 18px;">{{ __('Follow Us') }}</h5>
                         @php
-                            $links = json_decode($setting->social_link, true)['links'];
-                            $icons = json_decode($setting->social_link, true)['icons'];
-
+                            $links = json_decode($setting->social_link, true)['links'] ?? [];
+                            $icons = json_decode($setting->social_link, true)['icons'] ?? [];
                         @endphp
-                        <div class="footer-social-links">
+                        @if(!empty($links))
+                        <div class="footer-social-links d-flex gap-2 flex-wrap">
                             @foreach ($links as $link_key => $link)
-                                <a href="{{ $link }}"><span><i
-                                            class="{{ $icons[$link_key] }}"></i></span></a>
+                                @if(!empty($link) && isset($icons[$link_key]))
+                                <a href="{{ $link }}" target="_blank" rel="noopener noreferrer" 
+                                   style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.1); border-radius: 50%; color: #fff; text-decoration: none; transition: all 0.3s ease; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                    <i class="{{ $icons[$link_key] }}" style="font-size: 18px;"></i>
+                                </a>
+                                @endif
                             @endforeach
                         </div>
-                    </section>
+                        @endif
+                    </div>
                 </div>
             </div>
-            <!-- Copyright-->
-            <p class="footer-copyright"> {{ $setting->copy_right }}</p>
+            
+            <!-- Copyright -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="footer-copyright text-center pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                        <p class="mb-0" style="color: #999; font-size: 13px;">
+                            {{ $setting->copy_right ?? '© ' . date('Y') . ' ' . ($setting->title ?? 'Home Find') . '. ' . __('All rights reserved.') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     </footer>
+    
+    <style>
+    .site-footer a:hover {
+        color: #237a57 !important;
+    }
+    
+    .footer-social-links a:hover {
+        background: linear-gradient(135deg, #093028 0%, #237a57 100%) !important;
+        border-color: #237a57 !important;
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .site-footer {
+            padding: 40px 0 20px !important;
+        }
+        
+        .footer-widget {
+            margin-bottom: 30px;
+        }
+    }
+    </style>
     @endif
 
     <!-- Back To Top Button-->
@@ -492,6 +1139,7 @@ body_theme4 @endif
     <script type="text/javascript" src="{{ asset('assets/front/js/lazy.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('assets/front/js/lazy.plugin.js') }}"></script>
     <script type="text/javascript" src="{{ asset('assets/front/js/myscript.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/front/js/extraindex.js') }}"></script>
     @yield('script')
 
     @if ($setting->is_facebook_messenger == '1')
@@ -528,6 +1176,185 @@ body_theme4 @endif
 
     <script type="text/javascript">
         let mainurl = '{{ route('front.index') }}';
+
+        // Search autocomplete functionality
+        $(document).ready(function() {
+            let searchTimeout;
+            
+            // Function to handle search for both desktop and mobile
+            function handleSearch(inputId, suggestionsId) {
+                $(document).on('keyup', inputId, function () {
+                    let search = $(this).val();
+                    
+                    clearTimeout(searchTimeout);
+                    
+                    if (search.length >= 2) {
+                        searchTimeout = setTimeout(function() {
+                            let url = $(inputId).attr('data-target');
+                            $.get(url + '?search=' + encodeURIComponent(search), function (response) {
+                                $(suggestionsId).removeClass('d-none').html(response);
+                            }).fail(function() {
+                                $(suggestionsId).addClass('d-none');
+                            });
+                        }, 300);
+                    } else {
+                        $(suggestionsId).addClass('d-none');
+                    }
+                });
+            }
+            
+            // Initialize for desktop search
+            handleSearch('#__product__search', '#search_suggestions');
+            
+            // Initialize for mobile search
+            handleSearch('#__product__search_mobile', '#search_suggestions_mobile');
+
+            // Hide suggestions when clicking outside (desktop)
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('#__product__search, #search_suggestions').length) {
+                    $('#search_suggestions').addClass('d-none');
+                }
+                // Hide suggestions when clicking outside (mobile)
+                if (!$(e.target).closest('#__product__search_mobile, #search_suggestions_mobile').length) {
+                    $('#search_suggestions_mobile').addClass('d-none');
+                }
+            });
+
+            // Handle view all search link (desktop and mobile)
+            $(document).on('click', '#view_all_search_', function () {
+                // Check if clicked from mobile or desktop search
+                if ($('#__product__search_mobile').is(':visible')) {
+                    $('#header_search_form_mobile').submit();
+                } else {
+                    $('#header_search_form').submit();
+                }
+            });
+            
+            // New Mobile Menu Toggle with Fade Transition
+            // Backdrop is now in HTML, no need to create dynamically
+            
+            // Function to open menu
+            function openMobileMenu() {
+                // Close old menu if it's open
+                $('.mobile-menu').removeClass('open');
+                // Open new menu
+                $('.mobile-menu-new').addClass('active');
+                $('.mobile-menu-backdrop').addClass('active');
+                $('body').addClass('mobile-menu-open');
+            }
+            
+            // Function to close menu
+            function closeMobileMenu() {
+                $('.mobile-menu-new').removeClass('active');
+                $('.mobile-menu-backdrop').removeClass('active');
+                $('body').removeClass('mobile-menu-open');
+            }
+            
+            // Handle menu toggle button click (Menu button in header) - override old handler
+            $(document).off('click', '.mobile-menu-toggle').on('click', '.mobile-menu-toggle', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                
+                // Check if this is the close button
+                if ($(this).hasClass('mobile-menu-close-btn')) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
+                return false;
+            });
+            
+            // Handle close button click (separate handler for safety)
+            $(document).on('click', '.mobile-menu-close-btn', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                closeMobileMenu();
+                return false;
+            });
+            
+            // Handle backdrop click to close menu
+            $(document).on('click', '.mobile-menu-backdrop', function() {
+                closeMobileMenu();
+            });
+            
+            // Prevent menu close when clicking inside menu container - CRITICAL
+            $(document).on('click', '.mobile-menu-container', function(e) {
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                return true;
+            });
+            
+            // Handle clicks on backdrop area (outside menu container) to close
+            $(document).on('click', '.mobile-menu-backdrop.active', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeMobileMenu();
+            });
+            
+            // Handle menu link clicks - allow navigation, then close menu
+            $(document).on('click', '.mobile-menu-link', function(e) {
+                // Stop propagation to prevent backdrop click
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                
+                const href = $(this).attr('href');
+                
+                if (!href || href === '#') {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // If it's an anchor link (contains #), handle scroll
+                if (href.indexOf('#') !== -1) {
+                    const parts = href.split('#');
+                    const baseUrl = parts[0] || window.location.pathname;
+                    const anchor = parts[1];
+                    
+                    // If it's a full URL with anchor, navigate first
+                    if (baseUrl && baseUrl !== window.location.pathname && baseUrl !== '') {
+                        // It's a different page with anchor - navigate normally
+                        closeMobileMenu();
+                        setTimeout(function() {
+                            window.location.href = href;
+                        }, 200);
+                        return false;
+                    }
+                    
+                    // Same page anchor link - scroll to section
+                    e.preventDefault();
+                    const targetElement = anchor ? $('#' + anchor) : null;
+                    
+                    if (targetElement && targetElement.length) {
+                        closeMobileMenu();
+                        // Small delay to allow menu to close, then scroll
+                        setTimeout(function() {
+                            $('html, body').animate({
+                                scrollTop: targetElement.offset().top - 80
+                            }, 500);
+                        }, 300);
+                    } else {
+                        // If element not found, just close menu
+                        closeMobileMenu();
+                    }
+                    return false;
+                } else {
+                    // For regular links, navigate normally
+                    closeMobileMenu();
+                    // Allow default navigation to proceed
+                    setTimeout(function() {
+                        window.location.href = href;
+                    }, 200);
+                    return false;
+                }
+            });
+            
+            // Prevent any clicks inside menu from bubbling
+            $(document).on('click', '.mobile-menu-header, .mobile-menu-nav, .mobile-menu-list, .mobile-menu-item', function(e) {
+                e.stopPropagation();
+            });
+        });
 
         let view_extra_index = 0;
         // Notifications
@@ -618,6 +1445,239 @@ body_theme4 @endif
                 SuccessNotification('{{ Session::get('success') }}');
             })
         </script>
+    @endif
+
+    {{-- Purchase Notification Popup --}}
+    @if(isset($purchaseNotifications) && $purchaseNotifications && $purchaseNotifications->count() > 0)
+    <div id="purchase-notification-container" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999; max-width: 350px;"></div>
+
+    <style>
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        @keyframes slideOutLeft {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+        }
+        .purchase-notification-popup {
+            transition: all 0.3s ease;
+        }
+    </style>
+
+    <script>
+        var purchaseNotifications = {!! isset($purchaseNotificationsJson) ? $purchaseNotificationsJson : '[]' !!};
+        var currentNotificationIndex = 0;
+        var popupInterval = {{ $purchasePopupInterval ?? 2000 }};
+        var breakInterval = {{ $purchasePopupBreakInterval ?? 2000 }};
+        var notificationTimer = null;
+        var breakTimer = null;
+        var isPaused = false;
+
+        function calculateTimeAgo(createdAtTimestamp, minutesAgo) {
+            // Calculate actual time difference from when notification was created
+            var now = Math.floor(Date.now() / 1000); // Current timestamp in seconds
+            var created = createdAtTimestamp; // Notification creation timestamp
+            var actualMinutesAgo = Math.floor((now - created) / 60);
+            
+            // Reset after 24 hours (1440 minutes) - use original minutes_ago value
+            if (actualMinutesAgo >= 1440) {
+                actualMinutesAgo = minutesAgo;
+            } else {
+                // Use the actual calculated time, but ensure it's at least the configured minutes_ago
+                actualMinutesAgo = Math.max(actualMinutesAgo, minutesAgo);
+            }
+            
+            // Convert to hours if >= 60 minutes
+            if (actualMinutesAgo >= 60) {
+                var hours = Math.floor(actualMinutesAgo / 60);
+                var remainingMinutes = actualMinutesAgo % 60;
+                
+                if (remainingMinutes === 0) {
+                    // Exact hours
+                    if (hours === 1) {
+                        return '{{ __('1 hour ago') }}';
+                    } else {
+                        return hours + ' {{ __('hours ago') }}';
+                    }
+                } else {
+                    // Hours and minutes
+                    if (hours === 1) {
+                        return '{{ __('1 hour') }} ' + remainingMinutes + ' {{ __('min ago') }}';
+                    } else {
+                        return hours + ' {{ __('hours') }} ' + remainingMinutes + ' {{ __('min ago') }}';
+                    }
+                }
+            } else {
+                // Less than 60 minutes - show in minutes
+                if (actualMinutesAgo < 1) {
+                    return '{{ __('Just now') }}';
+                } else if (actualMinutesAgo == 1) {
+                    return '{{ __('1 min ago') }}';
+                } else {
+                    return actualMinutesAgo + ' {{ __('min ago') }}';
+                }
+            }
+        }
+
+        function createNotificationPopup(notification) {
+            var container = document.getElementById('purchase-notification-container');
+            
+            // Clear any existing popup first
+            container.innerHTML = '';
+            
+            var popupId = 'purchase-popup-' + Date.now();
+            
+            // Calculate time dynamically
+            var timeText = calculateTimeAgo(notification.created_at, notification.minutes_ago);
+            
+            var popupHTML = '<div id="' + popupId + '" class="purchase-notification-popup" style="background: linear-gradient(135deg, #093028 0%, #237a57 100%); border-radius: 12px; padding: 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); color: #fff; animation: slideInLeft 0.5s ease; position: relative;">' +
+                '<button type="button" class="btn-close-notification" style="position: absolute; top: 8px; right: 8px; background: none; border: none; color: #fff; font-size: 16px; cursor: pointer; opacity: 0.7; padding: 4px 8px; line-height: 1;" onclick="closePurchaseNotification(\'' + popupId + '\')">' +
+                '<i class="fas fa-times"></i>' +
+                '</button>' +
+                '<div class="purchase-notification-content" style="padding-right: 30px;">' +
+                '<div class="notification-line-1" style="font-size: 15px; line-height: 1.6; margin-bottom: 6px;">' +
+                '<strong style="font-weight: 600;">' + notification.customer_name + '</strong> {{ __('Purchase') }}' +
+                '</div>' +
+                '<div class="notification-line-2" style="font-size: 14px; line-height: 1.6; margin-bottom: 6px; color: #6dd5ed; font-weight: 600; cursor: pointer;" onclick="goToProduct(\'' + notification.product_slug + '\')">' +
+                notification.product_name +
+                '</div>' +
+                '<div class="notification-line-3" style="font-size: 13px; line-height: 1.6; opacity: 0.9;" data-created="' + notification.created_at + '" data-minutes="' + notification.minutes_ago + '">' +
+                timeText +
+                '</div>' +
+                '</div>' +
+                '</div>';
+            
+            container.innerHTML = popupHTML;
+            
+            // Update time every minute for active popup
+            var timeUpdateInterval = setInterval(function() {
+                var timeEl = document.querySelector('#' + popupId + ' .notification-line-3');
+                if (timeEl) {
+                    var created = parseInt(timeEl.getAttribute('data-created'));
+                    var minutes = parseInt(timeEl.getAttribute('data-minutes'));
+                    var newTimeText = calculateTimeAgo(created, minutes);
+                    timeEl.textContent = newTimeText;
+                } else {
+                    clearInterval(timeUpdateInterval);
+                }
+            }, 60000); // Update every minute
+            
+            // Auto remove after interval
+            notificationTimer = setTimeout(function() {
+                clearInterval(timeUpdateInterval);
+                removeNotificationPopup(popupId);
+            }, popupInterval);
+        }
+
+        function removeNotificationPopup(popupId) {
+            var popup = document.getElementById(popupId);
+            if (popup) {
+                popup.style.animation = 'slideOutLeft 0.5s ease forwards';
+                setTimeout(function() {
+                    if (popup && popup.parentNode) {
+                        popup.parentNode.removeChild(popup);
+                    }
+                    // Wait for break interval before showing next notification
+                    if (!isPaused && purchaseNotifications.length > 0) {
+                        startBreakPeriod();
+                    }
+                }, 500);
+            } else {
+                // If popup already removed, start break period
+                if (!isPaused && purchaseNotifications.length > 0) {
+                    startBreakPeriod();
+                }
+            }
+        }
+
+        function startBreakPeriod() {
+            // Clear container during break
+            var container = document.getElementById('purchase-notification-container');
+            if (container) {
+                container.innerHTML = '';
+            }
+            
+            // Wait for break interval, then show next notification
+            breakTimer = setTimeout(function() {
+                if (!isPaused && purchaseNotifications.length > 0) {
+                    showNextPurchaseNotification();
+                }
+            }, breakInterval);
+        }
+
+        function showNextPurchaseNotification() {
+            if (purchaseNotifications.length === 0 || isPaused) return;
+            
+            var notification = purchaseNotifications[currentNotificationIndex];
+            createNotificationPopup(notification);
+            
+            // Move to next notification
+            currentNotificationIndex = (currentNotificationIndex + 1) % purchaseNotifications.length;
+        }
+
+        function closePurchaseNotification(popupId) {
+            if (notificationTimer) {
+                clearTimeout(notificationTimer);
+            }
+            if (breakTimer) {
+                clearTimeout(breakTimer);
+            }
+            removeNotificationPopup(popupId);
+        }
+
+        function goToProduct(slug) {
+            if (slug) {
+                window.location.href = '{{ url("/") }}/product/' + slug;
+            }
+        }
+
+        // Pause on hover
+        document.addEventListener('DOMContentLoaded', function() {
+            var container = document.getElementById('purchase-notification-container');
+            if (container) {
+                container.addEventListener('mouseenter', function() {
+                    isPaused = true;
+                    if (notificationTimer) {
+                        clearTimeout(notificationTimer);
+                    }
+                    if (breakTimer) {
+                        clearTimeout(breakTimer);
+                    }
+                });
+                container.addEventListener('mouseleave', function() {
+                    isPaused = false;
+                    // Resume - if no popup is showing, start break period or show next
+                    var container = document.getElementById('purchase-notification-container');
+                    if (container && container.innerHTML.trim() === '') {
+                        // No popup showing, start break period which will show next
+                        if (purchaseNotifications.length > 0) {
+                            startBreakPeriod();
+                        }
+                    }
+                });
+            }
+            
+            // Start showing notifications after page load
+            if (purchaseNotifications.length > 0) {
+                setTimeout(function() {
+                    showNextPurchaseNotification();
+                }, 1000); // Start after 1 second (first notification shows immediately)
+            }
+        });
+    </script>
     @endif
 
 </body>

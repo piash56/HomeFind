@@ -8,7 +8,7 @@
     <ul id="category_list">
         @foreach ($categories as $getcategory)
         <li>
-            <a class="category_search" href="{{route('front.catalog').'?category='.$getcategory->slug}}">{{$getcategory->name}}</a>
+            <a class="category_search" href="{{route('front.products').'?category='.$getcategory->slug}}">{{$getcategory->name}}</a>
         </li>
         @endforeach
     </ul>

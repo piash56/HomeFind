@@ -11,13 +11,13 @@
         <div class="category-list">
             @foreach ($categories as $key => $pcategory)
                 <div class="c-item">
-                    <a class="d-block navi-link" href="{{route('front.catalog').'?category='.$pcategory->slug}}">
+                    <a class="d-block navi-link" href="{{route('front.products').'?category='.$pcategory->slug}}">
                         <img class="lazy" data-src="{{asset('storage/images/'.$pcategory->photo)}}">
                         <span class="text-gray-dark">{{$pcategory->name}}</span>
                     </a>
                 </div>
             @endforeach
-        <a href="{{route('front.catalog')}}" class="d-block navi-link view-all-category">
+        <a href="{{route('front.products')}}" class="d-block navi-link view-all-category">
             <img class="lazy" data-src="{{ asset('storage/images/category.jpg') }}" alt="">
             <span class="text-gray-dark">{{ __('All Categories')}}</span>
         </a>

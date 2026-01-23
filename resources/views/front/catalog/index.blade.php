@@ -127,7 +127,7 @@
 
 
 
-      <form id="search_form" class="d-none" action="{{route('front.index')}}" method="GET">
+      <form id="search_form" class="d-none" action="{{route('front.products')}}" method="GET">
 
         <input type="text" name="maxPrice" id="maxPrice" value="{{request()->input('maxPrice') ? request()->input('maxPrice') : ''}}">
         <input type="text" name="minPrice" id="minPrice" value="{{request()->input('minPrice') ? request()->input('minPrice') : ''}}">

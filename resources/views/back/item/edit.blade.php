@@ -266,6 +266,66 @@
                 </div>
             </div>
             
+            <!-- Featured & Best Selling Selection -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">{{ __('Product Display Options') }}</h5>
+                    
+                    <div class="form-group mb-3">
+                        <label class="switch-primary">
+                            <input type="checkbox" class="switch switch-bootstrap status radio-check" name="is_featured" value="1" {{($item->is_featured == 1 || $item->is_type == 'feature' || $item->is_type == 'flash_deal') ? 'checked' : ''}}>
+                            <span class="switch-body"></span>
+                            <span class="switch-text">{{ __('Featured Product') }}</span>
+                        </label>
+                        <small class="form-text text-muted d-block mt-2">{{ __('Featured products will appear in the hero section slider on the home page. You can select both Featured and Best Selling.') }}</small>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label class="switch-primary">
+                            <input type="checkbox" class="switch switch-bootstrap status radio-check" name="is_best_selling" value="1" {{($item->is_best_selling == 1 || $item->is_type == 'best') ? 'checked' : ''}}>
+                            <span class="switch-body"></span>
+                            <span class="switch-text">{{ __('Best Selling Product') }}</span>
+                        </label>
+                        <small class="form-text text-muted d-block mt-2">{{ __('Best selling products will appear in the best selling section on the home page. You can select both Featured and Best Selling.') }}</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Separate Delivery Section -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">{{ __('Delivery Settings') }}</h5>
+                    
+                    <div class="form-group mb-3">
+                        <label class="switch-primary">
+                            <input type="checkbox" class="switch switch-bootstrap status radio-check" name="has_separate_delivery" id="has_separate_delivery" value="1" {{ $item->has_separate_delivery ? 'checked' : '' }}>
+                            <span class="switch-body"></span>
+                            <span class="switch-text">{{ __('Enable Separate Delivery Charges') }}</span>
+                        </label>
+                        <small class="form-text text-muted d-block mt-2">{{ __('If enabled, customers will see separate delivery options (Inside Dhaka / Outside Dhaka) on the product page.') }}</small>
+                    </div>
+                    
+                    <div id="separate-delivery-section" style="display: {{ $item->has_separate_delivery ? 'block' : 'none' }};">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="inside_dhaka_delivery_fee">{{ __('Inside Dhaka Delivery Fee') }} ({{ PriceHelper::setCurrencySign() }})</label>
+                                    <input type="number" step="0.01" min="0" class="form-control" name="inside_dhaka_delivery_fee" id="inside_dhaka_delivery_fee" value="{{ old('inside_dhaka_delivery_fee', $item->inside_dhaka_delivery_fee ?? 70) }}" placeholder="70">
+                                    <small class="form-text text-muted">{{ __('Default: 70') }}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="outside_dhaka_delivery_fee">{{ __('Outside Dhaka Delivery Fee') }} ({{ PriceHelper::setCurrencySign() }})</label>
+                                    <input type="number" step="0.01" min="0" class="form-control" name="outside_dhaka_delivery_fee" id="outside_dhaka_delivery_fee" value="{{ old('outside_dhaka_delivery_fee', $item->outside_dhaka_delivery_fee ?? 130) }}" placeholder="130">
+                                    <small class="form-text text-muted">{{ __('Default: 130') }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Bulk Pricing Section -->
             <div class="card">
                 <div class="card-body">
@@ -482,6 +542,15 @@
 <script>
 $(document).ready(function() {
     // Toggle bulk pricing section
+    // Toggle separate delivery section
+    $('#has_separate_delivery').change(function() {
+        if ($(this).is(':checked')) {
+            $('#separate-delivery-section').slideDown();
+        } else {
+            $('#separate-delivery-section').slideUp();
+        }
+    });
+    
     $('#enable_bulk_pricing').change(function() {
         if ($(this).is(':checked')) {
             $('#bulk-pricing-section').slideDown();

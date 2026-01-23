@@ -35,7 +35,7 @@ class Helper
         if ($link["type"] == 'home') {
             $href = route('front.index');
         } else if ($link["type"] == 'shop') {
-            $href = route('front.catalog');
+            $href = route('front.products');
         }
 
         return $href;
