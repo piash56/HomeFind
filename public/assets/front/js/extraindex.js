@@ -192,28 +192,34 @@ $(function ($) {
             margin: 10,
             responsive: {
                 0: {
-                    items: 1,
-                    margin: 8
+                    items: 2,
+                    margin: 8,
+                    slideBy: 1
                 },
                 576: {
                     items: 2,
-                    margin: 10
+                    margin: 10,
+                    slideBy: 1
                 },
                 768: {
                     items: 3,
-                    margin: 10
+                    margin: 10,
+                    slideBy: 1
                 },
                 992: {
                     items: 4,
-                    margin: 10
+                    margin: 10,
+                    slideBy: 1
                 },
                 1200: {
                     items: 5,
-                    margin: 10
+                    margin: 10,
+                    slideBy: 1
                 },
                 1400: {
                     items: 5,
-                    margin: 10
+                    margin: 10,
+                    slideBy: 1
                 }
             },
             onInitialized: function() {

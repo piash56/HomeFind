@@ -11,9 +11,12 @@
             <div class="rating-stars">
                 {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
             </div>
-            <h4 class="product-price">
-                {{PriceHelper::grandCurrencyPrice($item)}}
-            </h4>
+            <div class="product-price-wrapper">
+                @if ($item->previous_price && $item->previous_price != 0)
+                <span class="old-price">{{PriceHelper::setPreviousPrice($item->previous_price)}}</span>
+                @endif
+                <span class="main-price">{{PriceHelper::grandCurrencyPrice($item)}}</span>
+            </div>
         </div>
     </div>
     @endforeach

@@ -207,6 +207,24 @@
         .main-header-area {
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        
+        .main-header-sticky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        
+        .main-header-sticky.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
         .search-box-wrapper .input-group {
             display: flex;
             align-items: stretch;
@@ -224,19 +242,72 @@
             top: 100%;
             left: 0;
         }
+        .product-card.p-col {
+            margin: 5px 0px;
+        }
         .search-suggestions .s-r-inner {
-            padding: 10px;
+            padding: 0;
         }
         .search-suggestions .product-card {
             border-bottom: 1px solid #e9ecef;
-            padding: 10px;
+            padding: 0px 10px;
             margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         .search-suggestions .product-card:hover {
             background: #f8f9fa;
+            border-color: #093028 !important;
+        }
+        .search-suggestions .product-card .product-thumb {
+            flex-shrink: 0;
+            width: 60px;
+            height: 60px;
+            display: block;
+            margin-right: 0px !important;
+        }
+        .search-suggestions .product-card .product-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        .search-suggestions .product-card .product-card-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .search-suggestions .product-card .product-title {
+            font-size: 14px;
+            margin-bottom: 2px;
+            line-height: 1.3;
+            margin-bottom: -15px !important;
+        }
+        .search-suggestions .product-card .product-title a {
+            text-decoration: none;
+            color: #333;
+        }
+        .search-suggestions .product-card .rating-stars {
+            margin-bottom: 2px;
+            font-size: 12px;
+        }
+        .search-suggestions .product-card .product-price-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .search-suggestions .product-card .old-price {
+            font-size: 13px;
+            color: #999;
+            text-decoration: line-through;
+        }
+        .search-suggestions .product-card .main-price {
+            font-size: 15px;
+            font-weight: 600;
+            color: #182848;
         }
         .search-suggestions .bottom-area {
-            padding: 10px;
+            padding: 8px 10px;
             text-align: center;
             border-top: 1px solid #e9ecef;
             background: #f8f9fa;
@@ -275,6 +346,24 @@
             /* Mobile header layout */
             .mobile-header-layout {
                 display: block !important;
+            }
+            
+            .mobile-header-sticky {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+                background: #fff;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                transition: transform 0.3s ease, opacity 0.3s ease;
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            
+            .mobile-header-sticky.show {
+                transform: translateY(0);
+                opacity: 1;
             }
             
             /* Ensure mobile menu items are properly styled */
@@ -389,17 +478,17 @@ body_theme4 @endif
                 <div class="row align-items-center">
                     <div class="col-lg-4 col-md-4 col-12 text-center text-md-start mb-2 mb-md-0">
                         <span class="tagline-item text-white" style="font-size: 13px; font-weight: 500;">
-                            <i class="fas fa-truck me-1"></i>{{__('Free delivery over 500tk')}}
+                            <i class="{{ $setting->tagline1_icon ?? 'fas fa-truck' }} me-1"></i>{{ $setting->tagline1_text ?? __('Free delivery over 500tk') }}
                         </span>
                     </div>
                     <div class="col-lg-4 col-md-4 col-12 text-center mb-2 mb-md-0 d-none d-md-block">
                         <span class="tagline-item text-white" style="font-size: 13px; font-weight: 500;">
-                            <i class="fas fa-percent me-1"></i>{{__('5% off for website order')}}
+                            <i class="{{ $setting->tagline2_icon ?? 'fas fa-percent' }} me-1"></i>{{ $setting->tagline2_text ?? __('5% off for website order') }}
                         </span>
                     </div>
                     <div class="col-lg-4 col-md-4 col-12 text-center text-md-end d-none d-md-block">
                         <span class="tagline-item text-white" style="font-size: 13px; font-weight: 500;">
-                            <i class="fas fa-gift me-1"></i>{{__('2nd time? get your 15% voucher')}}
+                            <i class="{{ $setting->tagline3_icon ?? 'fas fa-gift' }} me-1"></i>{{ $setting->tagline3_text ?? __('2nd time? get your 15% voucher') }}
                         </span>
                     </div>
                 </div>
@@ -407,7 +496,7 @@ body_theme4 @endif
         </div>
 
         <!-- Main Header (Desktop Only) -->
-        <div class="main-header-area d-none d-lg-block" style="background: #fff; border-bottom: 1px solid #e9ecef;">
+        <div class="main-header-area d-none d-lg-block" id="main-header-original" style="background: #fff; border-bottom: 1px solid #e9ecef;">
             <div class="container">
                 <div class="row align-items-center">
                     <!-- Logo -->
@@ -496,7 +585,7 @@ body_theme4 @endif
         </div>
 
         <!-- Mobile Header Layout -->
-        <div class="mobile-header-layout d-lg-none" style="background: #fff; border-bottom: 1px solid #e9ecef;">
+        <div class="mobile-header-layout d-lg-none" id="mobile-header-original" style="background: #fff; border-bottom: 1px solid #e9ecef;">
             <!-- Mobile Top Bar: Menu, Logo -->
             <div class="container">
                 <div class="row align-items-center py-2">
@@ -1679,6 +1768,96 @@ body_theme4 @endif
         });
     </script>
     @endif
+    
+    <!-- Sticky Header Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var desktopHeaderOriginal = document.getElementById('main-header-original');
+            var mobileHeaderOriginal = document.getElementById('mobile-header-original');
+            var scrollThreshold = 150;
+            var stickyDesktopHeader = null;
+            var stickyMobileHeader = null;
+            
+            // Create sticky clone for desktop
+            function createStickyDesktop() {
+                if (!stickyDesktopHeader && desktopHeaderOriginal) {
+                    stickyDesktopHeader = desktopHeaderOriginal.cloneNode(true);
+                    stickyDesktopHeader.id = 'main-header-sticky';
+                    stickyDesktopHeader.classList.add('main-header-sticky');
+                    stickyDesktopHeader.classList.remove('main-header-area');
+                    document.body.appendChild(stickyDesktopHeader);
+                }
+            }
+            
+            // Create sticky clone for mobile
+            function createStickyMobile() {
+                if (!stickyMobileHeader && mobileHeaderOriginal) {
+                    stickyMobileHeader = mobileHeaderOriginal.cloneNode(true);
+                    stickyMobileHeader.id = 'mobile-header-sticky';
+                    stickyMobileHeader.classList.add('mobile-header-sticky');
+                    stickyMobileHeader.classList.remove('mobile-header-layout');
+                    
+                    // Hide the search bar section in sticky mobile header
+                    var searchBarContainer = stickyMobileHeader.querySelector('.pb-2');
+                    if (searchBarContainer) {
+                        searchBarContainer.style.display = 'none';
+                    }
+                    
+                    document.body.appendChild(stickyMobileHeader);
+                    
+                    // Re-attach mobile menu toggle event to sticky header
+                    var stickyMenuBtn = stickyMobileHeader.querySelector('.mobile-menu-toggle');
+                    if (stickyMenuBtn) {
+                        stickyMenuBtn.addEventListener('click', function() {
+                            openMobileMenu();
+                        });
+                    }
+                }
+            }
+            
+            // Handle scroll
+            window.addEventListener('scroll', function() {
+                var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                // Desktop sticky header
+                if (window.innerWidth >= 992) {
+                    if (!stickyDesktopHeader) createStickyDesktop();
+                    
+                    if (scrollTop > scrollThreshold) {
+                        if (stickyDesktopHeader) {
+                            stickyDesktopHeader.classList.add('show');
+                        }
+                    } else {
+                        if (stickyDesktopHeader) {
+                            stickyDesktopHeader.classList.remove('show');
+                        }
+                    }
+                }
+                
+                // Mobile sticky header
+                if (window.innerWidth < 992) {
+                    if (!stickyMobileHeader) createStickyMobile();
+                    
+                    if (scrollTop > scrollThreshold) {
+                        if (stickyMobileHeader) {
+                            stickyMobileHeader.classList.add('show');
+                        }
+                    } else {
+                        if (stickyMobileHeader) {
+                            stickyMobileHeader.classList.remove('show');
+                        }
+                    }
+                }
+            });
+            
+            // Initial creation on page load
+            if (window.innerWidth >= 992) {
+                createStickyDesktop();
+            } else {
+                createStickyMobile();
+            }
+        });
+    </script>
 
 </body>
 

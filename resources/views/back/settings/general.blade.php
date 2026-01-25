@@ -114,6 +114,66 @@
                                 
                                 <div class="col-md-12">
                                     <hr>
+                                    <h5 class="mb-3">{{ __('Top Bar Taglines') }}</h5>
+                                    <p class="text-muted mb-3">{{ __('Customize the three taglines displayed in the top bar of your website.') }}</p>
+                                </div>
+                                
+                                <!-- Tagline 1 -->
+                                <div class="col-md-12 mb-3">
+                                    <h6 class="text-primary">{{ __('Tagline 1') }}</h6>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>{{ __('Tagline 1 Icon') }} <small>({{ __('Font Awesome class') }})</small></label>
+                                        <input type="text" class="form-control" name="tagline1_icon" value="{{ $setting->tagline1_icon ?? 'fas fa-truck' }}" placeholder="fas fa-truck">
+                                        <small class="form-text text-muted">{{ __('Example: fas fa-truck, fas fa-shipping-fast') }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>{{ __('Tagline 1 Text') }}</label>
+                                        <input type="text" class="form-control" name="tagline1_text" value="{{ $setting->tagline1_text ?? 'Free delivery over 500tk' }}" placeholder="{{ __('Free delivery over 500tk') }}">
+                                    </div>
+                                </div>
+                                
+                                <!-- Tagline 2 -->
+                                <div class="col-md-12 mb-3 mt-3">
+                                    <h6 class="text-primary">{{ __('Tagline 2') }}</h6>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>{{ __('Tagline 2 Icon') }} <small>({{ __('Font Awesome class') }})</small></label>
+                                        <input type="text" class="form-control" name="tagline2_icon" value="{{ $setting->tagline2_icon ?? 'fas fa-percent' }}" placeholder="fas fa-percent">
+                                        <small class="form-text text-muted">{{ __('Example: fas fa-percent, fas fa-tag') }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>{{ __('Tagline 2 Text') }}</label>
+                                        <input type="text" class="form-control" name="tagline2_text" value="{{ $setting->tagline2_text ?? '5% off for website order' }}" placeholder="{{ __('5% off for website order') }}">
+                                    </div>
+                                </div>
+                                
+                                <!-- Tagline 3 -->
+                                <div class="col-md-12 mb-3 mt-3">
+                                    <h6 class="text-primary">{{ __('Tagline 3') }}</h6>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>{{ __('Tagline 3 Icon') }} <small>({{ __('Font Awesome class') }})</small></label>
+                                        <input type="text" class="form-control" name="tagline3_icon" value="{{ $setting->tagline3_icon ?? 'fas fa-gift' }}" placeholder="fas fa-gift">
+                                        <small class="form-text text-muted">{{ __('Example: fas fa-gift, fas fa-star') }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>{{ __('Tagline 3 Text') }}</label>
+                                        <input type="text" class="form-control" name="tagline3_text" value="{{ $setting->tagline3_text ?? '2nd time? get your 15% voucher' }}" placeholder="{{ __('2nd time? get your 15% voucher') }}">
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-12">
+                                    <hr>
                                     <h5 class="mb-3">{{ __('Header & Footer Visibility') }}</h5>
                                     <p class="text-muted mb-3">{{ __('Control whether header and footer are displayed on specific pages.') }}</p>
                                 </div>

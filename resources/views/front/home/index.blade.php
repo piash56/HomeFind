@@ -1062,12 +1062,147 @@
         font-size: 2rem !important;
     }
     
-    .best-selling-slider .owl-nav {
-        display: none;
+    /* Best Selling Section Mobile */
+    .best-selling-section {
+        padding: 2rem 0 !important;
     }
     
-    .best-selling-slider .product-thumb img {
-        height: 220px;
+    .best-selling-section .container {
+        padding: 0 8px !important;
+    }
+    
+    .best-selling-slider.owl-carousel {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .best-selling-slider .owl-stage-outer {
+        padding: 8px 0 !important;
+    }
+    
+    /* Hide navigation arrows on mobile */
+    .best-selling-slider .owl-nav {
+        display: none !important;
+    }
+    
+    /* Product cards on mobile - 2 per row with minimal gap */
+    .best-selling-slider .owl-item {
+        padding: 0 2px !important;
+    }
+    
+    .best-selling-slider.owl-carousel {
+        margin: 0 -2px !important;
+    }
+    
+    .best-selling-slider .product-card {
+        width: 100% !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 0 0 8px 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    /* Larger product image on mobile - fills most of the card */
+    .best-selling-slider .product-image-wrapper {
+        height: 200px !important;
+        padding: 8px !important;
+        margin: -1px -1px 0 -1px !important;
+    }
+    
+    .best-selling-slider .product-image-wrapper img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+    
+    .best-selling-slider .product-card .px-4 {
+        padding: 10px 12px 8px 12px !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    /* Product name - aligned left */
+    .best-selling-slider .product-name {
+        font-size: 14px !important;
+        line-height: 1.4 !important;
+        min-height: 38px !important;
+        margin-bottom: 8px !important;
+        text-align: left !important;
+    }
+    
+    .best-selling-slider .product-name a {
+        font-size: 14px !important;
+        -webkit-line-clamp: 2 !important;
+        text-align: left !important;
+        display: -webkit-box !important;
+        -webkit-box-orient: vertical !important;
+    }
+    
+    .best-selling-slider .rating-stars {
+        font-size: 11px !important;
+        margin-bottom: 6px !important;
+        text-align: left !important;
+    }
+    
+    /* Prices on same line - old price left, main price right */
+    .best-selling-slider .product-card .mb-3 {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .best-selling-slider .product-card .mb-3 .mb-1 {
+        margin-bottom: 0 !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .best-selling-slider .product-card del {
+        font-size: 12px !important;
+        text-align: left !important;
+        white-space: nowrap !important;
+    }
+    
+    .best-selling-slider .product-card .fw-bold {
+        font-size: 18px !important;
+        text-align: right !important;
+        white-space: nowrap !important;
+    }
+    
+    /* Remove gap between price and button */
+    .best-selling-slider .product-card .mt-auto {
+        margin-top: 6px !important;
+    }
+    
+    .best-selling-slider .product-card a[href*="product"],
+    .best-selling-slider .product-card button {
+        /* padding: 10px 16px !important; */
+        font-size: 13px !important;
+        border-radius: 8px !important;
+        margin-top: 0 !important;
+    }
+    
+    .best-selling-slider .product-card a[href*="product"] i,
+    .best-selling-slider .product-card button i {
+        font-size: 12px !important;
+    }
+    
+    /* Badge sizing on mobile */
+    .best-selling-slider .badge {
+        font-size: 9px !important;
+        padding: 5px 10px !important;
+    }
+    
+    .best-selling-slider .badge i {
+        font-size: 9px !important;
+    }
+    
+    /* Position badges container */
+    .best-selling-slider .product-card .position-absolute {
+        padding: 8px !important;
     }
 }
 </style>

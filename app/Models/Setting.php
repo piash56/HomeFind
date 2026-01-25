@@ -150,6 +150,13 @@ class Setting extends Model
         // Header/Footer visibility settings
         'show_header_footer_product_page',
         'show_header_footer_shop_page',
+        // Top bar taglines
+        'tagline1_icon',
+        'tagline1_text',
+        'tagline2_icon',
+        'tagline2_text',
+        'tagline3_icon',
+        'tagline3_text',
     ];
 
     public $timestamps = false;
