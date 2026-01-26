@@ -14,8 +14,8 @@ class SmsService
 
     public function __construct()
     {
-        $this->enabled = env('SMS_ENABLED', false);
-        $this->apiKey = env('SMS_NET_BD_API_KEY');
+        $this->enabled = config('sms.enabled', false);
+        $this->apiKey = config('sms.api_key');
     }
 
     /**
