@@ -166,7 +166,7 @@ class CheckoutController extends Controller
 
         try {
             $cart = Session::get('cart');
-            
+
             // Get currency info
             if (Session::has('currency')) {
                 $currency = Currency::findOrFail(Session::get('currency'));
@@ -189,7 +189,7 @@ class CheckoutController extends Controller
             // Calculate delivery fee based on selected area
             $shipping_price = 0;
             $delivery_area_title = '';
-            
+
             if ($request->delivery_area === 'free_delivery') {
                 $shipping_price = 0;
                 $delivery_area_title = 'Free Delivery';
@@ -297,7 +297,6 @@ class CheckoutController extends Controller
 
             // Redirect to success page
             return redirect()->route('front.checkout.success', ['id' => $order->id]);
-
         } catch (\Exception $e) {
             \Log::error('Checkout failed: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to place order. Please try again.');
@@ -363,10 +362,20 @@ class CheckoutController extends Controller
 
             // Summary rows
             $shippingPrice = $shippingData['price'] ?? 0;
-            $tax = $order->tax ?? 0;
-            $statePrice = $order->state_price ?? 0;
+            $tax          = $order->tax ?? 0;
+            $statePrice   = $order->state_price ?? 0;
             $discountAmount = $discountData['discount'] ?? 0;
-            $couponCode = $discountData['code']['code'] ?? ($discountData['code'] ?? '');
+
+            // Normalize coupon code (may be stored as array of attributes or plain string)
+            $couponCode = '';
+            if (isset($discountData['code'])) {
+                if (is_array($discountData['code'])) {
+                    // From PromoCode model attributes stored in JSON
+                    $couponCode = $discountData['code']['code_name'] ?? '';
+                } elseif (is_string($discountData['code'])) {
+                    $couponCode = $discountData['code'];
+                }
+            }
 
             $grandTotal = $subTotal + $shippingPrice + $tax + $statePrice - $discountAmount;
 
@@ -427,7 +436,6 @@ class CheckoutController extends Controller
 
             $emailHelper = new EmailHelper();
             $emailHelper->adminMail($emailData);
-
         } catch (\Exception $e) {
             \Log::error('Cart order notification failed: ' . $e->getMessage());
         }
@@ -1187,11 +1195,11 @@ class CheckoutController extends Controller
             }
 
             $tax = $item->tax ? $item::taxCalculate($item) * $quantity : 0;
-            
+
             // Get delivery fee if separate delivery is enabled
             $shipping_price = 0; // Default free shipping
             $delivery_area_title = 'Free Shipping';
-            
+
             if ($request->has('delivery_area') && $request->has('delivery_fee')) {
                 $shipping_price = (float) $request->delivery_fee;
                 if ($request->delivery_area === 'inside_dhaka') {
@@ -1200,16 +1208,16 @@ class CheckoutController extends Controller
                     $delivery_area_title = 'Outside Dhaka Delivery';
                 }
             }
-            
+
             // Handle coupon discount if provided
             $discount = 0;
             $discountData = [];
-            
+
             if ($request->has('coupon_code') && !empty($request->coupon_code)) {
                 $promoCode = \App\Models\PromoCode::where('code_name', $request->coupon_code)
                     ->where('status', 1)
                     ->first();
-                
+
                 if ($promoCode && $promoCode->no_of_times > 0 && $promoCode->isValidDate()) {
                     // Check if coupon is product-specific
                     if ($promoCode->product_id && $promoCode->product_id != $item->id) {
@@ -1221,12 +1229,12 @@ class CheckoutController extends Controller
                         } else {
                             $discount = $promoCode->discount;
                         }
-                        
+
                         // Ensure discount doesn't exceed cart total
                         if ($discount > $cart_total) {
                             $discount = $cart_total;
                         }
-                        
+
                         // Store discount data for order
                         $discountData = [
                             'discount' => $discount,
@@ -1238,13 +1246,13 @@ class CheckoutController extends Controller
                                 'discount' => $promoCode->discount
                             ]
                         ];
-                        
+
                         // Reduce coupon usage count
                         $promoCode->decrement('no_of_times');
                     }
                 }
             }
-            
+
             $state_price = 0; // No state tax
             $grand_total = $cart_total + $tax + $shipping_price - $discount + $state_price;
 
