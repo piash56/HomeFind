@@ -2,8 +2,8 @@
 <div class="s-r-inner">
     @foreach ($items as $item)
     <div class="product-card p-col">
-        <a class="product-thumb" href="{{route('front.product',$item->slug)}}">
-            <img class="lazy" alt="Product" src="{{asset('storage/images/'.$item->thumbnail)}}" style=""></a>
+            <a class="product-thumb" href="{{route('front.product',$item->slug)}}">
+                <img class="lazy" alt="Product" data-src="{{asset('storage/images/'.$item->thumbnail)}}" style=""></a>
         <div class="product-card-body">
             <h3 class="product-title"><a href="{{route('front.product',$item->slug)}}">
                 {{ Str::limit($item->name, 35) }}

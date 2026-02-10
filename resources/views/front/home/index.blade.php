@@ -118,9 +118,10 @@
                             <!-- Left Side: Featured/Thumbnail Image (50%) -->
                             <div class="featured-image-left" style="flex: 0 0 calc(50% - 4px); height: 204px; border-radius: 8px; overflow: hidden;">
                                 <a href="{{route('front.product', $item->slug)}}" class="d-block h-100 w-100">
-                                    <img src="{{asset('storage/images/'.$item->thumbnail)}}" 
+                                    <img 
+                                         class="lazy featured-product-image"
+                                         data-src="{{asset('storage/images/'.$item->thumbnail)}}" 
                                          alt="{{$item->name}}" 
-                                         class="featured-product-image" 
                                          style="width: 100%; height: 100%; object-fit: cover;">
                                 </a>
                             </div>
@@ -132,17 +133,19 @@
                             <div class="gallery-image-right" style="flex: 0 0 calc(50% - 4px); height: 204px; border-radius: 8px; overflow: hidden;">
                                 @if($firstGallery)
                                     <a href="{{route('front.product', $item->slug)}}" class="d-block h-100 w-100">
-                                        <img src="{{asset('storage/images/'.$firstGallery->photo)}}" 
+                                        <img 
+                                             class="lazy gallery-product-image"
+                                             data-src="{{asset('storage/images/'.$firstGallery->photo)}}" 
                                              alt="{{$item->name}}" 
-                                             class="gallery-product-image" 
                                              style="width: 100%; height: 100%; object-fit: cover;">
                                     </a>
                                 @else
                                     <!-- Fallback: Show thumbnail if no gallery image -->
                                     <a href="{{route('front.product', $item->slug)}}" class="d-block h-100 w-100">
-                                        <img src="{{asset('storage/images/'.$item->thumbnail)}}" 
+                                        <img 
+                                             class="lazy gallery-product-image"
+                                             data-src="{{asset('storage/images/'.$item->thumbnail)}}" 
                                              alt="{{$item->name}}" 
-                                             class="gallery-product-image" 
                                              style="width: 100%; height: 100%; object-fit: cover; opacity: 0.7;">
                                     </a>
                                 @endif
@@ -277,9 +280,10 @@
                     <!-- Product Image Section - Single Featured Image Only -->
                     <div class="product-image-wrapper position-relative mb-3" style="height: 220px; border-radius: 12px 12px 0 0; overflow: hidden; margin: -1px -1px 0 -1px; padding: 8px;">
                         <a href="{{route('front.product', $item->slug)}}" class="d-block h-100 w-100">
-                            <img src="{{asset('storage/images/'.$item->thumbnail)}}" 
+                            <img 
+                                 class="lazy featured-product-image"
+                                 data-src="{{asset('storage/images/'.$item->thumbnail)}}" 
                                  alt="{{$item->name}}" 
-                                 class="featured-product-image" 
                                  style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
                         </a>
                     </div>
@@ -573,9 +577,10 @@
                             <!-- Product Image -->
                             <div class="product-image-wrapper position-relative mb-3" style="height: 220px; border-radius: 12px 12px 0 0; overflow: hidden; margin: -1px -1px 0 -1px; padding: 8px;">
                                 <a href="{{ route('front.product', $item->slug) }}" class="d-block h-100 w-100">
-                                    <img src="{{ asset('storage/images/'.$item->thumbnail) }}"
+                                    <img 
+                                         class="lazy featured-product-image"
+                                         data-src="{{ asset('storage/images/'.$item->thumbnail) }}"
                                          alt="{{ $item->name }}"
-                                         class="featured-product-image"
                                          style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
                                 </a>
                             </div>
@@ -894,7 +899,7 @@
                                             <div class="review-images mt-2 d-flex gap-1 flex-wrap justify-content-end">
                                                 @foreach(array_slice($review->getReviewImages(), 0, 3) as $image)
                                                 <a href="{{asset($image)}}" target="_blank" class="review-image-link">
-                                                    <img src="{{asset($image)}}" alt="Review Image" class="rounded" style="width: 40px; height: 40px; object-fit: cover; border: 1px solid #e0e0e0;">
+                                    <img class="lazy" data-src="{{asset($image)}}" alt="Review Image" class="rounded" style="width: 40px; height: 40px; object-fit: cover; border: 1px solid #e0e0e0;">
                                                 </a>
                                                 @endforeach
                                             </div>
@@ -999,8 +1004,18 @@
 </section>
 
 <style>
+/* Prevent horizontal scroll on mobile */
+@media (max-width: 991px) {
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+}
+
 .hero-section {
     margin-top: -20px;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 /* Hero Section Left Content Styling */
@@ -1269,10 +1284,28 @@
 
 /* Container for proper width */
 .best-selling-section .container,
-.featured-grid-section .container {
+.featured-grid-section .container,
+.reviews-section .container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 15px;
+}
+
+/* Prevent horizontal scroll on all sections */
+.best-selling-section,
+.featured-grid-section,
+.reviews-section {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+@media (max-width: 991px) {
+    .best-selling-section,
+    .featured-grid-section,
+    .reviews-section {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
 }
 
 /* Owl Carousel specific styles - let owl carousel handle layout completely */
@@ -1698,7 +1731,17 @@
 
 @media (max-width: 768px) {
     .hero-section {
-        border-radius: 0 0 30px 30px;
+        border-radius: 0 0 20px 20px;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    
+    .hero-section .container {
+        max-width: 100% !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
     }
     
     .display-4 {
@@ -1716,8 +1759,24 @@
     }
     
     .best-selling-section .container,
-    .featured-grid-section .container {
+    .featured-grid-section .container,
+    .reviews-section .container {
         padding: 0 8px !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Ensure all rows don't cause horizontal overflow */
+    .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        max-width: 100% !important;
+    }
+    
+    /* Fix for columns */
+    [class*="col-"] {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
     }
     
     .best-selling-slider.owl-carousel,
@@ -1846,6 +1905,18 @@
     .best-selling-slider .product-card .position-absolute,
     .featured-products-slider .product-card .position-absolute {
         padding: 8px !important;
+    }
+    
+    /* Ensure sliders don't cause horizontal scroll */
+    .best-selling-slider,
+    .featured-products-slider {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    
+    .best-selling-slider .owl-stage-outer,
+    .featured-products-slider .owl-stage-outer {
+        overflow: hidden !important;
     }
     
     /* Mobile-specific price adjustments */

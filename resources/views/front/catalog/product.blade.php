@@ -544,8 +544,11 @@ button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"
                                     data-featured-image="{{ asset('storage/images/' . $item->photo) }}" />
                             </div>
                             @foreach ($galleries as $key => $gallery)
-                                <div class="item" data-gallery-id="{{ $gallery->id }}"><img src="{{ asset('storage/images/' . $gallery->photo) }}"
-                                        alt="zoom" /></div>
+                                <div class="item" data-gallery-id="{{ $gallery->id }}">
+                                    <img class="lazy"
+                                         data-src="{{ asset('storage/images/' . $gallery->photo) }}"
+                                         alt="zoom" />
+                                </div>
                             @endforeach
                         </div>
                     </div>

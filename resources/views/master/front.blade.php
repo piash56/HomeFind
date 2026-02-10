@@ -86,10 +86,17 @@
     <!-- Vendor Styles including: Bootstrap, Font Icons, Plugins, etc.-->
     <link rel="stylesheet" media="screen" href="{{ asset('assets/front/css/plugins.min.css') }}">
 
+    <!-- Latest Font Awesome for all icons (including TikTok) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer">
+    
     @yield('styleplugins')
-
+    
     <link id="mainStyles" rel="stylesheet" media="screen" href="{{ asset('assets/front/css/styles.min.css') }}">
-
+    
     <link id="mainStyles" rel="stylesheet" media="screen" href="{{ asset('assets/front/css/responsive.css') }}">
     <!-- Color css -->
     <link
@@ -1167,6 +1174,26 @@ body_theme4 @endif
                 background: linear-gradient(135deg, #92EFFD 0%, #4E65FF 100%);
             }
         }
+        
+        /* Prevent horizontal scroll on mobile for all pages */
+        @media (max-width: 991px) {
+            html {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+            }
+            
+            body {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+                position: relative;
+            }
+            
+            .container,
+            .container-fluid {
+                max-width: 100% !important;
+                overflow-x: hidden !important;
+            }
+        }
         </style>
                         @php
                             $free_shipping = DB::table('shipping_services')
@@ -1320,10 +1347,30 @@ body_theme4 @endif
         color: #92EFFD !important;
     }
     
-    .footer-social-links a:hover {
+    /* Default social icon background */
+    .footer-social-links a {
+        background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;
+        border: none !important;
+        color: #fff !important;
+    }
+    
+    /* Remove global black overlay effect from theme */
+    .footer-social-links a::before,
+    .footer-social-links a:hover::before,
+    .footer-social-links a:focus::before,
+    .footer-social-links a:active::before {
+        background: transparent !important;
+        width: 0 !important;
+    }
+    
+    /* Hover / focus / active state */
+    .footer-social-links a:hover,
+    .footer-social-links a:focus,
+    .footer-social-links a:active {
         background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%) !important;
         border-color: #92EFFD !important;
         transform: translateY(-2px);
+        color: #fff !important;
     }
     
     @media (max-width: 768px) {

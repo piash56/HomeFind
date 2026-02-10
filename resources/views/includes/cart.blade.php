@@ -424,9 +424,13 @@
                         @endphp
                         <tr>
                             <td data-label="{{ __('Product') }}">
-                                <div class="product-item"><a class="product-thumb" style="padding: 0 !important;"
-                                        href="{{ route('front.product', $item['slug']) }}"><img
-                                            src="{{ asset('storage/images/' . $item['photo']) }}" alt="Product"></a>
+                                <div class="product-item">
+                                    <a class="product-thumb" style="padding: 0 !important;"
+                                        href="{{ route('front.product', $item['slug']) }}">
+                                        <img class="lazy"
+                                             data-src="{{ asset('storage/images/' . $item['photo']) }}" 
+                                             alt="Product">
+                                    </a>
                                     <div class="product-info">
                                         <h4 class="product-title"><a href="{{ route('front.product', $item['slug']) }}">
                                                 {{ Str::limit($item['name'], 45) }}

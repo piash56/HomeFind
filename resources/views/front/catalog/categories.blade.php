@@ -37,9 +37,9 @@
                     <div class="category-image-wrapper position-relative" style="height: 200px; overflow: hidden; border-radius: 12px 12px 0 0; margin: -3px -3px 0 -3px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
                         <a href="{{route('front.products').'?category='.$category->slug}}" class="d-block h-100 w-100 position-relative">
                             <div class="category-image-overlay position-absolute w-100 h-100" style="background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.1) 100%); z-index: 1;"></div>
-                            <img src="{{asset('storage/images/'.$category->photo)}}" 
+                            <img class="lazy category-image position-absolute"
+                                 data-src="{{asset('storage/images/'.$category->photo)}}" 
                                  alt="{{$category->name}}" 
-                                 class="category-image position-absolute" 
                                  style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; top: 0; left: 0;">
                         </a>
                     </div>
