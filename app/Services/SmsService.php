@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Exception;
+use App\Models\Setting;
 
 class SmsService
 {
@@ -160,11 +161,15 @@ class SmsService
      */
     private function createOrderConfirmationMessage($orderNumber, $customerName, $totalAmount)
     {
-        $message = "Dear {$customerName},\n\n";
+        // Get dynamic site title from settings, fallback to app name
+        $setting   = Setting::first();
+        $siteTitle = $setting->title ?? config('app.name', 'Home Find');
+
+        $message  = "Dear {$customerName},\n\n";
         $message .= "Your order #{$orderNumber} has been confirmed and you will received your goods in 2 to 3 days.\n";
         $message .= "Total Amount: ৳" . number_format((float)$totalAmount, 2) . "\n\n";
         $message .= "Regards,\n";
-        $message .= "Home Find";
+        $message .= $siteTitle;
 
         return $message;
     }

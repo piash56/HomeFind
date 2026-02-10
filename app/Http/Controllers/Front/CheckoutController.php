@@ -7,6 +7,7 @@ use App\{
     Http\Controllers\Controller
 };
 use App\Helpers\PriceHelper;
+use App\Helpers\EmailHelper;
 use App\Models\Currency;
 use App\Models\Item;
 use App\Models\Setting;
@@ -310,25 +311,122 @@ class CheckoutController extends Controller
     {
         try {
             $setting = Setting::first();
-            $shippingInfo = json_decode($order->shipping_info, true);
-            $cart = json_decode($order->cart, true);
+            $shippingInfo = json_decode($order->shipping_info, true) ?: [];
+            $cart = json_decode($order->cart, true) ?: [];
+            $discountData = json_decode($order->discount, true) ?: [];
+            $shippingData = json_decode($order->shipping, true) ?: [];
 
-            $customerName = $shippingInfo['ship_first_name'];
-            $customerPhone = $shippingInfo['ship_phone'];
-            $customerAddress = $shippingInfo['ship_address1'];
+            $customerName = $shippingInfo['ship_first_name'] ?? '';
+            $customerPhone = $shippingInfo['ship_phone'] ?? '';
+            $customerAddress = $shippingInfo['ship_address1'] ?? '';
 
-            // Prepare products list for email
-            $productsList = [];
-            foreach ($cart as $itemId => $cartItem) {
-                $productsList[] = [
-                    'name' => $cartItem['name'],
-                    'quantity' => $cartItem['qty'],
-                    'price' => $cartItem['main_price'],
-                ];
+            // Build items table with all products and attributes
+            $itemsHtml = '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; margin: 10px 0;">';
+            $itemsHtml .= '<tr style="background-color:#f8f9fa;">
+                <th style="border:1px solid #ddd; padding:8px; text-align:left;">Product</th>
+                <th style="border:1px solid #ddd; padding:8px; text-align:left;">Attributes</th>
+                <th style="border:1px solid #ddd; padding:8px; text-align:center;">Qty</th>
+                <th style="border:1px solid #ddd; padding:8px; text-align:right;">Unit Price</th>
+                <th style="border:1px solid #ddd; padding:8px; text-align:right;">Line Total</th>
+            </tr>';
+
+            $subTotal = 0;
+
+            foreach ($cart as $itemKey => $cartItem) {
+                $name = $cartItem['name'] ?? '';
+                $qty = $cartItem['qty'] ?? 1;
+                $mainPrice = $cartItem['main_price'] ?? 0;
+                $attrPrice = $cartItem['attribute_price'] ?? 0;
+                $unitRaw = $mainPrice + $attrPrice;
+                $lineRaw = $unitRaw * $qty;
+                $subTotal += $lineRaw;
+
+                // Attributes text
+                $attributesText = '';
+                if (!empty($cartItem['attribute']['option_name']) && is_array($cartItem['attribute']['option_name'])) {
+                    $names = $cartItem['attribute']['names'] ?? [];
+                    foreach ($cartItem['attribute']['option_name'] as $idx => $optName) {
+                        $attrLabel = $names[$idx] ?? '';
+                        $attributesText .= ($attributesText ? '<br>' : '');
+                        $attributesText .= '<strong>' . e($attrLabel) . ':</strong> ' . e($optName);
+                    }
+                }
+
+                $itemsHtml .= '<tr>
+                    <td style="border:1px solid #ddd; padding:8px;">' . e($name) . '</td>
+                    <td style="border:1px solid #ddd; padding:8px;">' . ($attributesText ?: '-') . '</td>
+                    <td style="border:1px solid #ddd; padding:8px; text-align:center;">' . (int)$qty . '</td>
+                    <td style="border:1px solid #ddd; padding:8px; text-align:right;">' . PriceHelper::setCurrencyPrice($unitRaw) . '</td>
+                    <td style="border:1px solid #ddd; padding:8px; text-align:right;">' . PriceHelper::setCurrencyPrice($lineRaw) . '</td>
+                </tr>';
             }
 
-            // Send email (implement as needed)
-            // Mail::to($setting->email)->send(new CartOrderNotification($order, $productsList));
+            // Summary rows
+            $shippingPrice = $shippingData['price'] ?? 0;
+            $tax = $order->tax ?? 0;
+            $statePrice = $order->state_price ?? 0;
+            $discountAmount = $discountData['discount'] ?? 0;
+            $couponCode = $discountData['code']['code'] ?? ($discountData['code'] ?? '');
+
+            $grandTotal = $subTotal + $shippingPrice + $tax + $statePrice - $discountAmount;
+
+            $itemsHtml .= '<tr style="background-color:#f8f9fa;">
+                <td colspan="4" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Subtotal</strong></td>
+                <td style="border:1px solid #ddd; padding:8px; text-align:right;">' . PriceHelper::setCurrencyPrice($subTotal) . '</td>
+            </tr>';
+
+            if ($shippingPrice > 0) {
+                $itemsHtml .= '<tr>
+                    <td colspan="4" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Shipping</strong></td>
+                    <td style="border:1px solid #ddd; padding:8px; text-align:right;">' . PriceHelper::setCurrencyPrice($shippingPrice) . '</td>
+                </tr>';
+            }
+
+            if ($tax > 0) {
+                $itemsHtml .= '<tr>
+                    <td colspan="4" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Tax</strong></td>
+                    <td style="border:1px solid #ddd; padding:8px; text-align:right;">' . PriceHelper::setCurrencyPrice($tax) . '</td>
+                </tr>';
+            }
+
+            if ($statePrice > 0) {
+                $itemsHtml .= '<tr>
+                    <td colspan="4" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>State Charge</strong></td>
+                    <td style="border:1px solid #ddd; padding:8px; text-align:right;">' . PriceHelper::setCurrencyPrice($statePrice) . '</td>
+                </tr>';
+            }
+
+            if ($discountAmount > 0) {
+                $label = 'Coupon Discount';
+                if ($couponCode) {
+                    $label .= ' (' . e($couponCode) . ')';
+                }
+                $itemsHtml .= '<tr>
+                    <td colspan="4" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>' . $label . '</strong></td>
+                    <td style="border:1px solid #ddd; padding:8px; text-align:right;">-' . PriceHelper::setCurrencyPrice($discountAmount) . '</td>
+                </tr>';
+            }
+
+            $itemsHtml .= '<tr style="background-color:#e9ffe9;">
+                <td colspan="4" style="border:1px solid #ddd; padding:8px; text-align:right;"><strong>Grand Total</strong></td>
+                <td style="border:1px solid #ddd; padding:8px; text-align:right; font-weight:bold;">' . PriceHelper::setCurrencyPrice($grandTotal) . '</td>
+            </tr>';
+
+            $itemsHtml .= '</table>';
+
+            $emailData = [
+                'transaction_number' => $order->transaction_number,
+                'customer_name'      => $customerName,
+                'customer_phone'     => $customerPhone,
+                'customer_address'   => $customerAddress,
+                'total_price'        => PriceHelper::setCurrencyPrice($grandTotal),
+                'payment_method'     => $order->payment_method,
+                'order_status'       => $order->order_status,
+                'bulk_pricing_info'  => $itemsHtml,
+            ];
+
+            $emailHelper = new EmailHelper();
+            $emailHelper->adminMail($emailData);
 
         } catch (\Exception $e) {
             \Log::error('Cart order notification failed: ' . $e->getMessage());

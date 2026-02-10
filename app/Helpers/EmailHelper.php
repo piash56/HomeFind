@@ -165,7 +165,9 @@ class EmailHelper
             $this->mail->clearAddresses();
             $this->mail->addAddress($adminEmail);
             $this->mail->isHTML(true);
-            $this->mail->Subject = $template->subject;
+
+            // Dynamic subject: New Order From {site title}
+            $this->mail->Subject = 'New Order From ' . $this->setting->title;
             $this->mail->Body = $email_body;
 
             $this->mail->send();
