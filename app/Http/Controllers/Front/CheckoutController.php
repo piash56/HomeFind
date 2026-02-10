@@ -30,7 +30,7 @@ class CheckoutController extends Controller
         $setting = Setting::first();
         if ($setting->is_guest_checkout != 1) {
             // Require auth for traditional checkout pages but allow direct order endpoint for guests
-            $this->middleware('auth')->except(['placeDirectOrder', 'paymentSuccess']);
+            $this->middleware('auth')->except(['placeDirectOrder', 'paymentSuccess', 'ship_address', 'billingStore']);
         }
         $this->middleware('localize');
         // Removed gateway initializers
@@ -79,7 +79,7 @@ class CheckoutController extends Controller
         $data['discount'] = $discount;
         $data['shipping'] = $shipping;
         $data['tax'] = $total_tax;
-        $data['payments'] = PaymentSetting::whereStatus(1)->get();
+        $data['setting'] = Setting::first();
 
         return view('front.checkout.index', $data);
     }
@@ -141,7 +141,7 @@ class CheckoutController extends Controller
         $data['discount'] = $discount;
         $data['shipping'] = $shipping;
         $data['tax'] = $total_tax;
-        $data['payments'] = PaymentSetting::whereStatus(1)->get();
+        $data['setting'] = Setting::first();
 
         return view('front.checkout.billing', $data);
     }
@@ -150,36 +150,189 @@ class CheckoutController extends Controller
 
     public function billingStore(Request $request)
     {
-        // Store billing address
-        Session::put('billing_address', $request->all());
+        // Validate required fields
+        $request->validate([
+            'bill_first_name' => 'required|string|max:255',
+            'bill_phone' => 'required|string|max:20',
+            'bill_address1' => 'required|string|max:500',
+            'delivery_area' => 'required|in:inside_dhaka,outside_dhaka,free_delivery',
+        ]);
 
-        // If payment method is provided, process order directly (simplified checkout)
-        if ($request->has('payment_method')) {
-            // Set shipping address same as billing for simplified checkout
-            $shipping = [
-                "ship_first_name" => $request->bill_first_name,
-                "ship_last_name" => $request->bill_last_name,
-                "ship_email" => $request->bill_email,
-                "ship_phone" => $request->bill_phone,
-                "ship_company" => $request->bill_company,
-                "ship_address1" => $request->bill_address1,
-                "ship_address2" => $request->bill_address2,
-                "ship_zip" => $request->bill_zip,
-                "ship_city" => $request->bill_city,
-                "ship_country" => $request->bill_country,
-            ];
-            Session::put('shipping_address', $shipping);
-
-            // Set default shipping and state
-            Session::put('shipping_id', $request->shipping_id ?? 1);
-            Session::put('state_id', $request->state_id ?? '');
-
-            // Process the order directly
-            return $this->checkout($request);
+        // Check if cart exists
+        if (!Session::has('cart') || empty(Session::get('cart'))) {
+            return redirect()->route('front.cart')->with('error', 'Your cart is empty');
         }
 
-        // For simplified checkout, always stay on billing page
-        return redirect()->route('front.checkout.billing');
+        try {
+            $cart = Session::get('cart');
+            
+            // Get currency info
+            if (Session::has('currency')) {
+                $currency = Currency::findOrFail(Session::get('currency'));
+            } else {
+                $currency = Currency::where('is_default', 1)->first();
+            }
+
+            // Calculate cart total
+            $cart_total = 0;
+            foreach ($cart as $key => $item) {
+                $cart_total += ($item['main_price'] + $item['attribute_price']) * $item['qty'];
+            }
+
+            // Apply discount if coupon exists
+            $discount = 0;
+            if (Session::has('coupon')) {
+                $discount = Session::get('coupon')['discount'];
+            }
+
+            // Calculate delivery fee based on selected area
+            $shipping_price = 0;
+            $delivery_area_title = '';
+            
+            if ($request->delivery_area === 'free_delivery') {
+                $shipping_price = 0;
+                $delivery_area_title = 'Free Delivery';
+            } elseif ($request->delivery_area === 'inside_dhaka') {
+                $shipping_price = 70;
+                $delivery_area_title = 'Inside Dhaka Delivery';
+            } else {
+                $shipping_price = 130;
+                $delivery_area_title = 'Outside Dhaka Delivery';
+            }
+
+            $tax = 0;
+            $state_price = 0;
+            $grand_total = $cart_total + $tax + $shipping_price - $discount + $state_price;
+
+            // Create billing address (include order notes in billing info)
+            $billing_address = [
+                'bill_first_name' => $request->bill_first_name,
+                'bill_last_name' => '',
+                'bill_email' => $request->bill_email ?? 'customer@example.com',
+                'bill_phone' => $request->bill_phone,
+                'bill_company' => '',
+                'bill_address1' => $request->bill_address1,
+                'bill_address2' => '',
+                'bill_zip' => '',
+                'bill_city' => 'Dhaka',
+                'bill_country' => 'Bangladesh',
+                'order_notes' => $request->order_notes ?? '', // Store notes here
+            ];
+
+            // Create shipping address (same as billing)
+            $shipping_address = [
+                'ship_first_name' => $request->bill_first_name,
+                'ship_last_name' => '',
+                'ship_email' => $request->bill_email ?? 'customer@example.com',
+                'ship_phone' => $request->bill_phone,
+                'ship_company' => '',
+                'ship_address1' => $request->bill_address1,
+                'ship_address2' => '',
+                'ship_zip' => '',
+                'ship_city' => 'Dhaka',
+                'ship_country' => 'Bangladesh',
+            ];
+
+            // Create order data
+            $orderData = [
+                'state' => null,
+                'cart' => json_encode($cart),
+                'discount' => json_encode(Session::has('coupon') ? Session::get('coupon') : []),
+                'shipping' => json_encode(['title' => $delivery_area_title, 'price' => $shipping_price]),
+                'tax' => $tax,
+                'state_price' => $state_price,
+                'shipping_info' => json_encode($shipping_address),
+                'billing_info' => json_encode($billing_address),
+                'payment_method' => 'Cash On Delivery',
+                'user_id' => Auth::check() ? Auth::id() : 0,
+                'transaction_number' => Str::random(10),
+                'currency_sign' => $currency->sign,
+                'currency_value' => $currency->value,
+                'payment_status' => 'Unpaid',
+                'order_status' => 'Pending',
+            ];
+
+            // Create the order
+            $order = Order::create($orderData);
+
+            // Generate proper transaction number
+            $new_txn = 'ORD-' . str_pad(Carbon::now()->format('Ymd'), 4, '0000', STR_PAD_LEFT) . '-' . $order->id;
+            $order->transaction_number = $new_txn;
+            $order->save();
+
+            // Create order tracking
+            TrackOrder::create([
+                'title' => 'Pending',
+                'order_id' => $order->id,
+            ]);
+
+            // Create notification
+            Notification::create([
+                'order_id' => $order->id
+            ]);
+
+            // Reduce stock for each item in cart
+            foreach ($cart as $key => $item) {
+                $itemId = explode('-', $key, 2)[0];
+                $product = Item::find($itemId);
+                if ($product && $product->item_type == 'normal') {
+                    $product->stock = $product->stock - $item['qty'];
+                    $product->save();
+                }
+            }
+
+            // Send admin email notification if enabled
+            try {
+                $setting = Setting::first();
+                if ($setting->order_mail == 1) {
+                    $this->sendCartOrderNotification($order);
+                }
+            } catch (\Exception $emailError) {
+                \Log::error('Email notification failed: ' . $emailError->getMessage());
+            }
+
+            // Clear sessions
+            Session::forget(['cart', 'billing_address', 'shipping_address', 'coupon', 'shipping_id', 'state_id']);
+
+            // Redirect to success page
+            return redirect()->route('front.checkout.success', ['id' => $order->id]);
+
+        } catch (\Exception $e) {
+            \Log::error('Checkout failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to place order. Please try again.');
+        }
+    }
+
+    /**
+     * Send admin email notification for cart order
+     */
+    private function sendCartOrderNotification($order)
+    {
+        try {
+            $setting = Setting::first();
+            $shippingInfo = json_decode($order->shipping_info, true);
+            $cart = json_decode($order->cart, true);
+
+            $customerName = $shippingInfo['ship_first_name'];
+            $customerPhone = $shippingInfo['ship_phone'];
+            $customerAddress = $shippingInfo['ship_address1'];
+
+            // Prepare products list for email
+            $productsList = [];
+            foreach ($cart as $itemId => $cartItem) {
+                $productsList[] = [
+                    'name' => $cartItem['name'],
+                    'quantity' => $cartItem['qty'],
+                    'price' => $cartItem['main_price'],
+                ];
+            }
+
+            // Send email (implement as needed)
+            // Mail::to($setting->email)->send(new CartOrderNotification($order, $productsList));
+
+        } catch (\Exception $e) {
+            \Log::error('Cart order notification failed: ' . $e->getMessage());
+        }
     }
 
 
@@ -230,7 +383,7 @@ class CheckoutController extends Controller
         $data['discount'] = $discount;
         $data['shipping'] = $shipping;
         $data['tax'] = $total_tax;
-        $data['payments'] = PaymentSetting::whereStatus(1)->get();
+        $data['setting'] = Setting::first();
         return view('front.checkout.shipping', $data);
     }
 
@@ -296,7 +449,7 @@ class CheckoutController extends Controller
         $data['discount'] = $discount;
         $data['shipping'] = $shipping;
         $data['tax'] = $total_tax;
-        $data['payments'] = PaymentSetting::whereStatus(1)->get();
+        $data['setting'] = Setting::first();
         return view('front.checkout.payment', $data);
     }
 
@@ -950,7 +1103,50 @@ class CheckoutController extends Controller
                 }
             }
             
-            $discount = 0; // No discount
+            // Handle coupon discount if provided
+            $discount = 0;
+            $discountData = [];
+            
+            if ($request->has('coupon_code') && !empty($request->coupon_code)) {
+                $promoCode = \App\Models\PromoCode::where('code_name', $request->coupon_code)
+                    ->where('status', 1)
+                    ->first();
+                
+                if ($promoCode && $promoCode->no_of_times > 0 && $promoCode->isValidDate()) {
+                    // Check if coupon is product-specific
+                    if ($promoCode->product_id && $promoCode->product_id != $item->id) {
+                        // Coupon not valid for this product, skip discount
+                    } else {
+                        // Calculate discount
+                        if ($promoCode->type == 'percentage') {
+                            $discount = ($cart_total * $promoCode->discount) / 100;
+                        } else {
+                            $discount = $promoCode->discount;
+                        }
+                        
+                        // Ensure discount doesn't exceed cart total
+                        if ($discount > $cart_total) {
+                            $discount = $cart_total;
+                        }
+                        
+                        // Store discount data for order
+                        $discountData = [
+                            'discount' => $discount,
+                            'code' => [
+                                'id' => $promoCode->id,
+                                'code_name' => $promoCode->code_name,
+                                'title' => $promoCode->title,
+                                'type' => $promoCode->type,
+                                'discount' => $promoCode->discount
+                            ]
+                        ];
+                        
+                        // Reduce coupon usage count
+                        $promoCode->decrement('no_of_times');
+                    }
+                }
+            }
+            
             $state_price = 0; // No state tax
             $grand_total = $cart_total + $tax + $shipping_price - $discount + $state_price;
 
@@ -1004,6 +1200,7 @@ class CheckoutController extends Controller
                 'bill_zip' => '',
                 'bill_city' => 'Dhaka',
                 'bill_country' => 'Bangladesh',
+                'order_notes' => $request->order_notes ?? '', // Store order notes
             ];
 
             // Create shipping address (same as billing)
@@ -1024,7 +1221,7 @@ class CheckoutController extends Controller
             $orderData = [
                 'state' => null,
                 'cart' => json_encode($cart),
-                'discount' => json_encode([]),
+                'discount' => json_encode($discountData),
                 'shipping' => json_encode(['title' => $delivery_area_title, 'price' => $shipping_price]),
                 'tax' => $tax,
                 'state_price' => $state_price,

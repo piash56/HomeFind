@@ -7,16 +7,35 @@
             {{ $data->code_name }}
         </td>
         <td>
-            {{ $data->no_of_times }}
+            @if($data->product_id && $data->product)
+                <span class="badge badge-info">{{ $data->product->name }}</span>
+            @else
+                <span class="text-muted">{{ __('All Products') }}</span>
+            @endif
         </td>
-
         <td>
             @if ($data->type == 'amount')
             {{ PriceHelper::adminCurrencyPrice($data->discount) }}
             @else
             {{ $data->discount }} %
             @endif
-
+        </td>
+        <td>
+            @if($data->start_date || $data->end_date)
+                <small>
+                    @if($data->start_date)
+                        <b>{{ __('From') }}:</b> {{ \Carbon\Carbon::parse($data->start_date)->format('M d, Y') }}<br>
+                    @endif
+                    @if($data->end_date)
+                        <b>{{ __('To') }}:</b> {{ \Carbon\Carbon::parse($data->end_date)->format('M d, Y') }}
+                    @endif
+                </small>
+            @else
+                <span class="text-muted">{{ __('No limit') }}</span>
+            @endif
+        </td>
+        <td>
+            {{ $data->no_of_times }}
         </td>
         <td>
 

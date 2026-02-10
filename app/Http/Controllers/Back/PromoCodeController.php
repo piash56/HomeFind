@@ -8,6 +8,7 @@ use App\{
     Http\Controllers\Controller
 };
 use App\Models\Currency;
+use App\Helpers\PriceHelper;
 
 class PromoCodeController extends Controller
 {
@@ -41,7 +42,8 @@ class PromoCodeController extends Controller
      */
     public function create()
     {
-        return view('back.code.create');
+        $products = \App\Models\Item::orderBy('name')->get();
+        return view('back.code.create', compact('products'));
     }
 
     /**
@@ -54,6 +56,20 @@ class PromoCodeController extends Controller
     {
         $curr = Currency::where('is_default',1)->first();
         $input = $request->all();
+        
+        // Validate fixed amount doesn't exceed product price
+        if($input['type'] == 'amount' && !empty($input['product_id'])){
+            $product = \App\Models\Item::find($input['product_id']);
+            if($product){
+                $discountAmount = $input['discount'] / $curr->value;
+                if($discountAmount > $product->discount_price){
+                    return redirect()->back()
+                        ->withErrors(['discount' => __('Fixed discount amount cannot exceed the product price') . ' (' . PriceHelper::adminCurrencyPrice($product->discount_price) . ')'])
+                        ->withInput();
+                }
+            }
+        }
+        
         if($input['type'] == 'amount'){
             $input['discount'] = $input['discount'] / $curr->value;
         }
@@ -98,6 +114,20 @@ class PromoCodeController extends Controller
     {
         $curr = Currency::where('is_default',1)->first();
         $input = $request->all();
+        
+        // Validate fixed amount doesn't exceed product price
+        if($input['type'] == 'amount' && !empty($input['product_id'])){
+            $product = \App\Models\Item::find($input['product_id']);
+            if($product){
+                $discountAmount = $input['discount'] / $curr->value;
+                if($discountAmount > $product->discount_price){
+                    return redirect()->back()
+                        ->withErrors(['discount' => __('Fixed discount amount cannot exceed the product price') . ' (' . PriceHelper::adminCurrencyPrice($product->discount_price) . ')'])
+                        ->withInput();
+                }
+            }
+        }
+        
         if($input['type'] == 'amount'){
             $input['discount'] = $input['discount'] / $curr->value;
         }

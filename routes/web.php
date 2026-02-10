@@ -307,6 +307,8 @@ Route::group(['middleware' => 'maintainance'], function () {
         // Products catalog page
         Route::get('/products', 'Front\CatalogController@index')->name('front.products');
         Route::get('/product/{slug}', 'Front\FrontendController@product')->name('front.product');
+        // Categories page
+        Route::get('/categories', 'Front\CatalogController@categories')->name('front.categories');
 
 
 
@@ -336,6 +338,17 @@ Route::group(['middleware' => 'maintainance'], function () {
 
         //------------ SEARCH SUGGEST ------------
         Route::get('/search/suggest', 'Front\CatalogController@suggestSearch')->name('front.search.suggest');
+
+        //------------ CART & CHECKOUT ------------
+        Route::get('/cart', 'Front\CartController@index')->name('front.cart');
+        Route::get('/product/add/cart', 'Front\CartController@add')->name('front.cart.add');
+        Route::get('/cart/clear', 'Front\CartController@clear')->name('front.cart.clear');
+        Route::get('/cart/destroy/{key}', 'Front\CartController@destroy')->name('front.cart.destroy');
+        Route::get('/cart/load', 'Front\CartController@getLoad')->name('cart.get.load');
+        Route::post('/promo/submit', 'Front\CartController@promoSubmit')->name('front.promo.submit');
+        Route::get('/promo/destroy', 'Front\CartController@promoDestroy')->name('front.promo.destroy');
+        Route::get('/checkout/billing/address', 'Front\CheckoutController@ship_address')->name('front.checkout.billing');
+        Route::post('/checkout/billing/address', 'Front\CheckoutController@billingStore')->name('front.checkout.billing.store');
 
         //------------ CATCH-ALL ROUTE ------------
         // Redirect any other URL to the root (shop page)

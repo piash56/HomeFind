@@ -9,7 +9,7 @@
 
 @section('content')
 <!-- Hero Section with Featured Product Slider -->
-<section class="hero-section py-5 mb-5" style="background: linear-gradient(135deg, #093028 0%, #237a57 100%); border-radius: 0 0 50px 50px;">
+<section class="hero-section py-5 mb-5" style="background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border-radius: 0 0 50px 50px;">
     <div class="container">
         <div class="row align-items-center">
             {{-- Left: Hero text ~60% (7/12) --}}
@@ -39,7 +39,7 @@
                     <!-- Introductory Badge -->
                     <div class="mb-3">
                         <span class="badge px-3 py-2 d-inline-flex align-items-center" style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 25px; font-size: 13px; font-weight: 600;">
-                            <i class="{{ $heroBadgeIcon }} me-2" style="background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
+                            <i class="{{ $heroBadgeIcon }} me-2" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"></i>
                             <span>{{ $heroBadgeText }}</span>
                         </span>
                     </div>
@@ -47,7 +47,7 @@
                     <!-- Main Headline -->
                     <h1 class="display-4 fw-bold mb-3" style="line-height: 1.2;">
                         <span class="d-block" style="color: #fff;">{{ $heroHeadline1 }}</span>
-                        <span class="d-block" style="background-color: #0575e6; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ $heroHeadline2 }}</span>
+                        <span class="d-block" style="background-color: #DD2476; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ $heroHeadline2 }}</span>
                     </h1>
 
                     <!-- Descriptive Text -->
@@ -57,7 +57,7 @@
 
                     <!-- Call-to-Action Buttons -->
                     <div class="d-flex flex-wrap gap-3 mb-4">
-                        <a href="{{ $button1Link }}" class="btn-lg px-4 py-3 fw-bold d-inline-flex align-items-center justify-content-center text-white" style="background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%); border-radius: 10px; box-shadow: 0 4px 15px rgba(33, 147, 176, 0.3); transition: all 0.3s ease;">
+                        <a href="{{ $button1Link }}" class="btn-lg px-4 py-3 fw-bold d-inline-flex align-items-center justify-content-center text-white" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border-radius: 10px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease;">
                             <i class="{{ $button1Icon }} me-2"></i>{{ $button1Text }} <i class="fas fa-arrow-right ms-2"></i>
                         </a>
                         <a href="{{ $button2Link }}" class="btn-lg px-4 py-3 fw-bold d-inline-flex align-items-center justify-content-center" style="background: transparent; color: #fff; border: 2px solid #fff; border-radius: 10px; transition: all 0.3s ease;">
@@ -66,17 +66,17 @@
                     </div>
 
                     <!-- Statistics/Metrics -->
-                    <div class="d-flex flex-wrap gap-4 mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div class="hero-stats-row d-flex flex-wrap gap-4 mt-4 pt-3" style="border-top: 1px solid rgba(255, 255, 255, 0.2);">
                         <div class="stat-item">
-                            <div class="fw-bold" style="font-size: 28px; line-height: 1; background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ $stat1Number ? $stat1Number : $totalProducts }}{{ $stat1Number ? '' : '+' }}</div>
+                            <div class="fw-bold" style="font-size: 28px; line-height: 1; color: #4E65FF;">{{ $stat1Number ? $stat1Number : $totalProducts }}{{ $stat1Number ? '' : '+' }}</div>
                             <div class="small" style="font-size: 13px; opacity: 0.9;">{{ $stat1Label }}</div>
                         </div>
                         <div class="stat-item">
-                            <div class="fw-bold" style="font-size: 28px; line-height: 1; background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ $stat2Number ? $stat2Number : $totalOrders }}{{ $stat2Number ? '' : '+' }}</div>
+                            <div class="fw-bold" style="font-size: 28px; line-height: 1; color: #4E65FF;">{{ $stat2Number ? $stat2Number : $totalOrders }}{{ $stat2Number ? '' : '+' }}</div>
                             <div class="small" style="font-size: 13px; opacity: 0.9;">{{ $stat2Label }}</div>
                         </div>
                         <div class="stat-item">
-                            <div class="fw-bold" style="font-size: 28px; line-height: 1; background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ $stat3Number ? $stat3Number : $totalCustomers }}{{ $stat3Number ? '' : '+' }}</div>
+                            <div class="fw-bold" style="font-size: 28px; line-height: 1; color: #4E65FF;">{{ $stat3Number ? $stat3Number : $totalCustomers }}{{ $stat3Number ? '' : '+' }}</div>
                             <div class="small" style="font-size: 13px; opacity: 0.9;">{{ $stat3Label }}</div>
                         </div>
                     </div>
@@ -100,7 +100,7 @@
                         <div class="position-absolute top-0 start-0 w-100 p-3" style="z-index: 10;">
                             <div class="d-flex justify-content-between align-items-start">
                                 <!-- Hot Deal Badge -->
-                                <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(75, 108, 183, 0.3);">
+                                <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(78, 101, 255, 0.3);">
                                     <i class="fas fa-fire me-1"></i>{{__('Stock Clearance')}}
                                 </span>
                                 
@@ -152,7 +152,7 @@
                         <!-- Product Content -->
                         <div class="px-4 pb-4">
                             <!-- Product Name -->
-                            <h4 class="product-name mb-2" style="font-size: 15px; font-weight: 600; line-height: 1.4; min-height: 42px;">
+                            <h4 class="product-name mb-2" style="font-size: 15px; font-weight: 600;">
                                 <a href="{{route('front.product', $item->slug)}}" class="text-dark text-decoration-none" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 22px;">
                                     {{ Str::limit($item->name, 60) }}
                                 </a>
@@ -164,14 +164,14 @@
                             </div>
                             
                             <!-- Prices -->
-                            <div class="mb-3">
+                            <div class="home-product-price-row mb-3">
                                 @if ($item->previous_price != 0)
-                                <div class="mb-1">
+                                <div class="home-product-old-price">
                                     <del class="text-muted" style="font-size: 16px;">{{PriceHelper::setPreviousPrice($item->previous_price)}}</del>
                                 </div>
                                 @endif
-                                <div>
-                                    <span class="fw-bold" style="font-size: 26px; background-color: #093028;linear-gradient(135deg, #4b6cb7 0%, #182848 100%) -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{PriceHelper::grandCurrencyPrice($item)}}</span>
+                                <div class="home-product-main-price">
+                                    <span class="fw-bold" style="font-size: 26px; background-color: #4E65FF;linear-gradient(135deg, #DD2476 0%, #FF512F 100%) -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{PriceHelper::grandCurrencyPrice($item)}}</span>
                                 </div>
                             </div>
                             
@@ -187,7 +187,7 @@
                                     <small class="text-muted" style="font-size: 14px;">{{__('Available')}}: {{$item->stock}}</small>
                                 </div>
                                 <div class="progress" style="height: 18px; border-radius: 10px; background: #e9ecef;">
-                                    <div class="progress-bar" role="progressbar" style="width: {{$stockPercentage}}%; border-radius: 10px; background: #237a57;" aria-valuenow="{{$stockPercentage}}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress-bar" role="progressbar" style="width: {{$stockPercentage}}%; border-radius: 10px; background: #4E65FF ;" aria-valuenow="{{$stockPercentage}}" aria-valuemin="0" aria-valuemax="100"></div>
                                 </div>
                             </div>
                             @endif
@@ -195,8 +195,11 @@
                             <!-- Order Now Button -->
                             <div class="mt-3">
                                 @if($item->is_stock())
-                                <a href="{{route('front.product', $item->slug)}}" class="w-100 fw-bold text-white d-flex align-items-center justify-content-center" style=" border-radius: 10px; background: linear-gradient(135deg, #093028 0%, #237a57 100%); border: none; padding: 12px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(33, 147, 176, 0.3); transition: all 0.3s ease;">
+                                <a href="{{route('front.product', $item->slug)}}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style=" border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                                     <i class="fas fa-shopping-cart me-2"></i>{{__('Order Now')}}
+                                </a>
+                                <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                    <i class="fas fa-cart-plus me-2"></i>{{__('Add to Cart')}}
                                 </a>
                                 @else
                                 <button class="btn w-100 rounded-pill text-white" disabled style="background: #6c757d; border: none; padding: 11px 20px; font-size: 14px;">
@@ -230,13 +233,22 @@
             <div class="col-12 text-center">
                 <h2 class="section-title fw-bold mb-2" style="font-size: 2.5rem; color: #232323;">{{__('Best Selling Products')}}</h2>
                 <p class="text-muted">{{__('Handpicked products loved by our customers')}}</p>
-                <div class="title-divider mx-auto mb-4" style="width: 80px; height: 4px; background: linear-gradient(135deg, #093028 0%, #237a57 100%); border-radius: 2px;"></div>
+                <div class="title-divider mx-auto mb-4" style="width: 80px; height: 4px; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border-radius: 2px;"></div>
             </div>
         </div>
         
         @if(isset($bestSellingProducts) && $bestSellingProducts && $bestSellingProducts->count() > 0)
-        <div class="best-selling-slider owl-carousel" id="best-selling-products-slider">
-            @foreach($bestSellingProducts as $item)
+        @php
+            $productCount = $bestSellingProducts->count();
+            $showTwoRows = $productCount > 10;
+            $firstRowProducts = $showTwoRows ? $bestSellingProducts->take(6) : $bestSellingProducts;
+            $secondRowProducts = $showTwoRows ? $bestSellingProducts->skip(6)->take(6) : collect();
+        @endphp
+        
+        @if($showTwoRows)
+            <!-- First Row -->
+            <div class="best-selling-slider owl-carousel mb-4" id="best-selling-products-slider-row-1">
+                @foreach($firstRowProducts as $item)
             <div class="item">
                 <div class="product-card bg-white rounded-4 shadow-lg position-relative overflow-hidden h-100" style="border: 1px solid rgba(102, 126, 234, 0.1); min-height: 450px;">
                     <!-- Badges Container -->
@@ -244,7 +256,7 @@
                         <div class="d-flex justify-content-between align-items-start">
                             <!-- Best Seller Badge -->
                             @if ($item->is_stock())
-                            <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(75, 108, 183, 0.3);">
+                            <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(78, 101, 255, 0.3);">
                                 <i class="fas fa-fire me-1"></i>{{__('Best Seller')}}
                             </span>
                             @else
@@ -275,7 +287,7 @@
                     <!-- Product Content -->
                     <div class="px-4 pb-4" style="flex: 1; display: flex; flex-direction: column;">
                         <!-- Product Name -->
-                        <h4 class="product-name mb-2" style="font-size: 20px; font-weight: 600; line-height: 1.4; min-height: 42px;">
+                        <h4 class="product-name mb-2" style="font-size: 20px; font-weight: 600;">
                             <a href="{{route('front.product', $item->slug)}}" class="text-dark text-decoration-none" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 20px;">
                                 {{ Str::limit($item->name, 60) }}
                             </a>
@@ -287,22 +299,25 @@
                         </div>
                         
                         <!-- Prices -->
-                        <div class="mb-3">
+                        <div class="home-product-price-row">
                             @if ($item->previous_price != 0)
-                            <div class="mb-1">
+                            <div class="home-product-old-price">
                                 <del class="text-muted" style="font-size: 16px;">{{PriceHelper::setPreviousPrice($item->previous_price)}}</del>
                             </div>
                             @endif
-                            <div>
-                                <span class="fw-bold" style="font-size: 26px; background-color: #093028;linear-gradient(135deg, #4b6cb7 0%, #182848 100%) -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{PriceHelper::grandCurrencyPrice($item)}}</span>
+                            <div class="home-product-main-price">
+                                <span class="fw-bold" style="font-size: 26px; background-color: #4E65FF;linear-gradient(135deg, #DD2476 0%, #FF512F 100%) -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{PriceHelper::grandCurrencyPrice($item)}}</span>
                             </div>
                         </div>
                         
                         <!-- Order Now Button -->
-                        <div class="mt-auto" style="margin-top: auto;">
+                        <div class="" style="margin-top: 10px;">
                             @if($item->is_stock())
-                            <a href="{{route('front.product', $item->slug)}}" class="w-100 fw-bold text-white d-flex align-items-center justify-content-center" style="border-radius: 10px; background: linear-gradient(135deg, #093028 0%, #237a57 100%); border: none; padding: 12px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(33, 147, 176, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                            <a href="{{route('front.product', $item->slug)}}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                                 <i class="fas fa-shopping-cart me-2"></i>{{__('Order Now')}}
+                            </a>
+                            <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                <i class="fas fa-cart-plus me-2"></i>{{__('Add to Cart')}}
                             </a>
                             @else
                             <button class="btn w-100 rounded-pill text-white" disabled style="background: #6c757d; border: none; padding: 11px 20px; font-size: 14px;">
@@ -313,11 +328,184 @@
                     </div>
                 </div>
             </div>
-            @endforeach
-        </div>
+                @endforeach
+            </div>
+            
+            @if($secondRowProducts->count() > 0)
+                <!-- Second Row -->
+                <div class="best-selling-slider owl-carousel" id="best-selling-products-slider-row-2">
+                    @foreach($secondRowProducts as $item)
+                        <div class="item">
+                            <div class="product-card bg-white rounded-4 shadow-lg position-relative overflow-hidden h-100" style="border: 1px solid rgba(102, 126, 234, 0.1); min-height: 450px;">
+                                <!-- Badges Container -->
+                                <div class="position-absolute top-0 start-0 w-100 p-3" style="z-index: 10;">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <!-- Best Seller Badge -->
+                                        @if ($item->is_stock())
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(78, 101, 255, 0.3);">
+                                            <i class="fas fa-fire me-1"></i>{{__('Best Seller')}}
+                                        </span>
+                                        @else
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: #6c757d; border: none; border-radius: 20px;">
+                                            {{__('Out of Stock')}}
+                                        </span>
+                                        @endif
+                                        
+                                        <!-- Discount Badge -->
+                                        @if($item->previous_price && $item->previous_price != 0)
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #ed213a 0%, #93291e 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(237, 33, 58, 0.3);">
+                                            -{{PriceHelper::DiscountPercentage($item)}}
+                                        </span>
+                                        @endif
+                                    </div>
+                                </div>
+                                
+                                <!-- Product Image Section -->
+                                <div class="product-image-wrapper position-relative" style="height: 220px; border-radius: 12px 12px 0 0; overflow: hidden; margin: -1px -1px 0 -1px; padding: 8px;">
+                                    <a href="{{route('front.product', $item->slug)}}" class="d-block h-100 w-100">
+                                        <img src="{{asset('storage/images/'.$item->thumbnail)}}" 
+                                             alt="{{$item->name}}" 
+                                             class="featured-product-image" 
+                                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                    </a>
+                                </div>
+                                
+                                <!-- Product Content -->
+                                <div class="px-4 pb-4" style="flex: 1; display: flex; flex-direction: column;">
+                                    <!-- Product Name -->
+                                    <h4 class="product-name mb-2" style="font-size: 20px; font-weight: 600;">
+                                        <a href="{{route('front.product', $item->slug)}}" class="text-dark text-decoration-none" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 20px;">
+                                            {{ Str::limit($item->name, 60) }}
+                                        </a>
+                                    </h4>
+                                    
+                                    <!-- Rating Stars -->
+                                    <div class="rating-stars mb-2" style="font-size: 13px;">
+                                        {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
+                                    </div>
+                                    
+                                    <!-- Prices -->
+                                    <div class="home-product-price-row">
+                                        @if ($item->previous_price != 0)
+                                        <div class="home-product-old-price">
+                                            <del class="text-muted" style="font-size: 16px;">{{PriceHelper::setPreviousPrice($item->previous_price)}}</del>
+                                        </div>
+                                        @endif
+                                        <div class="home-product-main-price">
+                                            <span class="fw-bold" style="font-size: 26px; background-color: #4E65FF;linear-gradient(135deg, #DD2476 0%, #FF512F 100%) -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{PriceHelper::grandCurrencyPrice($item)}}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Order Now Button -->
+                                    <div class="" style="margin-top: 10px;">
+                                        @if($item->is_stock())
+                                        <a href="{{route('front.product', $item->slug)}}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                                            <i class="fas fa-shopping-cart me-2"></i>{{__('Order Now')}}
+                                        </a>
+                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                            <i class="fas fa-cart-plus me-2"></i>{{__('Add to Cart')}}
+                                        </a>
+                                        @else
+                                        <button class="btn w-100 rounded-pill text-white" disabled style="background: #6c757d; border: none; padding: 11px 20px; font-size: 14px;">
+                                            {{__('Out of Stock')}}
+                                        </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        @else
+            <!-- Single Row (10 or fewer products) -->
+            <div class="best-selling-slider owl-carousel" id="best-selling-products-slider">
+                @foreach($bestSellingProducts as $item)
+                    <div class="item">
+                        <div class="product-card bg-white rounded-4 shadow-lg position-relative overflow-hidden h-100" style="border: 1px solid rgba(102, 126, 234, 0.1); min-height: 450px;">
+                            <!-- Badges Container -->
+                            <div class="position-absolute top-0 start-0 w-100 p-3" style="z-index: 10;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <!-- Best Seller Badge -->
+                                    @if ($item->is_stock())
+                                    <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(78, 101, 255, 0.3);">
+                                        <i class="fas fa-fire me-1"></i>{{__('Best Seller')}}
+                                    </span>
+                                    @else
+                                    <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: #6c757d; border: none; border-radius: 20px;">
+                                        {{__('Out of Stock')}}
+                                    </span>
+                                    @endif
+                                    
+                                    <!-- Discount Badge -->
+                                    @if($item->previous_price && $item->previous_price != 0)
+                                    <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #ed213a 0%, #93291e 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(237, 33, 58, 0.3);">
+                                        -{{PriceHelper::DiscountPercentage($item)}}
+                                    </span>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            <!-- Product Image Section -->
+                            <div class="product-image-wrapper position-relative" style="height: 220px; border-radius: 12px 12px 0 0; overflow: hidden; margin: -1px -1px 0 -1px; padding: 8px;">
+                                <a href="{{route('front.product', $item->slug)}}" class="d-block h-100 w-100">
+                                    <img src="{{asset('storage/images/'.$item->thumbnail)}}" 
+                                         alt="{{$item->name}}" 
+                                         class="featured-product-image" 
+                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                </a>
+                            </div>
+                            
+                            <!-- Product Content -->
+                            <div class="px-4 pb-4" style="flex: 1; display: flex; flex-direction: column;">
+                                <!-- Product Name -->
+                                <h4 class="product-name mb-2" style="font-size: 20px; font-weight: 600;">
+                                    <a href="{{route('front.product', $item->slug)}}" class="text-dark text-decoration-none" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 20px;">
+                                        {{ Str::limit($item->name, 60) }}
+                                    </a>
+                                </h4>
+                                
+                                <!-- Rating Stars -->
+                                <div class="rating-stars mb-2" style="font-size: 13px;">
+                                    {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
+                                </div>
+                                
+                                <!-- Prices -->
+                                <div class="home-product-price-row">
+                                    @if ($item->previous_price != 0)
+                                    <div class="home-product-old-price">
+                                        <del class="text-muted" style="font-size: 16px;">{{PriceHelper::setPreviousPrice($item->previous_price)}}</del>
+                                    </div>
+                                    @endif
+                                    <div class="home-product-main-price">
+                                        <span class="fw-bold" style="font-size: 26px; background-color: #4E65FF;linear-gradient(135deg, #DD2476 0%, #FF512F 100%) -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{PriceHelper::grandCurrencyPrice($item)}}</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Order Now Button -->
+                                <div class="" style="margin-top: 10px;">
+                                    @if($item->is_stock())
+                                    <a href="{{route('front.product', $item->slug)}}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                                        <i class="fas fa-shopping-cart me-2"></i>{{__('Order Now')}}
+                                    </a>
+                                    <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                        <i class="fas fa-cart-plus me-2"></i>{{__('Add to Cart')}}
+                                    </a>
+                                    @else
+                                    <button class="btn w-100 rounded-pill text-white" disabled style="background: #6c757d; border: none; padding: 11px 20px; font-size: 14px;">
+                                        {{__('Out of Stock')}}
+                                    </button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
         
         <div class="text-center mt-5">
-            <a href="{{route('front.products')}}" class="btn-lg px-4 py-3 fw-bold d-inline-flex align-items-center justify-content-center text-white" style="background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%); border-radius: 10px; box-shadow: 0 4px 15px rgba(33, 147, 176, 0.3); transition: all 0.3s ease; text-decoration: none;">
+            <a href="{{route('front.products')}}" class="btn-lg px-4 py-3 fw-bold d-inline-flex align-items-center justify-content-center text-white" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border-radius: 10px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                 <i class="fas fa-shopping-bag me-2"></i>{{__('View All Products')}} <i class="fas fa-arrow-right ms-2"></i>
             </a>
         </div>
@@ -334,6 +522,299 @@
     </div>
 </section>
 
+<!-- Featured Products Grid Section (Admin Selected) -->
+<section id="featured-grid-section" class="featured-grid-section py-5" style="background: #f9fafb;">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2 class="section-title fw-bold mb-2" style="font-size: 2.5rem; color: #232323;">{{ __('Featured Products') }}</h2>
+                <p class="text-muted">{{ __('Special products selected by our store') }}</p>
+                <div class="title-divider mx-auto mb-4" style="width: 80px; height: 4px; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border-radius: 2px;"></div>
+            </div>
+        </div>
+
+        @if(isset($featuredGridProducts) && $featuredGridProducts && $featuredGridProducts->count() > 0)
+        @php
+            $featuredCount = $featuredGridProducts->count();
+            $featuredShowTwoRows = $featuredCount > 10;
+            $featuredFirstRowProducts = $featuredShowTwoRows ? $featuredGridProducts->take(6) : $featuredGridProducts;
+            $featuredSecondRowProducts = $featuredShowTwoRows ? $featuredGridProducts->skip(6)->take(6) : collect();
+        @endphp
+        
+        @if($featuredShowTwoRows)
+            <!-- First Row -->
+            <div class="featured-products-slider owl-carousel mb-4" id="featured-products-slider-row-1">
+                @foreach($featuredFirstRowProducts as $item)
+                    <div class="item">
+                        <div class="product-card bg-white rounded-4 shadow-lg position-relative overflow-hidden h-100" style="border: 1px solid rgba(102, 126, 234, 0.1); min-height: 450px;">
+                            <!-- Badges Container -->
+                            <div class="position-absolute top-0 start-0 w-100 p-3" style="z-index: 10;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <!-- Featured Badge -->
+                                    @if ($item->is_stock())
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(78, 101, 255, 0.3);">
+                                            <i class="fas fa-star me-1"></i>{{ __('Featured') }}
+                                        </span>
+                                    @else
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: #6c757d; border: none; border-radius: 20px;">
+                                            {{ __('Out of Stock') }}
+                                        </span>
+                                    @endif
+
+                                    <!-- Discount Badge -->
+                                    @if($item->previous_price && $item->previous_price != 0)
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #ed213a 0%, #93291e 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(237, 33, 58, 0.3);">
+                                            -{{ PriceHelper::DiscountPercentage($item) }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Product Image -->
+                            <div class="product-image-wrapper position-relative mb-3" style="height: 220px; border-radius: 12px 12px 0 0; overflow: hidden; margin: -1px -1px 0 -1px; padding: 8px;">
+                                <a href="{{ route('front.product', $item->slug) }}" class="d-block h-100 w-100">
+                                    <img src="{{ asset('storage/images/'.$item->thumbnail) }}"
+                                         alt="{{ $item->name }}"
+                                         class="featured-product-image"
+                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                </a>
+                            </div>
+
+                            <!-- Product Content -->
+                            <div class="px-4 pb-4" style="flex: 1; display: flex; flex-direction: column;">
+                                <!-- Product Name -->
+                                <h4 class="product-name mb-2" style="font-size: 20px; font-weight: 600;">
+                                    <a href="{{ route('front.product', $item->slug) }}" class="text-dark text-decoration-none" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 20px;">
+                                        {{ Str::limit($item->name, 60) }}
+                                    </a>
+                                </h4>
+
+                                <!-- Rating Stars -->
+                                <div class="rating-stars mb-2" style="font-size: 13px;">
+                                    {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
+                                </div>
+
+                                <!-- Prices -->
+                                <div class="home-product-price-row">
+                                    @if ($item->previous_price != 0)
+                                        <div class="home-product-old-price">
+                                            <del class="text-muted" style="font-size: 16px;">{{ PriceHelper::setPreviousPrice($item->previous_price) }}</del>
+                                        </div>
+                                    @endif
+                                    <div class="home-product-main-price">
+                                        <span class="fw-bold" style="font-size: 26px; background-color: #4E65FF;linear-gradient(135deg, #DD2476 0%, #FF512F 100%) -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                            {{ PriceHelper::grandCurrencyPrice($item) }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Order Now Button -->
+                                <div class="" style="margin-top: 10px;">
+                                    @if($item->is_stock())
+                                        <a href="{{ route('front.product', $item->slug) }}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                                            <i class="fas fa-shopping-cart me-2"></i>{{ __('Order Now') }}
+                                        </a>
+                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                            <i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}
+                                        </a>
+                                    @else
+                                        <button class="btn w-100 rounded-pill text-white" disabled style="background: #6c757d; border: none; padding: 11px 20px; font-size: 14px;">
+                                            {{ __('Out of Stock') }}
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            
+            @if($featuredSecondRowProducts->count() > 0)
+                <!-- Second Row -->
+                <div class="featured-products-slider owl-carousel" id="featured-products-slider-row-2">
+                    @foreach($featuredSecondRowProducts as $item)
+                        <div class="item">
+                            <div class="product-card bg-white rounded-4 shadow-lg position-relative overflow-hidden h-100" style="border: 1px solid rgba(102, 126, 234, 0.1); min-height: 450px;">
+                                <!-- Badges Container -->
+                                <div class="position-absolute top-0 start-0 w-100 p-3" style="z-index: 10;">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <!-- Featured Badge -->
+                                        @if ($item->is_stock())
+                                            <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(78, 101, 255, 0.3);">
+                                                <i class="fas fa-star me-1"></i>{{ __('Featured') }}
+                                            </span>
+                                        @else
+                                            <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: #6c757d; border: none; border-radius: 20px;">
+                                                {{ __('Out of Stock') }}
+                                            </span>
+                                        @endif
+
+                                        <!-- Discount Badge -->
+                                        @if($item->previous_price && $item->previous_price != 0)
+                                            <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #ed213a 0%, #93291e 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(237, 33, 58, 0.3);">
+                                                -{{ PriceHelper::DiscountPercentage($item) }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <!-- Product Image -->
+                                <div class="product-image-wrapper position-relative mb-3" style="height: 220px; border-radius: 12px 12px 0 0; overflow: hidden; margin: -1px -1px 0 -1px; padding: 8px;">
+                                    <a href="{{ route('front.product', $item->slug) }}" class="d-block h-100 w-100">
+                                        <img src="{{ asset('storage/images/'.$item->thumbnail) }}"
+                                             alt="{{ $item->name }}"
+                                             class="featured-product-image"
+                                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                    </a>
+                                </div>
+
+                                <!-- Product Content -->
+                                <div class="px-4 pb-4" style="flex: 1; display: flex; flex-direction: column;">
+                                    <!-- Product Name -->
+                                    <h4 class="product-name mb-2" style="font-size: 20px; font-weight: 600;">
+                                        <a href="{{ route('front.product', $item->slug) }}" class="text-dark text-decoration-none" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 20px;">
+                                            {{ Str::limit($item->name, 60) }}
+                                        </a>
+                                    </h4>
+
+                                    <!-- Rating Stars -->
+                                    <div class="rating-stars mb-2" style="font-size: 13px;">
+                                        {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
+                                    </div>
+
+                                    <!-- Prices -->
+                                    <div class="home-product-price-row">
+                                        @if ($item->previous_price != 0)
+                                            <div class="home-product-old-price">
+                                                <del class="text-muted" style="font-size: 16px;">{{ PriceHelper::setPreviousPrice($item->previous_price) }}</del>
+                                            </div>
+                                        @endif
+                                        <div class="home-product-main-price">
+                                            <span class="fw-bold" style="font-size: 26px; background-color: #4E65FF;linear-gradient(135deg, #DD2476 0%, #FF512F 100%) -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                                {{ PriceHelper::grandCurrencyPrice($item) }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Order Now Button -->
+                                    <div class="" style="margin-top: 10px;">
+                                        @if($item->is_stock())
+                                            <a href="{{ route('front.product', $item->slug) }}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                                                <i class="fas fa-shopping-cart me-2"></i>{{ __('Order Now') }}
+                                            </a>
+                                            <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                                <i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}
+                                            </a>
+                                        @else
+                                            <button class="btn w-100 rounded-pill text-white" disabled style="background: #6c757d; border: none; padding: 11px 20px; font-size: 14px;">
+                                                {{ __('Out of Stock') }}
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        @else
+            <!-- Single Row (10 or fewer products) -->
+            <div class="featured-products-slider owl-carousel">
+                @foreach($featuredGridProducts as $item)
+                    <div class="item">
+                        <div class="product-card bg-white rounded-4 shadow-lg position-relative overflow-hidden h-100" style="border: 1px solid rgba(102, 126, 234, 0.1); min-height: 450px;">
+                            <!-- Badges Container -->
+                            <div class="position-absolute top-0 start-0 w-100 p-3" style="z-index: 10;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <!-- Featured Badge -->
+                                    @if ($item->is_stock())
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(78, 101, 255, 0.3);">
+                                            <i class="fas fa-star me-1"></i>{{ __('Featured') }}
+                                        </span>
+                                    @else
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: #6c757d; border: none; border-radius: 20px;">
+                                            {{ __('Out of Stock') }}
+                                        </span>
+                                    @endif
+
+                                    <!-- Discount Badge -->
+                                    @if($item->previous_price && $item->previous_price != 0)
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #ed213a 0%, #93291e 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(237, 33, 58, 0.3);">
+                                            -{{ PriceHelper::DiscountPercentage($item) }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Product Image -->
+                            <div class="product-image-wrapper position-relative mb-3" style="height: 220px; border-radius: 12px 12px 0 0; overflow: hidden; margin: -1px -1px 0 -1px; padding: 8px;">
+                                <a href="{{ route('front.product', $item->slug) }}" class="d-block h-100 w-100">
+                                    <img src="{{ asset('storage/images/'.$item->thumbnail) }}"
+                                         alt="{{ $item->name }}"
+                                         class="featured-product-image"
+                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                </a>
+                            </div>
+
+                            <!-- Product Content -->
+                            <div class="px-4 pb-4" style="flex: 1; display: flex; flex-direction: column;">
+                                <!-- Product Name -->
+                                <h4 class="product-name mb-2" style="font-size: 20px; font-weight: 600;">
+                                    <a href="{{ route('front.product', $item->slug) }}" class="text-dark text-decoration-none" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 20px;">
+                                        {{ Str::limit($item->name, 60) }}
+                                    </a>
+                                </h4>
+
+                                <!-- Rating Stars -->
+                                <div class="rating-stars mb-2" style="font-size: 13px;">
+                                    {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
+                                </div>
+
+                                <!-- Prices -->
+                                <div class="home-product-price-row">
+                                    @if ($item->previous_price != 0)
+                                        <div class="home-product-old-price">
+                                            <del class="text-muted" style="font-size: 16px;">{{ PriceHelper::setPreviousPrice($item->previous_price) }}</del>
+                                        </div>
+                                    @endif
+                                    <div class="home-product-main-price">
+                                        <span class="fw-bold" style="font-size: 26px; background-color: #4E65FF;linear-gradient(135deg, #DD2476 0%, #FF512F 100%) -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                            {{ PriceHelper::grandCurrencyPrice($item) }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Order Now Button -->
+                                <div class="" style="margin-top: 10px;">
+                                    @if($item->is_stock())
+                                        <a href="{{ route('front.product', $item->slug) }}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                                            <i class="fas fa-shopping-cart me-2"></i>{{ __('Order Now') }}
+                                        </a>
+                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                            <i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}
+                                        </a>
+                                    @else
+                                        <button class="btn w-100 rounded-pill text-white" disabled style="background: #6c757d; border: none; padding: 11px 20px; font-size: 14px;">
+                                            {{ __('Out of Stock') }}
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+        @else
+            <div class="text-center py-5">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>{{ __('No featured products available right now.') }}
+                </div>
+            </div>
+        @endif
+    </div>
+</section>
+
 <!-- Reviews Section -->
 <section id="reviews-section" class="reviews-section py-5" style="background: #f8f9fa;">
     <div class="container">
@@ -341,7 +822,7 @@
             <div class="col-12 text-center">
                 <h2 class="section-title fw-bold mb-2" style="font-size: 2.5rem; color: #232323;">{{__('What Our Customers Say')}}</h2>
                 <p class="text-muted">{{__('Latest reviews from satisfied customers')}}</p>
-                <div class="title-divider mx-auto mb-4" style="width: 80px; height: 4px; background: linear-gradient(135deg, #093028 0%, #237a57 100%); border-radius: 2px;"></div>
+                <div class="title-divider mx-auto mb-4" style="width: 80px; height: 4px; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border-radius: 2px;"></div>
             </div>
         </div>
         
@@ -351,13 +832,13 @@
             <div class="col-lg-7">
                 <div class="review-list-card bg-white rounded-4 shadow-sm" style="border: 1px solid #e9ecef; overflow: hidden;">
                     <!-- Header -->
-                    <div class="review-list-header p-3 text-white" style="background: linear-gradient(135deg, #093028 0%, #237a57 100%);">
+                    <div class="review-list-header p-3 text-white" style="background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-comments me-2" style="font-size: 20px;"></i>
                                 <h5 class="mb-0 fw-bold" style="color: #ffffff;">{{__('Latest Customer Reviews')}}</h5>
                             </div>
-                            <a href="{{route('front.products')}}" class="btn-sm text-white fw-bold" style="background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%); border: none; border-radius: 20px; padding: 6px 16px; box-shadow: 0 2px 8px rgba(24, 40, 72, 0.3); transition: all 0.3s ease;">
+                            <a href="{{route('front.products')}}" class="btn-sm text-white fw-bold" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; border-radius: 20px; padding: 6px 16px; box-shadow: 0 2px 8px rgba(255, 81, 47, 0.3); transition: all 0.3s ease;">
                                 {{__('View All')}}
                             </a>
                         </div>
@@ -369,7 +850,7 @@
                         <div class="review-item mb-3 pb-3" style="border-bottom: 1px solid #f0f0f0;">
                             <div class="d-flex align-items-start">
                                 <!-- Avatar -->
-                                <div class="avatar-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #093028 0%, #237a57 100%); color: white; font-weight: 600; font-size: 16px;">
+                                <div class="avatar-circle me-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); color: white; font-weight: 600; font-size: 16px;">
                                     {{ strtoupper(substr($review->customer_name, 0, 1)) }}
                                 </div>
                                 
@@ -500,7 +981,7 @@
                     
                     <!-- View All Reviews Button -->
                     <div class="text-center">
-                        <a href="{{route('front.products')}}" class="w-100 fw-bold text-white d-inline-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%); border: none; padding: 12px 20px; font-size: 16px; border-radius: 10px; box-shadow: 0 4px 15px rgba(24, 40, 72, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                        <a href="{{route('front.products')}}" class="w-100 fw-bold text-white d-inline-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 12px 20px; font-size: 16px; border-radius: 10px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                             <i class="fas fa-star me-2"></i>{{__('View All Reviews')}}
                         </a>
                     </div>
@@ -541,9 +1022,24 @@
 }
 
 @media (max-width: 768px) {
-    .hero-content .stat-item {
-        flex: 0 0 calc(33.333% - 10px);
+    /* Keep all 3 hero stat items on one line on mobile */
+    .hero-content .hero-stats-row {
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+    }
+    
+    .hero-content .hero-stats-row .stat-item {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
         text-align: center;
+    }
+    
+    .hero-content .hero-stats-row .stat-item .fw-bold {
+        font-size: 18px !important;
+    }
+    
+    .hero-content .hero-stats-row .stat-item .small {
+        font-size: 11px !important;
     }
     
     .hero-content .d-flex.gap-3 {
@@ -738,7 +1234,7 @@
 }
 
 .review-image-link:hover img {
-    border-color: #093028 !important;
+                                    border-color: #4E65FF !important;
 }
 
 .rating-summary-card {
@@ -759,54 +1255,63 @@
 }
 
 /* Best Selling Products Slider Styles */
-.best-selling-section {
+.best-selling-section,
+.featured-grid-section {
     background: #fff;
     padding: 60px 0;
 }
 
-.best-selling-slider {
+.best-selling-slider,
+.featured-products-slider {
     position: relative;
     width: 100%;
 }
 
 /* Container for proper width */
-.best-selling-section .container {
+.best-selling-section .container,
+.featured-grid-section .container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 15px;
 }
 
 /* Owl Carousel specific styles - let owl carousel handle layout completely */
-.best-selling-slider.owl-carousel {
+.best-selling-slider.owl-carousel,
+.featured-products-slider.owl-carousel {
     display: block;
     position: relative;
     overflow: visible;
 }
 
-.best-selling-slider.owl-carousel .owl-stage-outer {
+.best-selling-slider.owl-carousel .owl-stage-outer,
+.featured-products-slider.owl-carousel .owl-stage-outer {
     overflow: hidden;
     position: relative;
     padding: 20px 0;
     margin: 0 -5px;
 }
 
-.best-selling-slider.owl-carousel {
+.best-selling-slider.owl-carousel,
+.featured-products-slider.owl-carousel {
     overflow: visible;
     position: relative;
     padding: 0 15px;
 }
 
-.best-selling-slider.owl-carousel .owl-stage {
+.best-selling-slider.owl-carousel .owl-stage,
+.featured-products-slider.owl-carousel .owl-stage {
     display: flex;
     align-items: stretch;
 }
 
-.best-selling-slider.owl-carousel .owl-item {
+.best-selling-slider.owl-carousel .owl-item,
+.featured-products-slider.owl-carousel .owl-item {
     display: flex;
     height: auto;
 }
 
-.best-selling-slider.owl-carousel .owl-item .item {
+.best-selling-slider.owl-carousel .owl-item .item,
+.featured-products-slider.owl-carousel .owl-item .item {
     width: 100%;
     height: 100%;
     display: flex;
@@ -815,12 +1320,14 @@
 }
 
 /* Remove any conflicting styles - let owl carousel handle everything */
-.best-selling-slider.owl-carousel .item {
+.best-selling-slider.owl-carousel .item,
+.featured-products-slider.owl-carousel .item {
     /* Let owl carousel control display */
 }
 
 /* Professional product card styling - matching featured product design */
-.best-selling-slider .product-card {
+.best-selling-slider .product-card,
+.featured-products-slider .product-card {
     margin-bottom: 0;
     height: 100%;
     display: flex;
@@ -828,12 +1335,15 @@
     transition: all 0.3s ease;
 }
 
-.best-selling-slider .product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+/* Remove hover effects for best selling and featured product cards */
+.best-selling-slider .product-card:hover,
+.featured-products-slider .product-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
 }
 
-.best-selling-slider .product-image-wrapper {
+.best-selling-slider .product-image-wrapper,
+.featured-products-slider .product-image-wrapper {
     position: relative;
     overflow: hidden;
 }
@@ -842,8 +1352,82 @@
     transition: transform 0.5s ease;
 }
 
-.best-selling-slider .product-card:hover .product-image-wrapper img {
-    transform: scale(1.05);
+.best-selling-slider .product-card:hover .product-image-wrapper img,
+.featured-products-slider .product-card:hover .product-image-wrapper img {
+    transform: none !important;
+}
+
+/* Remove hover effects for hero featured product cards */
+.hero-section .featured-product-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+.hero-section .featured-product-card:hover .product-image-wrapper img {
+    transform: none !important;
+}
+
+.order-now-btn-home{
+    border: 2px solid #DD2476 !important;
+    font-size: 15px !important;
+
+}
+
+/* Order Now Button Hover & Active Styles - Best Selling & Featured Sections */
+.order-now-btn-home:hover,
+.order-now-btn-home:active,
+.order-now-btn-home:focus {
+    background: transparent !important;
+    background-image: none !important;
+    background-color: transparent !important;
+    background-clip: border-box !important;
+    border: 2px solid #DD2476 !important;
+    color: #DD2476 !important;
+    box-shadow: none !important;
+}
+
+.order-now-btn-home:hover *,
+.order-now-btn-home:active *,
+.order-now-btn-home:focus * {
+    color: #DD2476 !important;
+}
+
+.order-now-btn-home:hover i,
+.order-now-btn-home:active i,
+.order-now-btn-home:focus i {
+    color: #DD2476 !important;
+}
+
+.add_to_single_cart {
+    font-size: 15px !important;
+}
+
+/* Add to Cart Button Hover Styles - Best Selling & Featured Sections */
+.best-selling-slider .product-card .add_to_single_cart:hover,
+.featured-products-slider .product-card .add_to_single_cart:hover,
+.best-selling-section .product-card .add_to_single_cart:hover,
+.featured-grid-section .product-card .add_to_single_cart:hover,
+.hero-section .featured-product-card .add_to_single_cart:hover {
+    background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%) !important;
+    border: 2px solid transparent !important;
+    border-color: transparent !important;
+    color: #fff !important;
+}
+
+.best-selling-slider .product-card .add_to_single_cart:hover *,
+.featured-products-slider .product-card .add_to_single_cart:hover *,
+.best-selling-section .product-card .add_to_single_cart:hover *,
+.featured-grid-section .product-card .add_to_single_cart:hover *,
+.hero-section .featured-product-card .add_to_single_cart:hover * {
+    color: #fff !important;
+}
+
+.best-selling-slider .product-card .add_to_single_cart:hover i,
+.featured-products-slider .product-card .add_to_single_cart:hover i,
+.best-selling-section .product-card .add_to_single_cart:hover i,
+.featured-grid-section .product-card .add_to_single_cart:hover i,
+.hero-section .featured-product-card .add_to_single_cart:hover i {
+    color: #fff !important;
 }
 
 /* Single image display for best selling products */
@@ -869,7 +1453,15 @@
 .best-selling-slider .owl-dots,
 .best-selling-slider .owl-dot,
 .best-selling-slider [class*="undefined"],
-.best-selling-slider *:contains("undefined") {
+.best-selling-slider *:contains("undefined"),
+.featured-products-slider .owl-dots,
+.featured-products-slider .owl-dot,
+.featured-products-slider [class*="undefined"],
+.featured-products-slider *:contains("undefined"),
+.featured-grid-section .owl-dots,
+.featured-grid-section .owl-dot,
+.featured-grid-section [class*="undefined"],
+.featured-grid-section *:contains("undefined") {
     display: none !important;
     visibility: hidden !important;
 }
@@ -896,7 +1488,8 @@
 }
 
 /* Navigation arrows */
-.best-selling-slider .owl-nav {
+.best-selling-slider .owl-nav,
+.featured-products-slider .owl-nav {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -910,7 +1503,8 @@
     padding: 0;
 }
 
-.best-selling-slider .owl-nav button {
+.best-selling-slider .owl-nav button,
+.featured-products-slider .owl-nav button {
     pointer-events: all !important;
     width: 50px;
     height: 50px;
@@ -935,48 +1529,59 @@
 }
 
 .best-selling-slider .owl-nav button span,
-.best-selling-slider .owl-nav button i {
+.best-selling-slider .owl-nav button i,
+.featured-products-slider .owl-nav button span,
+.featured-products-slider .owl-nav button i {
     display: block;
     line-height: 1;
 }
 
 /* Ensure only one icon per button - hide all but first */
 .best-selling-slider .owl-nav button i:not(:first-child),
-.best-selling-slider .owl-nav button span:not(:first-child) {
+.best-selling-slider .owl-nav button span:not(:first-child),
+.featured-products-slider .owl-nav button i:not(:first-child),
+.featured-products-slider .owl-nav button span:not(:first-child) {
     display: none !important;
 }
 
 /* Remove any text content from buttons */
-.best-selling-slider .owl-nav button {
+.best-selling-slider .owl-nav button,
+.featured-products-slider .owl-nav button {
     text-indent: 0;
     overflow: hidden;
 }
 
 .best-selling-slider .owl-nav button:before,
-.best-selling-slider .owl-nav button:after {
+.best-selling-slider .owl-nav button:after,
+.featured-products-slider .owl-nav button:before,
+.featured-products-slider .owl-nav button:after {
     display: none !important;
     content: none !important;
 }
 
-.best-selling-slider .owl-nav button:hover {
+.best-selling-slider .owl-nav button:hover,
+.featured-products-slider .owl-nav button:hover {
     transform: scale(1.15);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     background: #ebebeb !important;
     border-color: #d5d5d5 !important;
 }
 
-.best-selling-slider .owl-nav button.owl-prev {
+.best-selling-slider .owl-nav button.owl-prev,
+.featured-products-slider .owl-nav button.owl-prev {
     left: -15px !important;
     position: absolute !important;
 }
 
-.best-selling-slider .owl-nav button.owl-next {
+.best-selling-slider .owl-nav button.owl-next,
+.featured-products-slider .owl-nav button.owl-next {
     right: -15px !important;
     position: absolute !important;
 }
 
 /* Ensure buttons are always visible and clickable */
-.best-selling-slider .owl-nav button:not(.disabled) {
+.best-selling-slider .owl-nav button:not(.disabled),
+.featured-products-slider .owl-nav button:not(.disabled) {
     opacity: 1 !important;
     visibility: visible !important;
     pointer-events: all !important;
@@ -984,11 +1589,13 @@
 }
 
 /* Prevent any overlay from blocking clicks - but allow button itself */
-.best-selling-slider .owl-nav button * {
+.best-selling-slider .owl-nav button *,
+.featured-products-slider .owl-nav button * {
     pointer-events: none;
 }
 
-.best-selling-slider .owl-nav button i {
+.best-selling-slider .owl-nav button i,
+.featured-products-slider .owl-nav button i {
     pointer-events: none;
 }
 
@@ -1000,13 +1607,15 @@
 }
 
 /* Make sure buttons are above everything */
-.best-selling-slider .owl-nav button {
+.best-selling-slider .owl-nav button,
+.featured-products-slider .owl-nav button {
     position: absolute !important;
     top: 50% !important;
     transform: translateY(-50%) !important;
 }
 
-.best-selling-slider .owl-nav button.disabled {
+.best-selling-slider .owl-nav button.disabled,
+.featured-products-slider .owl-nav button.disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
@@ -1049,6 +1658,44 @@
     }
 }
 
+/* Price row: old price left, main price right - desktop and mobile */
+.home-product-price-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+}
+
+.home-product-old-price {
+    margin-bottom: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+.home-product-main-price {
+    flex-shrink: 0 !important;
+}
+
+.best-selling-slider .product-card .home-product-price-row del,
+.featured-products-slider .product-card .home-product-price-row del,
+.hero-section .featured-product-card .home-product-price-row del,
+.best-selling-section .product-card .home-product-price-row del,
+.featured-grid-section .product-card .home-product-price-row del {
+    font-size: 14px !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+}
+
+.best-selling-slider .product-card .home-product-main-price .fw-bold,
+.featured-products-slider .product-card .home-product-main-price .fw-bold,
+.hero-section .featured-product-card .home-product-main-price .fw-bold,
+.best-selling-section .product-card .home-product-main-price .fw-bold,
+.featured-grid-section .product-card .home-product-main-price .fw-bold {
+    font-size: 20px !important;
+    text-align: right !important;
+    white-space: nowrap !important;
+}
+
 @media (max-width: 768px) {
     .hero-section {
         border-radius: 0 0 30px 30px;
@@ -1063,38 +1710,46 @@
     }
     
     /* Best Selling Section Mobile */
-    .best-selling-section {
+    .best-selling-section,
+    .featured-grid-section {
         padding: 2rem 0 !important;
     }
     
-    .best-selling-section .container {
+    .best-selling-section .container,
+    .featured-grid-section .container {
         padding: 0 8px !important;
     }
     
-    .best-selling-slider.owl-carousel {
+    .best-selling-slider.owl-carousel,
+    .featured-products-slider.owl-carousel {
         padding: 0 !important;
         margin: 0 !important;
     }
     
-    .best-selling-slider .owl-stage-outer {
+    .best-selling-slider .owl-stage-outer,
+    .featured-products-slider .owl-stage-outer {
         padding: 8px 0 !important;
     }
     
     /* Hide navigation arrows on mobile */
-    .best-selling-slider .owl-nav {
+    .best-selling-slider .owl-nav,
+    .featured-products-slider .owl-nav {
         display: none !important;
     }
     
     /* Product cards on mobile - 2 per row with minimal gap */
-    .best-selling-slider .owl-item {
+    .best-selling-slider .owl-item,
+    .featured-products-slider .owl-item {
         padding: 0 2px !important;
     }
     
-    .best-selling-slider.owl-carousel {
+    .best-selling-slider.owl-carousel,
+    .featured-products-slider.owl-carousel {
         margin: 0 -2px !important;
     }
     
-    .best-selling-slider .product-card {
+    .best-selling-slider .product-card,
+    .featured-products-slider .product-card {
         width: 100% !important;
         min-height: auto !important;
         margin: 0 !important;
@@ -1104,19 +1759,22 @@
     }
     
     /* Larger product image on mobile - fills most of the card */
-    .best-selling-slider .product-image-wrapper {
+    .best-selling-slider .product-image-wrapper,
+    .featured-products-slider .product-image-wrapper {
         height: 200px !important;
         padding: 8px !important;
         margin: -1px -1px 0 -1px !important;
     }
     
-    .best-selling-slider .product-image-wrapper img {
+    .best-selling-slider .product-image-wrapper img,
+    .featured-products-slider .product-image-wrapper img {
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important;
     }
     
-    .best-selling-slider .product-card .px-4 {
+    .best-selling-slider .product-card .px-4,
+    .featured-products-slider .product-card .px-4 {
         padding: 10px 12px 8px 12px !important;
         flex: 1 !important;
         display: flex !important;
@@ -1124,15 +1782,17 @@
     }
     
     /* Product name - aligned left */
-    .best-selling-slider .product-name {
+    .best-selling-slider .product-name,
+    .featured-products-slider .product-name {
         font-size: 14px !important;
-        line-height: 1.4 !important;
-        min-height: 38px !important;
+        /* line-height: 1.4 !important; */
+        /* min-height: 38px !important; */
         margin-bottom: 8px !important;
         text-align: left !important;
     }
     
-    .best-selling-slider .product-name a {
+    .best-selling-slider .product-name a,
+    .featured-products-slider .product-name a {
         font-size: 14px !important;
         -webkit-line-clamp: 2 !important;
         text-align: left !important;
@@ -1140,74 +1800,88 @@
         -webkit-box-orient: vertical !important;
     }
     
-    .best-selling-slider .rating-stars {
+    .best-selling-slider .rating-stars,
+    .featured-products-slider .rating-stars {
         font-size: 11px !important;
         margin-bottom: 6px !important;
         text-align: left !important;
     }
     
-    /* Prices on same line - old price left, main price right */
-    .best-selling-slider .product-card .mb-3 {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        gap: 8px !important;
-        margin-bottom: 8px !important;
-    }
-    
-    .best-selling-slider .product-card .mb-3 .mb-1 {
-        margin-bottom: 0 !important;
-        flex-shrink: 0 !important;
-    }
-    
-    .best-selling-slider .product-card del {
-        font-size: 12px !important;
-        text-align: left !important;
-        white-space: nowrap !important;
-    }
-    
-    .best-selling-slider .product-card .fw-bold {
-        font-size: 18px !important;
-        text-align: right !important;
-        white-space: nowrap !important;
-    }
-    
     /* Remove gap between price and button */
-    .best-selling-slider .product-card .mt-auto {
+    .best-selling-slider .product-card .mt-auto,
+    .featured-products-slider .product-card .mt-auto {
         margin-top: 6px !important;
     }
     
     .best-selling-slider .product-card a[href*="product"],
-    .best-selling-slider .product-card button {
+    .best-selling-slider .product-card button,
+    .featured-products-slider .product-card a[href*="product"],
+    .featured-products-slider .product-card button {
         /* padding: 10px 16px !important; */
-        font-size: 13px !important;
+        font-size: 14px !important;
         border-radius: 8px !important;
         margin-top: 0 !important;
     }
     
     .best-selling-slider .product-card a[href*="product"] i,
-    .best-selling-slider .product-card button i {
+    .best-selling-slider .product-card button i,
+    .featured-products-slider .product-card a[href*="product"] i,
+    .featured-products-slider .product-card button i {
         font-size: 12px !important;
     }
     
     /* Badge sizing on mobile */
-    .best-selling-slider .badge {
+    .best-selling-slider .badge,
+    .featured-products-slider .badge {
         font-size: 9px !important;
         padding: 5px 10px !important;
     }
     
-    .best-selling-slider .badge i {
+    .best-selling-slider .badge i,
+    .featured-products-slider .badge i {
         font-size: 9px !important;
     }
     
     /* Position badges container */
-    .best-selling-slider .product-card .position-absolute {
+    .best-selling-slider .product-card .position-absolute,
+    .featured-products-slider .product-card .position-absolute {
         padding: 8px !important;
+    }
+    
+    /* Mobile-specific price adjustments */
+    @media (max-width: 576px) {
+        .home-product-price-row {
+            gap: 8px !important;
+        }
+        .hero-section .home-product-main-price .fw-bold {
+            font-size: 18px !important;
+        }
     }
 }
 </style>
 
 <script>
+// Remove undefined elements from featured products section
+document.addEventListener('DOMContentLoaded', function() {
+    // Remove undefined elements from featured products slider
+    setTimeout(function() {
+        var $featuredSection = $('.featured-grid-section, .featured-products-slider');
+        if ($featuredSection.length) {
+            // Remove owl dots and undefined elements
+            $featuredSection.find('.owl-dots, .owl-dot, [class*="undefined"]').remove();
+            $featuredSection.find('*').filter(function() {
+                return $(this).text().trim() === 'undefined';
+            }).remove();
+            // Remove any elements containing "undefined" text
+            $featuredSection.find('*').each(function() {
+                if ($(this).text().indexOf('undefined') !== -1 && $(this).text().trim() === 'undefined') {
+                    $(this).remove();
+                }
+            });
+        }
+    }, 1000);
+});
+
 document.addEventListener('DOMContentLoaded', function () {
     const slider = document.getElementById('featured-product-slider');
     if (!slider) return;

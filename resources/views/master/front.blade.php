@@ -105,6 +105,26 @@
     <style>
         {{ $setting->custom_css }}
         
+        /* Checkout button consistent styling */
+        .checkout-btn:hover,
+        .checkout-btn:active,
+        .checkout-btn:focus {
+            background: transparent !important;
+            background-image: none !important;
+            border: 2px solid #DD2476 !important;
+            color: #DD2476 !important;
+            box-shadow: none !important;
+            transform: none;
+        }
+        .checkout-btn:hover span,
+        .checkout-btn:active span,
+        .checkout-btn:focus span,
+        .checkout-btn:hover i,
+        .checkout-btn:active i,
+        .checkout-btn:focus i {
+            color: #DD2476 !important;
+        }
+        
         /* Custom styles for pages without header/footer */
         @if ($shouldHideHeaderFooter)
         body {
@@ -191,7 +211,7 @@
         .text-primary:not(.header-menu-item a):not(.header-menu-item),
         .product-card .product-title > a:hover,
         .product-card .product-category > a:hover {
-            background: linear-gradient(135deg, #093028 0%, #237a57 100%) !important;
+            background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%) !important;
             -webkit-background-clip: text !important;
             -webkit-text-fill-color: transparent !important;
             background-clip: text !important;
@@ -258,7 +278,7 @@
         }
         .search-suggestions .product-card:hover {
             background: #f8f9fa;
-            border-color: #093028 !important;
+            border-color: #4E65FF !important;
         }
         .search-suggestions .product-card .product-thumb {
             flex-shrink: 0;
@@ -304,7 +324,7 @@
         .search-suggestions .product-card .main-price {
             font-size: 15px;
             font-weight: 600;
-            color: #182848;
+            color: #FF512F;
         }
         .search-suggestions .bottom-area {
             padding: 8px 10px;
@@ -413,6 +433,71 @@
                 margin-top: 10px;
             }
         }
+        
+        /* Shared Order Now / Buy Now button style (home + single product page) */
+        .order-now-btn-home {
+            font-size: 15px !important;
+            border: 2px solid #DD2476 !important;
+        }
+        .order-now-btn-home:hover,
+        .order-now-btn-home:active,
+        .order-now-btn-home:focus {
+            background: transparent !important;
+            background-image: none !important;
+            background-color: transparent !important;
+            border: 2px solid #DD2476 !important;
+            color: #DD2476 !important;
+            box-shadow: none !important;
+        }
+        .order-now-btn-home:hover *,
+        .order-now-btn-home:active *,
+        .order-now-btn-home:focus *,
+        .order-now-btn-home:hover i,
+        .order-now-btn-home:active i,
+        .order-now-btn-home:focus i {
+            color: #DD2476 !important;
+        }
+        /* Shared Add to Cart button style (home + single product page) */
+        .add_to_single_cart {
+            font-size: 15px !important;
+        }
+        .add_to_single_cart:hover,
+        .add_to_single_cart:focus {
+            background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%) !important;
+            border: 2px solid transparent !important;
+            color: #fff !important;
+        }
+        .add_to_single_cart:hover *,
+        .add_to_single_cart:focus *,
+        .add_to_single_cart:hover i,
+        .add_to_single_cart:focus i {
+            color: #fff !important;
+        }
+        /* Add to cart feedback: success state and cart count animation */
+        .add_to_single_cart.add-to-cart-success,
+        #add_to_cart.add-to-cart-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            border-color: transparent !important;
+            color: #fff !important;
+            pointer-events: none;
+        }
+        .add_to_single_cart.add-to-cart-success *,
+        #add_to_cart.add-to-cart-success * {
+            color: #fff !important;
+        }
+        .add_to_single_cart.add-to-cart-loading,
+        #add_to_cart.add-to-cart-loading {
+            opacity: 0.8;
+            cursor: wait;
+        }
+        @keyframes cartCountBump {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.35); }
+            100% { transform: scale(1); }
+        }
+        .cart_count.cart-count-bump {
+            animation: cartCountBump 0.5s ease;
+        }
     </style>
     {{-- Google AdSense Start --}}
     @if ($setting->is_google_adsense == '1')
@@ -473,7 +558,7 @@ body_theme4 @endif
     @if (!$shouldHideHeaderFooter)
     <header class="site-header navbar-sticky">
         <!-- Top Bar with Taglines -->
-        <div class="top-tagline-bar" style="background: linear-gradient(135deg, #093028 0%, #237a57 100%); padding: 10px 0;">
+        <div class="top-tagline-bar" style="background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); padding: 10px 0;">
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-lg-4 col-md-4 col-12 text-center text-md-start mb-2 mb-md-0">
@@ -526,7 +611,7 @@ body_theme4 @endif
                                                    padding: 0 20px; 
                                                    width: 42px;
                                                    height: 42px;
-                                                   background: linear-gradient(135deg, #182848  0%, #4b6cb7 100%) !important;
+                                                   background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;
                                                    border: 2px solid transparent;
                                                    color: white;">
                                         <i class="icon-search" style="font-size: 18px; line-height: 1;"></i>
@@ -544,7 +629,7 @@ body_theme4 @endif
                         <div class="header-menu-items d-flex justify-content-end align-items-center flex-wrap">
                             <!-- Categories -->
                             <div class="header-menu-item me-3 mb-2 mb-md-0">
-                                <a href="{{ route('front.products') }}" class="text-dark text-decoration-none d-flex align-items-center" style="font-size: 14px; font-weight: 500;">
+                                <a href="{{ route('front.categories') }}" class="text-dark text-decoration-none d-flex align-items-center" style="font-size: 14px; font-weight: 500;">
                                     <i class="fas fa-th-large me-1"></i>{{__('Categories')}}
                                 </a>
                             </div>
@@ -572,14 +657,13 @@ body_theme4 @endif
                         </div>
                     </div>
 
-                    <!-- Phone Number (Separate) -->
-                    @if($setting->footer_phone)
-                    <div class="col-lg-2 col-md-2 col-6 header-phone-number">
-                        <a href="tel:{{$setting->footer_phone}}" class="text-decoration-none d-flex align-items-center justify-content-end fw-bold text-dark" style="font-size: 14px; font-weight: 500;">
-                            <i class="fas fa-phone-alt me-1"></i>{{$setting->footer_phone}}
+                    <!-- Cart -->
+                    <div class="col-lg-2 col-md-2 col-6 d-flex justify-content-end align-items-center">
+                        <a href="{{ route('front.cart') }}" class="text-decoration-none d-flex flex-column align-items-center justify-content-center fw-bold text-dark" style="font-size: 14px;">
+                            <span class="cart_count badge rounded-pill mb-0" style="min-width: 20px; font-size: 11px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);">{{ Session::has('cart') ? count(Session::get('cart')) : 0 }}</span>
+                            <span class="d-flex align-items-center mt-1"><i class="fas fa-shopping-cart me-1"></i>{{ __('Cart') }}</span>
                         </a>
                     </div>
-                    @endif
                 </div>
             </div>
         </div>
@@ -590,16 +674,24 @@ body_theme4 @endif
             <div class="container">
                 <div class="row align-items-center py-2">
                     <!-- Menu Button -->
-                    <div class="col-6">
-                        <button class="mobile-menu-toggle" style="background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%); border: none; border-radius: 8px; padding: 10px 18px; color: #fff; font-size: 16px; font-weight: 600; box-shadow: 0 2px 8px rgba(24, 40, 72, 0.3); transition: all 0.3s ease; display: inline-flex; align-items: center; cursor: pointer;">
+                    <div class="col-4">
+                        <button class="mobile-menu-toggle" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; border-radius: 8px; padding: 10px 18px; color: #fff; font-size: 16px; font-weight: 600; box-shadow: 0 2px 8px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; display: inline-flex; align-items: center; cursor: pointer;">
                             <i class="icon-menu me-2"></i>{{__('Menu')}}
                         </button>
                     </div>
                     
                     <!-- Logo (Center) -->
-                    <div class="col-6 text-center">
+                    <div class="col-4 text-center">
                         <a class="site-logo" href="{{ route('front.index') }}">
                             <img src="{{ asset('storage/images/' . $setting->logo) }}" alt="{{ $setting->title }}" style="max-height: 45px; width: auto;">
+                        </a>
+                    </div>
+
+                    <!-- Cart (Mobile) -->
+                    <div class="col-4 d-flex justify-content-end">
+                        <a href="{{ route('front.cart') }}" class="text-decoration-none d-flex flex-column align-items-center text-dark" style="font-size: 13px;">
+                            <span class="cart_count badge rounded-pill mb-0" style="min-width: 18px; font-size: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);">{{ Session::has('cart') ? count(Session::get('cart')) : 0 }}</span>
+                            <span class="d-flex align-items-center mt-0"><i class="fas fa-shopping-cart me-1"></i>{{ __('Cart') }}</span>
                         </a>
                     </div>
                 </div>
@@ -623,7 +715,7 @@ body_theme4 @endif
                                            padding: 0 20px; 
                                            width: 42px;
                                            height: 42px;
-                                           background: linear-gradient(135deg, #182848  0%, #4b6cb7 100%) !important;
+                                           background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;
                                            border: 2px solid transparent;
                                            color: white;">
                                 <i class="icon-search" style="font-size: 18px; line-height: 1;"></i>
@@ -654,15 +746,28 @@ body_theme4 @endif
                 <!-- Menu Items -->
                 <nav class="mobile-menu-nav">
                     <ul class="mobile-menu-list">
-                        <!-- Categories -->
-                        <li class="mobile-menu-item">
-                            <a href="{{ route('front.products') }}" class="mobile-menu-link">
+                        <!-- Categories with Submenu -->
+                        <li class="mobile-menu-item has-submenu">
+                            <a href="javascript:void(0);" class="mobile-menu-link" data-toggle="submenu">
                                 <div class="menu-icon-wrapper">
                                     <i class="fas fa-th-large"></i>
                                 </div>
                                 <span class="menu-text">{{ __('Categories') }}</span>
-                                <i class="fas fa-chevron-right menu-arrow"></i>
+                                <i class="fas fa-chevron-down menu-arrow"></i>
                             </a>
+                            <!-- Categories Submenu -->
+                            <ul class="mobile-submenu">
+                                @php
+                                    $categories = App\Models\Category::whereStatus(1)->orderby('serial','asc')->get();
+                                @endphp
+                                @foreach ($categories as $category)
+                                <li class="mobile-submenu-item">
+                                    <a href="{{ route('front.products').'?category='.$category->slug }}" class="mobile-submenu-link">
+                                        {{ $category->name }}
+                                    </a>
+                                </li>
+                                @endforeach
+                            </ul>
                         </li>
                         
                         <!-- Shop -->
@@ -716,14 +821,14 @@ body_theme4 @endif
         /* Menu Button Styling */
         @media (max-width: 991px) {
             .mobile-menu-toggle {
-                background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%) !important;
+                background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;
                 border: none !important;
                 border-radius: 8px !important;
                 padding: 10px 18px !important;
                 color: #fff !important;
                 font-size: 16px !important;
                 font-weight: 600 !important;
-                box-shadow: 0 2px 8px rgba(24, 40, 72, 0.3) !important;
+                box-shadow: 0 2px 8px rgba(255, 81, 47, 0.3) !important;
                 transition: all 0.3s ease !important;
                 display: inline-flex !important;
                 align-items: center !important;
@@ -731,12 +836,23 @@ body_theme4 @endif
             }
             
             .mobile-menu-toggle:hover {
-                box-shadow: 0 4px 15px rgba(24, 40, 72, 0.4) !important;
+                box-shadow: 0 4px 15px rgba(255, 81, 47, 0.4) !important;
                 transform: translateY(-1px);
             }
             
             .mobile-menu-toggle:active {
                 transform: translateY(0);
+            }
+            
+            /* Change icon color when menu is open */
+            .mobile-menu-toggle.menu-open i {
+                color: #DD2476 !important;
+            }
+            
+            .mobile-menu-toggle.menu-open {
+                background: #fff !important;
+                border: 2px solid #DD2476 !important;
+                color: #DD2476 !important;
             }
         }
         
@@ -784,7 +900,7 @@ body_theme4 @endif
             
             /* Header */
             .mobile-menu-header {
-                background: linear-gradient(135deg, #093028 0%, #237a57 100%);
+                background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
                 padding: 20px;
                 display: flex;
                 align-items: center;
@@ -857,8 +973,8 @@ body_theme4 @endif
             
             .mobile-menu-link:hover,
             .mobile-menu-link:active {
-                background: linear-gradient(90deg, rgba(9, 48, 40, 0.05) 0%, rgba(35, 122, 87, 0.05) 100%);
-                color: #237a57;
+                background: linear-gradient(90deg, rgba(78, 101, 255, 0.05) 0%, rgba(146, 239, 253, 0.05) 100%);
+                color: #92EFFD;
                 text-decoration: none;
             }
             
@@ -868,7 +984,7 @@ body_theme4 @endif
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background: linear-gradient(135deg, rgba(9, 48, 40, 0.1) 0%, rgba(35, 122, 87, 0.1) 100%);
+                background: linear-gradient(135deg, rgba(78, 101, 255, 0.1) 0%, rgba(146, 239, 253, 0.1) 100%);
                 border-radius: 10px;
                 margin-right: 15px;
                 transition: all 0.3s ease;
@@ -876,13 +992,13 @@ body_theme4 @endif
             
             .mobile-menu-link:hover .menu-icon-wrapper,
             .mobile-menu-link:active .menu-icon-wrapper {
-                background: linear-gradient(135deg, #093028 0%, #237a57 100%);
+                background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
                 transform: scale(1.1);
             }
             
             .menu-icon-wrapper i {
                 font-size: 18px;
-                color: #237a57;
+                color: #DD2476;
                 transition: color 0.3s ease;
             }
             
@@ -904,8 +1020,63 @@ body_theme4 @endif
             
             .mobile-menu-link:hover .menu-arrow,
             .mobile-menu-link:active .menu-arrow {
-                color: #237a57;
+                color: #92EFFD;
                 transform: translateX(5px);
+            }
+            
+            /* Submenu arrow rotation */
+            .has-submenu.active .menu-arrow {
+                transform: rotate(180deg);
+                color: #92EFFD;
+            }
+            
+            /* Submenu Styles */
+            .mobile-submenu {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+                background: #f8f9fa;
+            }
+            
+            .has-submenu.active .mobile-submenu {
+                max-height: 500px;
+            }
+            
+            .mobile-submenu-item {
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .mobile-submenu-item:last-child {
+                border-bottom: none;
+            }
+            
+            .mobile-submenu-link {
+                display: block;
+                padding: 12px 20px 12px 60px;
+                text-decoration: none;
+                color: #555;
+                font-size: 14px;
+                font-weight: 400;
+                transition: all 0.2s ease;
+                position: relative;
+            }
+            
+            .mobile-submenu-link:before {
+                content: "•";
+                position: absolute;
+                left: 45px;
+                color: #DD2476;
+                font-size: 16px;
+            }
+            
+            .mobile-submenu-link:hover,
+            .mobile-submenu-link:active {
+                background: #fff;
+                color: #92EFFD;
+                padding-left: 65px;
             }
             
             /* Backdrop - Separate element, behind menu, NO BLUR */
@@ -988,12 +1159,12 @@ body_theme4 @endif
             }
             
             .mobile-menu-nav::-webkit-scrollbar-thumb {
-                background: linear-gradient(135deg, #093028 0%, #237a57 100%);
+                background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
                 border-radius: 3px;
             }
             
             .mobile-menu-nav::-webkit-scrollbar-thumb:hover {
-                background: linear-gradient(135deg, #237a57 0%, #093028 100%);
+                background: linear-gradient(135deg, #92EFFD 0%, #4E65FF 100%);
             }
         }
         </style>
@@ -1026,18 +1197,18 @@ body_theme4 @endif
                         <h5 class="mb-3 fw-bold" style="color: #fff; font-size: 18px;">{{ $setting->title ?? __('Home Find') }}</h5>
                         @if($setting->footer_address)
                         <p class="mb-2" style="color: #ccc; font-size: 14px; line-height: 1.6;">
-                            <i class="fas fa-map-marker-alt me-2" style="color: #237a57;"></i>{{ $setting->footer_address }}
+                            <i class="fas fa-map-marker-alt me-2" style="color: #92EFFD;"></i>{{ $setting->footer_address }}
                         </p>
                         @endif
                         @if($setting->footer_phone)
                         <p class="mb-2" style="color: #ccc; font-size: 14px;">
-                            <i class="fas fa-phone me-2" style="color: #237a57;"></i>
+                            <i class="fas fa-phone me-2" style="color: #92EFFD;"></i>
                             <a href="tel:{{ $setting->footer_phone }}" style="color: #ccc; text-decoration: none;">{{ $setting->footer_phone }}</a>
                         </p>
                         @endif
                         @if($setting->footer_email)
                         <p class="mb-3" style="color: #ccc; font-size: 14px;">
-                            <i class="fas fa-envelope me-2" style="color: #237a57;"></i>
+                            <i class="fas fa-envelope me-2" style="color: #92EFFD;"></i>
                             <a href="mailto:{{ $setting->footer_email }}" style="color: #ccc; text-decoration: none;">{{ $setting->footer_email }}</a>
                         </p>
                         @endif
@@ -1099,7 +1270,7 @@ body_theme4 @endif
                         <h5 class="mb-3 fw-bold" style="color: #fff; font-size: 18px;">{{ __('Contact') }}</h5>
                         @if($setting->working_days_from_to)
                         <p class="mb-2" style="color: #ccc; font-size: 14px;">
-                            <i class="fas fa-clock me-2" style="color: #237a57;"></i>
+                            <i class="fas fa-clock me-2" style="color: #92EFFD;"></i>
                             <strong>{{ $setting->working_days_from_to }}:</strong><br>
                             <span class="ms-4">{{ $setting->friday_start }} - {{ $setting->friday_end }}</span>
                         </p>
@@ -1146,12 +1317,12 @@ body_theme4 @endif
     
     <style>
     .site-footer a:hover {
-        color: #237a57 !important;
+        color: #92EFFD !important;
     }
     
     .footer-social-links a:hover {
-        background: linear-gradient(135deg, #093028 0%, #237a57 100%) !important;
-        border-color: #237a57 !important;
+        background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%) !important;
+        border-color: #92EFFD !important;
         transform: translateY(-2px);
     }
     
@@ -1330,6 +1501,7 @@ body_theme4 @endif
                 $('.mobile-menu-new').addClass('active');
                 $('.mobile-menu-backdrop').addClass('active');
                 $('body').addClass('mobile-menu-open');
+                $('.mobile-menu-toggle').addClass('menu-open');
             }
             
             // Function to close menu
@@ -1337,7 +1509,33 @@ body_theme4 @endif
                 $('.mobile-menu-new').removeClass('active');
                 $('.mobile-menu-backdrop').removeClass('active');
                 $('body').removeClass('mobile-menu-open');
+                $('.mobile-menu-toggle').removeClass('menu-open');
             }
+            
+            // Handle submenu toggle - DO NOT close main menu
+            $(document).on('click', '.mobile-menu-link[data-toggle="submenu"]', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                
+                var parentItem = $(this).closest('.mobile-menu-item');
+                
+                // Toggle active class
+                parentItem.toggleClass('active');
+                
+                // Close other submenus
+                $('.mobile-menu-item.has-submenu').not(parentItem).removeClass('active');
+                
+                // DO NOT close the main menu
+                return false;
+            });
+            
+            // Handle submenu item clicks - CLOSE the main menu
+            $(document).on('click', '.mobile-submenu-link', function(e) {
+                e.stopPropagation();
+                // Allow navigation and close menu
+                closeMobileMenu();
+            });
             
             // Handle menu toggle button click (Menu button in header) - override old handler
             $(document).off('click', '.mobile-menu-toggle').on('click', '.mobile-menu-toggle', function(e) {
@@ -1384,13 +1582,18 @@ body_theme4 @endif
             
             // Handle menu link clicks - allow navigation, then close menu
             $(document).on('click', '.mobile-menu-link', function(e) {
+                // Skip if this is a submenu toggle (Categories)
+                if ($(this).attr('data-toggle') === 'submenu') {
+                    return; // Let the submenu handler deal with it
+                }
+                
                 // Stop propagation to prevent backdrop click
                 e.stopPropagation();
                 e.stopImmediatePropagation();
                 
                 const href = $(this).attr('href');
                 
-                if (!href || href === '#') {
+                if (!href || href === '#' || href === 'javascript:void(0);') {
                     e.preventDefault();
                     return false;
                 }
@@ -1632,7 +1835,7 @@ body_theme4 @endif
             // Calculate time dynamically
             var timeText = calculateTimeAgo(notification.created_at, notification.minutes_ago);
             
-            var popupHTML = '<div id="' + popupId + '" class="purchase-notification-popup" style="background: linear-gradient(135deg, #093028 0%, #237a57 100%); border-radius: 12px; padding: 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); color: #fff; animation: slideInLeft 0.5s ease; position: relative;">' +
+            var popupHTML = '<div id="' + popupId + '" class="purchase-notification-popup" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border-radius: 12px; padding: 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); color: #fff; animation: slideInLeft 0.5s ease; position: relative;">' +
                 '<button type="button" class="btn-close-notification" style="position: absolute; top: 8px; right: 8px; background: none; border: none; color: #fff; font-size: 16px; cursor: pointer; opacity: 0.7; padding: 4px 8px; line-height: 1;" onclick="closePurchaseNotification(\'' + popupId + '\')">' +
                 '<i class="fas fa-times"></i>' +
                 '</button>' +

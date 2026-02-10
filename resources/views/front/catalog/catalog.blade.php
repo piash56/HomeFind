@@ -5,19 +5,19 @@
             <div class="col-xxl-3 col-md-4 col-6">
                 <div class="product-card ">
                     @if ($item->is_stock())
-                        <div class="product-badge
-                            @if($item->is_type == 'feature')
-                            bg-warning
+                        <div class="product-badge text-white
+                            @if($item->is_type == 'feature' || $item->is_type == 'best')
+                            catalog-type-badge
                             @elseif($item->is_type == 'new')
                             bg-danger
                             @elseif($item->is_type == 'top')
                             bg-info
-                            @elseif($item->is_type == 'best')
-                            bg-dark
                             @elseif($item->is_type == 'flash_deal')
                             bg-success
+                            @else
+                            bg-secondary
                             @endif
-                            "> {{  $item->is_type != 'undefine' ?  (str_replace('_',' ',__("$item->is_type"))) : ''   }}
+                            " @if($item->is_type == 'feature' || $item->is_type == 'best') style="background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%) !important; border: none;" @endif"> {{  $item->is_type != 'undefine' ?  (str_replace('_',' ',__("$item->is_type"))) : ''   }}
                         </div>
                     @else
                     <div class="product-badge bg-secondary border-default text-body
@@ -25,7 +25,7 @@
                     @endif
 
                 @if($item->previous_price && $item->previous_price !=0)
-                <div class="product-badge product-badge2 text-white" style="background: linear-gradient(135deg, #ed213a 0%, #93291e 100%);"> -{{PriceHelper::DiscountPercentage($item)}}</div>
+                <div class="product-badge product-badge2 text-white catalog-percent-badge"> -{{PriceHelper::DiscountPercentage($item)}}</div>
                 @endif
                 <div class="product-thumb">
                     <img class="lazy" data-src="{{asset('storage/images/'.$item->thumbnail)}}" alt="Product">
@@ -44,7 +44,7 @@
                         @if ($item->previous_price !=0)
                         <del>{{PriceHelper::setPreviousPrice($item->previous_price)}}</del>
                         @endif
-                        {{PriceHelper::grandCurrencyPrice($item)}}
+                        <span class="catalog-main-price">{{PriceHelper::grandCurrencyPrice($item)}}</span>
                     </h4>
                 </div>
 
@@ -58,26 +58,26 @@
                         <div class="product-thumb" >
                         @if ($item->is_stock())
 
-                            <div class="product-badge
-                                @if($item->is_type == 'feature')
-                                bg-warning
+                            <div class="product-badge text-white
+                                @if($item->is_type == 'feature' || $item->is_type == 'best')
+                                catalog-type-badge
                                 @elseif($item->is_type == 'new')
                                 bg-danger
                                 @elseif($item->is_type == 'top')
                                 bg-info
-                                @elseif($item->is_type == 'best')
-                                bg-dark
                                 @elseif($item->is_type == 'flash_deal')
                                 bg-success
+                                @else
+                                bg-secondary
                                 @endif
-                                ">{{  $item->is_type != 'undefine' ?  ucfirst(str_replace('_',' ',$item->is_type)) : ''   }}
+                                " @if($item->is_type == 'feature' || $item->is_type == 'best') style="background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%) !important; border: none;" @endif">{{  $item->is_type != 'undefine' ?  ucfirst(str_replace('_',' ',$item->is_type)) : ''   }}
                             </div>
                             @else
                             <div class="product-badge bg-secondary border-default text-body
                             ">{{__('out of stock')}}</div>
                             @endif
                             @if($item->previous_price && $item->previous_price !=0)
-                            <div class="product-badge product-badge2 text-white" style="background: linear-gradient(135deg, #ed213a 0%, #93291e 100%);"> -{{PriceHelper::DiscountPercentage($item)}}</div>
+                            <div class="product-badge product-badge2 text-white catalog-percent-badge"> -{{PriceHelper::DiscountPercentage($item)}}</div>
                             @endif
 
                             <img class="lazy" data-src="{{asset('storage/images/'.$item->thumbnail)}}" alt="Product">
@@ -100,7 +100,7 @@
                                         @if ($item->previous_price !=0)
                                         <del>{{PriceHelper::setPreviousPrice($item->previous_price)}}</del>
                                         @endif
-                                        {{PriceHelper::grandCurrencyPrice($item)}}
+                                        <span class="catalog-main-price">{{PriceHelper::grandCurrencyPrice($item)}}</span>
                                     </h4>
                                     <p class="text-sm sort_details_show  text-muted hidden-xs-down my-1">
                                     {{ Str::limit(strip_tags($item->sort_details), 100) }}
@@ -132,4 +132,22 @@
     </div>
 </div>
 
+<style>
+#main_div .catalog-percent-badge {
+    background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;
+}
+/* Override master gradient text so catalog main price is solid #4E65FF */
+#main_div .product-card .product-price .catalog-main-price {
+    color: #4E65FF !important;
+    -webkit-text-fill-color: #4E65FF !important;
+    background: none !important;
+    background-clip: unset !important;
+    -webkit-background-clip: unset !important;
+    font-weight: 600;
+    font-size: 1.15em;
+}
+#main_div .product-price del {
+    color: #6c757d;
+}
+</style>
 <script type="text/javascript" src="{{asset('assets/front/js/catalog.js')}}"></script>

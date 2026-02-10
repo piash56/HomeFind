@@ -172,16 +172,17 @@ $(function ($) {
         },
     });
 
-    // best-selling-slider Area Start - match popular-category-slider pattern
-    var $best_selling_slider = $(".best-selling-slider");
-    if ($best_selling_slider.length) {
+    // Helper function to initialize product slider
+    function initProductSlider($slider) {
+        if (!$slider.length) return;
+        
         // Destroy any existing instance first
-        if ($best_selling_slider.data('owlCarousel')) {
-            $best_selling_slider.trigger('destroy.owl.carousel');
+        if ($slider.data('owlCarousel')) {
+            $slider.trigger('destroy.owl.carousel');
         }
         
-        // Initialize owl carousel - use empty navText to prevent default arrows
-        $best_selling_slider.owlCarousel({
+        // Initialize owl carousel
+        $slider.owlCarousel({
             navText: [],
             nav: true,
             dots: false,
@@ -224,14 +225,12 @@ $(function ($) {
             },
             onInitialized: function() {
                 // Remove any undefined elements or dots that might appear
-                $best_selling_slider.find('.owl-dots, .owl-dot, [class*="undefined"]').remove();
+                $slider.find('.owl-dots, .owl-dot, [class*="undefined"]').remove();
                 
                 // Clear and set nav buttons with single icons
-                $best_selling_slider.find('.owl-nav button').each(function() {
+                $slider.find('.owl-nav button').each(function() {
                     var $btn = $(this);
-                    // Remove all existing content (text, spans, icons, etc.)
                     $btn.empty();
-                    // Add only one icon based on button type
                     if ($btn.hasClass('owl-prev')) {
                         $btn.append('<i class="fas fa-chevron-left"></i>');
                     } else if ($btn.hasClass('owl-next')) {
@@ -241,30 +240,27 @@ $(function ($) {
             }
         });
         
-        // Fix nav buttons after initialization and ensure they work
+        // Fix nav buttons after initialization
         setTimeout(function() {
             // Remove any undefined elements
-            $best_selling_slider.find('.owl-dots, .owl-dot, [class*="undefined"], [text*="undefined"]').remove();
-            $best_selling_slider.find('*').filter(function() {
+            $slider.find('.owl-dots, .owl-dot, [class*="undefined"], [text*="undefined"]').remove();
+            $slider.find('*').filter(function() {
                 return $(this).text().trim() === 'undefined';
             }).remove();
             
             // Ensure nav buttons only have one icon each and are clickable
-            $best_selling_slider.find('.owl-nav button').each(function() {
+            $slider.find('.owl-nav button').each(function() {
                 var $btn = $(this);
-                // Remove all content first
                 var isPrev = $btn.hasClass('owl-prev');
                 var isNext = $btn.hasClass('owl-next');
                 $btn.empty();
                 
-                // Add only one icon
                 if (isPrev) {
                     $btn.append('<i class="fas fa-chevron-left"></i>');
                 } else if (isNext) {
                     $btn.append('<i class="fas fa-chevron-right"></i>');
                 }
                 
-                // Ensure button is clickable and remove any blocking styles
                 $btn.css({
                     'pointer-events': 'all',
                     'cursor': 'pointer',
@@ -274,67 +270,41 @@ $(function ($) {
                     'visibility': 'visible'
                 });
                 
-                // Remove any disabled state if present
                 $btn.removeClass('disabled');
-                
-                // Ensure button is not hidden
                 $btn.show();
                 
-                // Add explicit click handlers as backup - use both jQuery and native
+                // Add click handlers
                 $btn.off('click touchstart').on('click touchstart', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
-                    
-                    // Trigger owl carousel navigation
                     if (isPrev) {
-                        $best_selling_slider.trigger('prev.owl.carousel', [300]);
+                        $slider.trigger('prev.owl.carousel', [300]);
                     } else if (isNext) {
-                        $best_selling_slider.trigger('next.owl.carousel', [300]);
+                        $slider.trigger('next.owl.carousel', [300]);
                     }
-                    
                     return false;
                 });
-                
-                // Also add native event listener as backup
-                var btnElement = $btn[0];
-                if (btnElement) {
-                    btnElement.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (isPrev) {
-                            $best_selling_slider.trigger('prev.owl.carousel', [300]);
-                        } else if (isNext) {
-                            $best_selling_slider.trigger('next.owl.carousel', [300]);
-                        }
-                    }, true);
-                }
             });
             
-            // Ensure nav container allows button clicks
-            $best_selling_slider.find('.owl-nav').css({
+            $slider.find('.owl-nav').css({
                 'pointer-events': 'auto',
                 'z-index': '10000'
             });
-            
-            // Add global event delegation as final backup
-            $(document).off('click', '.best-selling-slider .owl-nav button.owl-prev')
-                       .on('click', '.best-selling-slider .owl-nav button.owl-prev', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                $best_selling_slider.trigger('prev.owl.carousel', [300]);
-                return false;
-            });
-            
-            $(document).off('click', '.best-selling-slider .owl-nav button.owl-next')
-                       .on('click', '.best-selling-slider .owl-nav button.owl-next', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                $best_selling_slider.trigger('next.owl.carousel', [300]);
-                return false;
-            });
         }, 500);
     }
+
+    // Initialize all best selling sliders (including row-1 and row-2)
+    $(".best-selling-slider").each(function() {
+        initProductSlider($(this));
+    });
+    
+    // Initialize all featured products sliders (including row-1 and row-2)
+    $(".featured-products-slider").each(function() {
+        initProductSlider($(this));
+    });
+
+    // Featured products slider initialization is now handled by the helper function above
 
     // home-blog-slider
     var $home_blog_slider = $(".home-blog-slider");

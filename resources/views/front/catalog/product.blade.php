@@ -59,81 +59,90 @@
     visibility: hidden !important;
 }
 
-/* Button styles - Match Request A Product button */
+/* Order Now button - checkout style */
+#order_now_btn {
+    background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
+    border: 2px solid #DD2476;
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3);
+    transition: all 0.3s ease;
+}
+
+/* Other primary buttons (review modal, etc.) - not Buy Now / Add to Cart */
 .btn-primary,
-#but_to_cart,
-.related-buy-now-btn,
-#order_now_btn,
 #review-login-btn,
 button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"],
 .btn-outline-primary[data-target="#all-reviews-modal"] {
-    background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%) !important;
+    background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;
     border: none !important;
     border: 2px solid transparent !important;
     color: #fff !important;
-    box-shadow: 0 2px 8px rgba(24, 40, 72, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(255, 81, 47, 0.3) !important;
     transition: all 0.3s ease !important;
+}
+
+#order_now_btn:hover,
+#order_now_btn:active,
+#order_now_btn:focus {
+    background: transparent !important;
+    background-image: none !important;
+    border: 2px solid #DD2476 !important;
+    color: #DD2476 !important;
+    box-shadow: none !important;
+    transform: none;
+}
+
+#order_now_btn:hover span,
+#order_now_btn:active span,
+#order_now_btn:focus span,
+#order_now_btn:hover i,
+#order_now_btn:active i,
+#order_now_btn:focus i {
+    color: #DD2476 !important;
 }
 
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active,
-#but_to_cart:hover,
-#but_to_cart:focus,
-#but_to_cart:active,
-.related-buy-now-btn:hover,
-.related-buy-now-btn:focus,
-.related-buy-now-btn:active,
-#order_now_btn:hover,
-#order_now_btn:focus,
-#order_now_btn:active,
+.btn-primary:hover *,
 #review-login-btn:hover,
 #review-login-btn:focus,
 #review-login-btn:active,
 button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"]:hover,
 button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"]:focus,
-button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"]:active,
 .btn-outline-primary[data-target="#all-reviews-modal"]:hover,
-.btn-outline-primary[data-target="#all-reviews-modal"]:focus,
-.btn-outline-primary[data-target="#all-reviews-modal"]:active {
-    background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%) !important;
-    box-shadow: 0 4px 15px rgba(24, 40, 72, 0.4) !important;
+.btn-outline-primary[data-target="#all-reviews-modal"]:focus {
+    background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;
+    background-color: #FF512F !important;
+    box-shadow: 0 4px 15px rgba(255, 81, 47, 0.4) !important;
     transform: translateY(-1px);
     border-color: transparent !important;
-    color: #fff !important; /* Ensure text stays white on hover */
+    color: #fff !important;
 }
 
-/* Ensure Buy Now button text stays white on hover - override any conflicting styles */
-a.related-buy-now-btn,
-a.related-buy-now-btn:hover,
-a.related-buy-now-btn:focus,
-a.related-buy-now-btn:active,
-.related-buy-now-btn:hover,
-.related-buy-now-btn:focus,
-.related-buy-now-btn:active,
-.related-buy-now-btn:hover span,
-.related-buy-now-btn:focus span,
-.related-buy-now-btn:active span,
-.related-buy-now-btn:hover *,
-.related-buy-now-btn:focus *,
-.related-buy-now-btn:active *,
-.product-card .related-buy-now-btn:hover,
-.product-card .related-buy-now-btn:focus,
-.product-card .related-buy-now-btn:active {
-    color: #fff !important;
-    background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%) !important;
-    background-color: transparent !important;
-    border-color: transparent !important;
+/* Main product image badges: first badge #FF512F → #DD2476, percentage #4E65FF → #92EFFD */
+.product-gallery > span.product-badge {
+    background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;
+    border: none !important;
+}
+.product-gallery > div.product-badge.ppp-t,
+.product-gallery > div.product-badge.bg-goldenrod {
+    background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%) !important;
+    border: none !important;
 }
 
-/* Override any black background on hover for related buy now button - highest priority */
-a.btn.related-buy-now-btn:hover,
-a.btn-primary.related-buy-now-btn:hover,
-a.btn-sm.related-buy-now-btn:hover {
-    background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%) !important;
-    background-color: transparent !important;
-    color: #fff !important;
-    border-color: transparent !important;
+/* আপনি পছন্দ করতে পারেন section: same badge gradients */
+.relatedproductslider .product-card > div.product-badge:not(.product-badge2) {
+    background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;
+    border: none !important;
+}
+.relatedproductslider .product-badge2 {
+    background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%) !important;
+    border: none !important;
 }
 
 .bulk-pricing-section {
@@ -199,7 +208,10 @@ a.btn-sm.related-buy-now-btn:hover {
     transform: translateY(-2px);
 }
 
-.bulk-price-option .btn-primary {
+.bulk-price-option .btn-primary,
+.bulk-price-option .btn-primary *,
+.bulk-price-option .btn-primary i,
+.bulk-price-option .btn-primary span {
     background-color: #ff6600;
     border-color: #ff6600;
     margin-top: auto;
@@ -208,14 +220,69 @@ a.btn-sm.related-buy-now-btn:hover {
 
 .bulk-price-option .btn-primary:hover,
 .bulk-price-option .btn-primary:focus,
-.bulk-price-option .btn-primary:active {
-    background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%) !important;
+.bulk-price-option .btn-primary:active,
+.bulk-price-option .btn-primary:hover *,
+.bulk-price-option .btn-primary:focus *,
+.bulk-price-option .btn-primary:active *,
+.bulk-price-option .btn-primary:hover i,
+.bulk-price-option .btn-primary:focus i,
+.bulk-price-option .btn-primary:active i,
+.bulk-price-option .btn-primary:hover span,
+.bulk-price-option .btn-primary:focus span,
+.bulk-price-option .btn-primary:active span,
+.bulk-buy-now:hover,
+.bulk-buy-now:focus,
+.bulk-buy-now:active,
+.bulk-buy-now:hover *,
+.bulk-buy-now:focus *,
+.bulk-buy-now:active *,
+.bulk-buy-now:hover i,
+.bulk-buy-now:focus i,
+.bulk-buy-now:active i,
+.bulk-buy-now:hover span,
+.bulk-buy-now:focus span,
+.bulk-buy-now:active span {
+    background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;
+    background-color: #FF512F !important;
     border-color: transparent !important;
     color: #fff !important;
 }
 
 .cursor-pointer {
     cursor: pointer;
+}
+
+/* Force white text on all Buy Now buttons when background is black or dark */
+.bulk-price-option .btn-primary[style*="background"]:hover,
+.bulk-price-option .btn-primary[style*="background-color"]:hover,
+.bulk-buy-now[style*="background"]:hover,
+.bulk-buy-now[style*="background-color"]:hover,
+.related-buy-now-btn[style*="background"]:hover,
+.related-buy-now-btn[style*="background-color"]:hover,
+.btn-primary[style*="background"]:hover,
+.btn-primary[style*="background-color"]:hover {
+    color: #fff !important;
+}
+
+.bulk-price-option .btn-primary:hover,
+.bulk-price-option .btn-primary:focus,
+.bulk-price-option .btn-primary:active,
+.bulk-buy-now:hover,
+.bulk-buy-now:focus,
+.bulk-buy-now:active {
+    color: #fff !important;
+}
+
+.bulk-price-option .btn-primary:hover *,
+.bulk-price-option .btn-primary:focus *,
+.bulk-price-option .btn-primary:active *,
+.bulk-buy-now:hover *,
+.bulk-buy-now:focus *,
+.bulk-buy-now:active *,
+.related-buy-now-btn:hover *,
+.related-buy-now-btn:focus *,
+.related-buy-now-btn:active * {
+    color: #fff !important;
 }
 
 #bulk-selection-message {
@@ -230,6 +297,14 @@ a.btn-sm.related-buy-now-btn:hover {
 #order_now_btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+    transform: none;
+    background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;
+    color: white !important;
+    border: 2px solid #DD2476 !important;
+}
+
+#order_now_btn:disabled i {
+    color: white !important;
 }
 
 /* Related buy now button already styled above with gradient */
@@ -255,18 +330,18 @@ a.btn-sm.related-buy-now-btn:hover {
 }
 
 .delivery-option-item:hover {
-    border-color: #237a57 !important;
-    background: rgba(35, 122, 87, 0.05) !important;
+    border-color: #92EFFD !important;
+    background: rgba(146, 239, 253, 0.05) !important;
 }
 
 .delivery-option-item input[type="radio"]:checked + span {
-    color: #237a57;
+    color: #92EFFD;
     font-weight: 600;
 }
 
 .delivery-option-item:has(input[type="radio"]:checked) {
-    border-color: #237a57 !important;
-    background: rgba(35, 122, 87, 0.1) !important;
+    border-color: #92EFFD !important;
+    background: rgba(146, 239, 253, 0.1) !important;
 }
 
 .delivery-option-item label {
@@ -300,15 +375,21 @@ a.btn-sm.related-buy-now-btn:hover {
             $cartItemCount = 0;
             
             foreach($cart as $key => $row) {
-                $itemTotal = ($row['item']['discount_price'] ?? $row['item']['price']) * $row['qty'];
+                if (!is_array($row)) {
+                    continue;
+                }
+                $price = $row['main_price'] ?? $row['price'] ?? 0;
+                $qty = (int)($row['qty'] ?? 1);
+                $itemTotal = $price * $qty;
                 $cartTotal += $itemTotal;
-                $cartItemCount += $row['qty'];
+                $cartItemCount += $qty;
+                $itemId = is_string($key) ? explode('-', $key)[0] : $key;
                 $cartItems[] = [
-                    'id' => $row['item']['id'],
-                    'name' => $row['item']['name'],
-                    'category' => $row['item']['category']['name'] ?? '',
-                    'quantity' => $row['qty'],
-                    'price' => $row['item']['discount_price'] ?? $row['item']['price']
+                    'id' => $itemId,
+                    'name' => $row['name'] ?? '',
+                    'category' => '',
+                    'quantity' => $qty,
+                    'price' => $price
                 ];
             }
             
@@ -444,13 +525,15 @@ a.btn-sm.related-buy-now-btn:hover {
           bg-dark
           @elseif($item->is_type == 'flash_deal')
             bg-success @endif
-          ">{{ $item->is_type != 'undefine' ? ucfirst(str_replace('_', ' ', $item->is_type)) : '' }}</span>
+          "
+          style="background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%) !important;"
+          >{{ $item->is_type != 'undefine' ? ucfirst(str_replace('_', ' ', $item->is_type)) : '' }}</span>
                     @else
-                        <span class="product-badge bg-secondary border-default text-body">{{ __('out of stock') }}</span>
+                        <span class="product-badge bg-secondary border-default text-body" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important;">{{ __('out of stock') }}</span>
                     @endif
 
                     @if ($item->previous_price && $item->previous_price != 0)
-                        <div class="product-badge bg-goldenrod  ppp-t"> -{{ PriceHelper::DiscountPercentage($item) }}</div>
+                        <div class="product-badge bg-goldenrod  ppp-t" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important; border: none;"> -{{ PriceHelper::DiscountPercentage($item) }}</div>
                     @endif
 
                     <div class="product-thumbnails insize">
@@ -475,11 +558,12 @@ a.btn-sm.related-buy-now-btn:hover {
                         <input type="hidden" id="item_id" value="{{ $item->id }}">
                         <input type="hidden" id="demo_price"
                             value="{{ PriceHelper::setConvertPrice($item->discount_price) }}">
+                        <input type="hidden" id="previous_price" value="{{ $item->previous_price != 0 ? PriceHelper::setConvertPrice($item->previous_price) : 0 }}">
                         <input type="hidden" value="{{ PriceHelper::setCurrencySign() }}" id="set_currency">
                         <input type="hidden" value="{{ PriceHelper::setCurrencyValue() }}" id="set_currency_val">
                         <input type="hidden" value="{{ $setting->currency_direction }}" id="currency_direction">
-                        <h4 class="mb-2 p-title-main">{{ $item->name }}</h4>
-                        {{-- <div class="mb-3">
+                        <h4 class="mb-2" style="font-size: 30px !important; text-transform: capitalize !important;">{{ $item->name }}</h4>
+                        <div class="mb-3">
                             <div class="rating-stars d-inline-block gmr-3">
                                 {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
                             </div>
@@ -489,7 +573,7 @@ a.btn-sm.related-buy-now-btn:hover {
                             @else
                                 <span class="text-danger  d-inline-block">{{ __('Out of stock') }}</span>
                             @endif
-                        </div> --}}
+                        </div>
 
 
                         @if ($item->is_type == 'flash_deal')
@@ -507,13 +591,12 @@ a.btn-sm.related-buy-now-btn:hover {
                         <span class="h3 d-block price-area">
                             @if (!$hasBulkPricingPreview)
                                 @if ($item->previous_price != 0)
-                                    <small
-                                        class="d-inline-block"><del>{{ PriceHelper::setPreviousPrice($item->previous_price) }}</del></small>
+                                    <small class="d-inline-block"><del id="old_price">{{ PriceHelper::setPreviousPrice($item->previous_price) }}</del></small>
                                 @endif
-                                <span id="main_price" class="main-price">{{ PriceHelper::grandCurrencyPrice($item) }}</span>
+                                <span id="main_price" class="main-price" style="color: #4E65FF !important;">{{ PriceHelper::grandCurrencyPrice($item) }}</span>
                             @else
                                 <span class="text-muted" style="font-size: 1.2rem;">{{ __('দাম শুরু') }}</span>
-                                <span id="main_price" class="main-price">{{ PriceHelper::grandCurrencyPrice($item) }}</span>
+                                <span id="main_price" class="main-price" style="color: #4E65FF !important;">{{ PriceHelper::grandCurrencyPrice($item) }}</span>
                                 <span class="text-muted" style="font-size: 1.2rem;">{{ __('থেকে') }}</span>
                             @endif
                         </span>
@@ -685,20 +768,21 @@ a.btn-sm.related-buy-now-btn:hover {
                                 @endif
                                 
                                 @if (!$hasBulkPricing)
-                                    {{-- Regular Buy Now button --}}
-                                    <div class="p-action-button">
+                                    {{-- Buy Now and Add to Cart: same structure/style as home page best selling --}}
+                                    <div class="p-action-button d-flex flex-wrap gap-2 align-items-center">
                                         @if ($item->item_type != 'affiliate')
                                             @if ($item->is_stock())
-                                                <button class="btn btn-primary m-0" id="but_to_cart"><i
-                                                        class="icon-bag"></i><span>{{ __('Buy Now') }}</span></button>
+                                                <button type="button" id="but_to_cart" class="order-now-btn-home fw-bold text-white d-flex align-items-center justify-content-center" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease;">
+                                                    <i class="fas fa-shopping-cart me-2"></i><span>{{ __('Buy Now') }}</span>
+                                                </button>
+                                                <button type="button" id="add_to_cart" class="add_to_single_cart fw-bold d-flex align-items-center justify-content-center" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease;">
+                                                    <i class="fas fa-cart-plus me-2"></i><span>{{ __('Add to Cart') }}</span>
+                                                </button>
                                             @else
-                                                <button class="btn btn-primary m-0"><i
-                                                        class="icon-bag"></i><span>{{ __('Out of stock') }}</span></button>
+                                                <button class="btn btn-primary m-0" disabled><i class="icon-bag"></i><span>{{ __('Out of stock') }}</span></button>
                                             @endif
                                         @else
-                                            <a href="{{ $item->affiliate_link }}" target="_blank"
-                                                class="btn btn-primary m-0"><span><i
-                                                        class="icon-bag"></i>{{ __('Buy Now') }}</span></a>
+                                            <a href="{{ $item->affiliate_link }}" target="_blank" class="order-now-btn-home fw-bold text-white d-flex align-items-center justify-content-center" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;"><i class="fas fa-shopping-cart me-2"></i><span>{{ __('Buy Now') }}</span></a>
                                         @endif
                                     </div>
                                 @else
@@ -1050,7 +1134,9 @@ a.btn-sm.related-buy-now-btn:hover {
                                     bg-dark
                                     @elseif($related->is_type == 'flash_deal')
                                     bg-success @endif
-                                    ">
+                                    "
+                                    style="background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%) !important; border: none;"
+                                    >
                                                 {{ ucfirst(str_replace('_', ' ', $related->is_type)) }}
                                             </div>
                                         @endif
@@ -1061,12 +1147,7 @@ a.btn-sm.related-buy-now-btn:hover {
                                             {{ __('out of stock') }}</div>
                                     @endif
                                     @if ($related->previous_price && $related->previous_price != 0)
-                                        <div class="product-badge product-badge2 bg-info">
-                                            -{{ PriceHelper::DiscountPercentage($related) }}</div>
-                                    @endif
-
-                                    @if ($related->previous_price && $related->previous_price != 0)
-                                        <div class="product-badge product-badge2 bg-info">
+                                        <div class="product-badge product-badge2 bg-info" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%) !important; border: none;">
                                             -{{ PriceHelper::DiscountPercentage($related) }}</div>
                                     @endif
                                     <div class="product-thumb">
@@ -1088,10 +1169,13 @@ a.btn-sm.related-buy-now-btn:hover {
                                             @endif
                                             {{ PriceHelper::grandCurrencyPrice($related) }}
                                         </h4>
-                                        <div class="product-buttons">
-                                            <a href="{{ route('front.product', $related->slug) }}" class="btn btn-primary btn-sm related-buy-now-btn" style="color: white !important; text-decoration: none !important;">
-                                                {{ __('Buy Now') }}
-                                            </a>
+                                        <div class="product-buttons d-flex flex-wrap gap-2 align-items-center">
+                                            @if ($related->is_stock())
+                                                <a href="{{ route('front.product', $related->slug) }}" class="order-now-btn-home fw-bold text-white d-flex align-items-center justify-content-center" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 15px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;"><i class="fas fa-shopping-cart me-2"></i>{{ __('Buy Now') }}</a>
+                                                <a href="javascript:;" class="add_to_single_cart fw-bold d-flex align-items-center justify-content-center" data-target="{{ $related->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;"><i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}</a>
+                                            @else
+                                                <a href="{{ route('front.product', $related->slug) }}" class="order-now-btn-home fw-bold text-white d-flex align-items-center justify-content-center" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 15px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;"><i class="fas fa-shopping-cart me-2"></i>{{ __('Buy Now') }}</a>
+                                            @endif
                                         </div>
                                     </div>
 
@@ -1167,6 +1251,15 @@ a.btn-sm.related-buy-now-btn:hover {
                                 <input type="hidden" id="outside-dhaka-fee" value="{{ $item->outside_dhaka_delivery_fee ?? 130 }}">
                                 @endif
                                 
+                                <!-- Order Notes (Optional) - Always visible -->
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="order_notes">{{ __('অর্ডার নোট (ঐচ্ছিক)') }}</label>
+                                        <textarea class="form-control" name="order_notes" id="order_notes" rows="3" placeholder="বিশেষ প্যাকিং বা অতিরিক্ত কিছুর প্রয়োজন হলে এখানে লিখুন..."></textarea>
+                                        <small class="text-muted">{{ __('যেমন: উপহার হিসেবে মোড়ানো, বিশেষ সময়ে ডেলিভারি ইত্যাদি।') }}</small>
+                                    </div>
+                                </div>
+                                
                                 <!-- Hidden fields for required data -->
                                 <input type="hidden" name="bill_email" value="{{ isset($user) ? $user->email : 'customer@example.com' }}">
                                 <input type="hidden" name="bill_last_name" value="">
@@ -1202,13 +1295,18 @@ a.btn-sm.related-buy-now-btn:hover {
                                 <td class="text-gray-dark" id="cart-subtotal">{{ PriceHelper::setCurrencyPrice($cart_total) }}</td>
                             </tr>
 
+                            <tr id="discount-row" style="display: none;">
+                                <td>{{ __('ডিসকাউন্ট') }} <span id="coupon-title"></span>:</td>
+                                <td class="text-danger" id="discount-amount">{{ PriceHelper::setCurrencyPrice(0) }}</td>
+                            </tr>
+
                             <tr>
                                 <td>{{ __('ডেলিভারি ফি') }}:</td>
                                 <td class="text-gray-dark" id="delivery-fee-display">{{ PriceHelper::setCurrencyPrice(0) }}</td>
                             </tr>
                             <tr>
-                                <td class="text-lg text-primary">{{ __('মোট টাকা') }}</td>
-                                <td class="text-lg text-primary grand_total_set" id="order-total">{{ PriceHelper::setCurrencyPrice($grand_total) }}
+                                <td class="text-lg" style="color: #2193b0; font-weight: bold;">{{ __('মোট টাকা') }}</td>
+                                <td class="text-lg grand_total_set" id="order-total" style="color: #2193b0; font-weight: bold;">{{ PriceHelper::setCurrencyPrice($grand_total) }}
                                 </td>
                             </tr>
                         </table>
@@ -1221,7 +1319,40 @@ a.btn-sm.related-buy-now-btn:hover {
                         
                     </section>
 
-                    
+                    <!-- Coupon Code Section -->
+                    <div class="card border-0 mt-3">
+                        <div class="card-body p-3">
+                            <h5 class="mb-3"><i class="fas fa-tag"></i> {{ __('কুপন কোড') }}</h5>
+                            <form id="product_coupon_form" class="d-flex gap-2">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $item->id }}">
+                                <input class="form-control form-control-sm flex-grow-1" 
+                                    name="code" 
+                                    id="coupon_code_input"
+                                    type="text"
+                                    placeholder="{{ __('কুপন কোড লিখুন') }}" 
+                                    style="flex: 1;">
+                                <button class="btn btn-primary btn-sm" 
+                                    type="submit" 
+                                    id="apply_coupon_btn"
+                                    style="white-space: nowrap;">
+                                    <span>{{ __('প্রয়োগ করুন') }}</span>
+                                </button>
+                            </form>
+                            <div id="coupon-message" class="mt-2" style="display: none;"></div>
+                            <div id="applied-coupon" class="mt-2 alert alert-success" style="display: none;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>
+                                        <i class="fas fa-check-circle"></i> 
+                                        <strong id="applied-coupon-text"></strong>
+                                    </span>
+                                    <button type="button" class="btn btn-sm btn-danger" id="remove_coupon_btn">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Quantity Selection Message -->
                     @if ($hasBulkPricingCheckout)
@@ -2129,15 +2260,20 @@ $(document).ready(function() {
         });
         
         $(this).closest('.delivery-option-item').css({
-            'border-color': '#237a57',
-            'background': 'rgba(35, 122, 87, 0.05)'
+            'border-color': '#92EFFD',
+            'background': 'rgba(146, 239, 253, 0.05)'
         });
         
         // Hide error message
         $('#delivery-area-error').hide();
         
         // Update order summary with delivery fee
-        updateOrderSummary();
+        // Check if coupon is applied and use appropriate function
+        if (window.appliedCoupon) {
+            updateOrderSummaryWithCoupon();
+        } else {
+            updateOrderSummary();
+        }
     });
     
     // Add hover effect to delivery options
@@ -2145,8 +2281,8 @@ $(document).ready(function() {
         function() {
             if (!$(this).find('input[type="radio"]').is(':checked')) {
                 $(this).css({
-                    'border-color': '#237a57',
-                    'background': 'rgba(35, 122, 87, 0.02)'
+                    'border-color': '#92EFFD',
+                    'background': 'rgba(146, 239, 253, 0.02)'
                 });
             }
         },
@@ -2342,6 +2478,7 @@ $(document).ready(function() {
             bill_first_name: $('input[name="bill_first_name"]').val(),
             bill_phone: $('input[name="bill_phone"]').val(),
             bill_address1: $('textarea[name="bill_address1"]').val(),
+            order_notes: $('textarea[name="order_notes"]').val() || '',
             selected_attributes: JSON.stringify(selectedAttributes)
         };
         
@@ -2359,6 +2496,11 @@ $(document).ready(function() {
             orderData.bulk_pricing = true;
             orderData.bulk_quantity = window.bulkPricingSelection.quantity;
             orderData.bulk_total_price = window.bulkPricingSelection.totalPrice;
+        }
+        
+        // Add coupon code if applied
+        if (window.appliedCoupon) {
+            orderData.coupon_code = window.appliedCoupon.code;
         }
         
         // Place order directly (no cart needed)
@@ -2398,6 +2540,175 @@ $(document).ready(function() {
     
     // Initialize order summary on page load
     updateOrderSummary();
+    
+    // ============================================
+    // Coupon Code Functionality
+    // ============================================
+    
+    // Handle coupon form submission
+    $('#product_coupon_form').on('submit', function(e) {
+        e.preventDefault();
+        
+        var couponCode = $('input[name="code"]').val().trim();
+        var productId = $('input[name="product_id"]').val();
+        
+        if (!couponCode) {
+            showCouponMessage('দয়া করে একটি কুপন কোড লিখুন', 'error');
+            return;
+        }
+        
+        // Disable button during request
+        $('#apply_coupon_btn').prop('disabled', true).html('<span><i class="fas fa-spinner fa-spin"></i></span>');
+        
+        $.ajax({
+            url: "{{ route('front.promo.submit') }}",
+            type: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                code: couponCode,
+                product_id: productId
+            },
+            success: function(response) {
+                $('#apply_coupon_btn').prop('disabled', false).html('<span>{{ __('প্রয়োগ করুন') }}</span>');
+                
+                if (response.success) {
+                    // Store coupon data globally
+                    window.appliedCoupon = {
+                        code: couponCode,
+                        discount: parseFloat(response.discount),
+                        title: response.title || couponCode
+                    };
+                    
+                    // Show success message
+                    $('#coupon_code_input').val('');
+                    $('#applied-coupon-text').text(window.appliedCoupon.code + ' কুপন প্রয়োগ হয়েছে!');
+                    $('#applied-coupon').slideDown();
+                    $('#product_coupon_form').hide();
+                    
+                    // Update order summary with discount
+                    updateOrderSummaryWithCoupon();
+                    
+                    showCouponMessage('কুপন সফলভাবে প্রয়োগ হয়েছে!', 'success');
+                } else {
+                    showCouponMessage(response.message || 'কুপন প্রয়োগ করতে ব্যর্থ', 'error');
+                }
+            },
+            error: function(xhr) {
+                $('#apply_coupon_btn').prop('disabled', false).html('<span>{{ __('প্রয়োগ করুন') }}</span>');
+                
+                var errorMsg = 'কুপন প্রয়োগ করতে ব্যর্থ';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+                showCouponMessage(errorMsg, 'error');
+            }
+        });
+    });
+    
+    // Handle coupon removal
+    $('#remove_coupon_btn').on('click', function() {
+        window.appliedCoupon = null;
+        $('#applied-coupon').slideUp();
+        $('#product_coupon_form').show();
+        $('#coupon-message').slideUp();
+        
+        // Update order summary without discount
+        updateOrderSummaryWithCoupon();
+    });
+    
+    // Function to show coupon messages
+    function showCouponMessage(message, type) {
+        var alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        $('#coupon-message')
+            .removeClass('alert-success alert-danger')
+            .addClass('alert ' + alertClass)
+            .html('<i class="fas fa-' + (type === 'success' ? 'check' : 'exclamation') + '-circle"></i> ' + message)
+            .slideDown();
+        
+        if (type === 'success') {
+            setTimeout(function() {
+                $('#coupon-message').slideUp();
+            }, 3000);
+        }
+    }
+    
+    // Function to update order summary with coupon discount
+    function updateOrderSummaryWithCoupon() {
+        var quantity = parseInt($('#quantity-input').val()) || 1;
+        var basePrice = parseFloat($('#base-price').val());
+        var currencySign = $('#currency-sign').val();
+        var currencyDirection = parseInt($('#currency-direction').val());
+        
+        // Calculate product subtotal
+        var subtotal = basePrice * quantity;
+        
+        // Add selected attribute prices
+        var optionPrices = [];
+        $('.attribute_option :selected').each(function() {
+            var price = parseFloat($(this).data('option_price')) || 0;
+            if (price > 0) optionPrices.push(price);
+        });
+        $('.color-swatch-btn.active').each(function() {
+            var price = parseFloat($(this).data('option_price')) || 0;
+            if (price > 0) optionPrices.push(price);
+        });
+        $('.image-selector-btn.active').each(function() {
+            var price = parseFloat($(this).data('option_price')) || 0;
+            if (price > 0) optionPrices.push(price);
+        });
+        
+        var attributeTotal = 0;
+        optionPrices.forEach(function(price) {
+            attributeTotal += price;
+        });
+        subtotal += (attributeTotal * quantity);
+        
+        // Apply coupon discount if available
+        var discount = 0;
+        if (window.appliedCoupon) {
+            discount = window.appliedCoupon.discount;
+            
+            // Show discount row
+            var discountFormatted = (currencyDirection == 1) 
+                ? '-' + currencySign + discount.toFixed(2) 
+                : '-' + discount.toFixed(2) + currencySign;
+            
+            $('#discount-amount').html(discountFormatted);
+            $('#coupon-title').text('(' + window.appliedCoupon.code + ')');
+            $('#discount-row').show();
+        } else {
+            $('#discount-row').hide();
+        }
+        
+        // Get delivery fee
+        var deliveryFee = 0;
+        @if($item->has_separate_delivery)
+        var selectedDelivery = $('input[name="delivery_area"]:checked').val();
+        if (selectedDelivery === 'inside_dhaka') {
+            deliveryFee = parseFloat({{ $item->inside_dhaka_delivery_fee ?? 0 }});
+        } else if (selectedDelivery === 'outside_dhaka') {
+            deliveryFee = parseFloat({{ $item->outside_dhaka_delivery_fee ?? 0 }});
+        }
+        @endif
+        
+        // Calculate grand total
+        var grandTotal = subtotal - discount + deliveryFee;
+        
+        // Update display
+        var subtotalFormatted = (currencyDirection == 1) 
+            ? currencySign + subtotal.toFixed(2) 
+            : subtotal.toFixed(2) + currencySign;
+        var deliveryFeeFormatted = (currencyDirection == 1) 
+            ? currencySign + deliveryFee.toFixed(2) 
+            : deliveryFee.toFixed(2) + currencySign;
+        var grandTotalFormatted = (currencyDirection == 1) 
+            ? currencySign + grandTotal.toFixed(2) 
+            : grandTotal.toFixed(2) + currencySign;
+        
+        $('#cart-subtotal').html(subtotalFormatted);
+        $('#delivery-fee-display').html(deliveryFeeFormatted);
+        $('#order-total').html(grandTotalFormatted);
+    }
 });
 </script>
 
@@ -2529,7 +2840,7 @@ $(document).ready(function() {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #093028 0%, #237a57 100%);
+    background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%);
     color: white;
     display: flex;
     align-items: center;

@@ -49,13 +49,43 @@
 											placeholder="{{ __('Enter Number Of Times') }}" value="{{ old('no_of_times') }}" min="1" >
 									</div>
 
+									<div class="form-group">
+										<label for="product_id">{{ __('Specific Product (Optional)') }}</label>
+										<select name="product_id" class="form-control" id="product_id">
+											<option value="">{{ __('All Products') }}</option>
+											@foreach(\App\Models\Item::orderBy('name')->get() as $product)
+												<option value="{{ $product->id }}" {{ old('product_id') == $product->id ? 'selected' : '' }}>
+													{{ $product->name }} - {{ PriceHelper::adminCurrencyPrice($product->discount_price) }}
+												</option>
+											@endforeach
+										</select>
+										<small class="text-muted">{{ __('Leave blank to apply coupon to all products') }}</small>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="start_date">{{ __('Start Date (Optional)') }}</label>
+												<input type="date" name="start_date" class="form-control" id="start_date" value="{{ old('start_date') }}">
+												<small class="text-muted">{{ __('Leave blank for no start date restriction') }}</small>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label for="end_date">{{ __('End Date (Optional)') }}</label>
+												<input type="date" name="end_date" class="form-control" id="end_date" value="{{ old('end_date') }}">
+												<small class="text-muted">{{ __('Leave blank for no end date restriction') }}</small>
+											</div>
+										</div>
+									</div>
+
                                     <div class="form-group">
                                         <label for="discount">{{ __('Discount') }}
                                             *</label>
                                         <div class="input-group mb-3">
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text">
-													<select name="type" class="form-control">
+													<select name="type" class="form-control" id="discount_type">
 														<option value="percentage">{{__('Percentage')}} (%)</option>
 														<option value="amount">{{__('Amount')}} ({{ PriceHelper::adminCurrency() }})</option>
 													</select>
@@ -67,7 +97,29 @@
                                                 min="0" step="0.1"
                                                 value="{{ old('discount') }}" >
                                         </div>
+										<small class="text-danger" id="discount_error" style="display:none;"></small>
                                     </div>
+
+									<div class="card bg-light p-3 mb-3">
+										<h5 class="mb-3">{{ __('Free Delivery Option') }}</h5>
+										
+										<div class="form-group">
+											<div class="custom-control custom-checkbox">
+												<input type="checkbox" class="custom-control-input" id="is_free_delivery" name="is_free_delivery" value="1" {{ old('is_free_delivery') ? 'checked' : '' }}>
+												<label class="custom-control-label" for="is_free_delivery">
+													{{ __('Enable Free Delivery Coupon') }}
+												</label>
+											</div>
+											<small class="text-muted">{{ __('When enabled, this coupon will provide free delivery instead of a price discount') }}</small>
+										</div>
+
+										<div class="form-group" id="minimum_amount_field" style="display: none;">
+											<label for="minimum_order_amount">{{ __('Minimum Order Amount') }}</label>
+											<input type="number" name="minimum_order_amount" class="form-control" id="minimum_order_amount"
+												placeholder="{{ __('Enter Minimum Order Amount') }}" value="{{ old('minimum_order_amount', 900) }}" min="0" step="0.01">
+											<small class="text-muted">{{ __('Minimum cart subtotal required to apply this free delivery coupon') }}</small>
+										</div>
+									</div>
 
 									<div class="form-group">
 										<button type="submit" class="btn btn-secondary">{{ __('Submit') }}</button>
@@ -86,4 +138,76 @@
 
 </div>
 
+@endsection
+
+@section('scripts')
+<script>
+$(document).ready(function() {
+    // Validate discount amount against product price
+    function validateDiscount() {
+        var productId = $('#product_id').val();
+        var discountType = $('#discount_type').val();
+        var discountValue = parseFloat($('#discount').val()) || 0;
+        
+        // Clear previous error
+        $('#discount_error').hide().text('');
+        
+        if (productId && discountType === 'amount' && discountValue > 0) {
+            // Get product price from the selected option text
+            var selectedOption = $('#product_id option:selected');
+            var priceText = selectedOption.text().split(' - ')[1];
+            
+            if (priceText) {
+                // Extract numeric value from price (remove currency symbol and format)
+                var priceMatch = priceText.match(/[\d,]+\.?\d*/);
+                if (priceMatch) {
+                    var productPrice = parseFloat(priceMatch[0].replace(/,/g, ''));
+                    
+                    if (discountValue > productPrice) {
+                        $('#discount_error').show().text('{{ __('Discount amount cannot exceed product price') }}: ' + priceText);
+                        $('button[type="submit"]').prop('disabled', true);
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        $('button[type="submit"]').prop('disabled', false);
+        return true;
+    }
+    
+    // Trigger validation on change
+    $('#product_id, #discount_type, #discount').on('change keyup', validateDiscount);
+    
+    // Validate dates
+    $('#start_date, #end_date').on('change', function() {
+        var startDate = $('#start_date').val();
+        var endDate = $('#end_date').val();
+        
+        if (startDate && endDate && startDate > endDate) {
+            alert('{{ __('End date must be after start date') }}');
+            $('#end_date').val('');
+        }
+    });
+    
+    // Handle free delivery checkbox
+    $('#is_free_delivery').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#minimum_amount_field').slideDown();
+            // Hide discount fields when free delivery is enabled
+            $('#discount, #discount_type').closest('.form-group').find('label').append(' <span class="text-muted">({{ __('Not applicable for free delivery') }})</span>');
+            $('#discount').val(0).prop('readonly', true);
+        } else {
+            $('#minimum_amount_field').slideUp();
+            $('#discount').prop('readonly', false);
+            $('#discount, #discount_type').closest('.form-group').find('label span').remove();
+        }
+    });
+    
+    // Check on page load
+    if ($('#is_free_delivery').is(':checked')) {
+        $('#minimum_amount_field').show();
+    }
+});
+</script>
 @endsection

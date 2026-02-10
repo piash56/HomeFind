@@ -175,6 +175,7 @@ class CartRepository
                 "qty" => $qty,
                 "price" => PriceHelper::grandPrice($item),
                 "main_price" => $item->discount_price,
+                "previous_price" => $item->previous_price ?? 0,
                 "photo" => $item->photo,
                 "type" => $item->item_type,
                 "item_type" => $item->item_type,
@@ -262,31 +263,126 @@ class CartRepository
 
     public function promoStore($request)
     {
-
         $input = $request->all();
-        $promo_code = PromoCode::where('status', 1)->whereCodeName($input['code'])->where('no_of_times', '>', 0)->first();
-
-        if ($promo_code) {
-            $cart = Session::get('cart');
-            $cartTotal = PriceHelper::cartTotal($cart, 2);
-            $discount = $this->getDiscount($promo_code->discount, $promo_code->type, $cartTotal);
-
-            $coupon = [
-                'discount' => $discount['sub'],
-                'code'  => $promo_code
-            ];
-            Session::put('coupon', $coupon);
-
-            return [
-                'status'  => true,
-                'message' => __('Promo code found!')
-            ];
-        } else {
+        
+        // First check if coupon code exists at all
+        $code_exists = PromoCode::where('code_name', $input['code'])->first();
+        
+        if (!$code_exists) {
             return [
                 'status'  => false,
-                'message' => __('No coupon code found')
+                'message' => __('Invalid coupon code')
             ];
         }
+        
+        // Check if coupon is enabled
+        if ($code_exists->status != 1) {
+            return [
+                'status'  => false,
+                'message' => __('This coupon code is currently disabled')
+            ];
+        }
+        
+        // Check if coupon has uses remaining
+        if ($code_exists->no_of_times <= 0) {
+            return [
+                'status'  => false,
+                'message' => __('This coupon code has been fully used')
+            ];
+        }
+        
+        $promo_code = $code_exists;
+        
+        // Check if promo code is within valid date range
+        if (!$promo_code->isValidDate()) {
+            return [
+                'status'  => false,
+                'message' => __('This coupon code has expired or is not yet active')
+            ];
+        }
+        
+        // Check if this is a single product page request
+        // If product_id is provided in request, treat as single product validation
+        if ($request->has('product_id')) {
+            $productId = $request->product_id;
+            
+            // If coupon is product-specific, validate it
+            if ($promo_code->product_id && $promo_code->product_id != $productId) {
+                $productName = $promo_code->product ? $promo_code->product->name : 'specific product';
+                return [
+                    'status'  => false,
+                    'message' => __('This coupon is only valid for') . ': ' . $productName
+                ];
+            }
+            
+            // Get product details
+            $product = Item::find($productId);
+            if (!$product) {
+                return [
+                    'status'  => false,
+                    'message' => __('Product not found')
+                ];
+            }
+            
+            // Calculate discount based on product price (single unit)
+            $productPrice = $product->discount_price;
+            $discount = $this->getDiscount($promo_code->discount, $promo_code->type, $productPrice);
+            
+            // Return discount info without saving to session (will be applied at checkout)
+            return [
+                'status'  => true,
+                'success' => true,
+                'discount' => $discount['sub'],
+                'title' => $promo_code->title,
+                'code' => $promo_code->code_name,
+                'message' => __('Coupon applied successfully')
+            ];
+        }
+        
+        // Cart-based coupon application
+        $cart = Session::get('cart');
+        
+        // If promo code is for a specific product, check if that product is in cart
+        if ($promo_code->product_id) {
+            $productInCart = false;
+            $productPrice = 0;
+            
+            foreach ($cart as $key => $item) {
+                $itemId = explode('-', $key, 2)[0];
+                if ($itemId == $promo_code->product_id) {
+                    $productInCart = true;
+                    // Calculate product total (price + attributes) * quantity
+                    $productPrice = ($item['main_price'] + $item['attribute_price']) * $item['qty'];
+                    break;
+                }
+            }
+            
+            if (!$productInCart) {
+                $productName = $promo_code->product ? $promo_code->product->name : 'specific product';
+                return [
+                    'status'  => false,
+                    'message' => __('This coupon is only valid for') . ': ' . $productName
+                ];
+            }
+            
+            // Calculate discount based on specific product price
+            $discount = $this->getDiscount($promo_code->discount, $promo_code->type, $productPrice);
+        } else {
+            // Apply to entire cart
+            $cartTotal = PriceHelper::cartTotal($cart, 2);
+            $discount = $this->getDiscount($promo_code->discount, $promo_code->type, $cartTotal);
+        }
+
+        $coupon = [
+            'discount' => $discount['sub'],
+            'code'  => $promo_code
+        ];
+        Session::put('coupon', $coupon);
+
+        return [
+            'status'  => true,
+            'message' => __('Promo code applied successfully!')
+        ];
     }
 
 

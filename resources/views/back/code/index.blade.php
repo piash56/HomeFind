@@ -26,8 +26,10 @@
 						<tr>
                 <th>{{ __('Title') }}</th>
                 <th>{{ __('Code') }}</th>
-                <th>{{ __('No. Of Times') }}</th>
+                <th>{{ __('Product') }}</th>
                 <th>{{ __('Discount') }}</th>
+                <th>{{ __('Valid Period') }}</th>
+                <th>{{ __('Times Left') }}</th>
                 <th>{{ __('Status') }}</th>
                 <th>{{ __('Actions') }}</th>
               </tr>

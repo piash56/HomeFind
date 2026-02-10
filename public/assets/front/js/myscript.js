@@ -930,14 +930,23 @@ $(function ($) {
         $(document).on("click", ".increaseQty", function () {
             getData();
         });
+        function showCartLoader() {
+            var $ol = $("#cart-loader-overlay");
+            if ($ol.length) $ol.css("display", "flex");
+        }
+        function hideCartLoader() {
+            var $ol = $("#cart-loader-overlay");
+            if ($ol.length) $ol.hide();
+        }
+
         $(document).on("click", ".increaseQtycart", function () {
             let item_key = $(this).attr('data-target');
             let item_id = $(this).attr('data-id');
             let item = $(this).attr('data-item');
-            let newOptionArray = item.split(',');
-            let qty = parseInt($(this).parent().find('input').val()) +1;
-            cartSubmit(item_key,item_id,qty,newOptionArray);
-            // getData(0,0,0,0,0,);
+            let newOptionArray = item ? item.split(',') : [];
+            let qty = parseInt($(this).parent().find('input').val(), 10) + 1;
+            showCartLoader();
+            cartSubmit(item_key, item_id, qty, newOptionArray);
         });
 
         $(document).on("click", ".decreaseQty", function () {
@@ -947,22 +956,44 @@ $(function ($) {
         $(document).on("click", ".decreaseQtycart", function () {
             let item_key = $(this).attr('data-target');
             let item_id = $(this).attr('data-id');
-            let qty = parseInt($(this).parent().find('input').val()) -1;
-            
-            if(qty>0){
-                cartSubmit(item_key,item_id,qty);
-                getData();
+            let qty = parseInt($(this).parent().find('input').val(), 10) - 1;
+            if (qty > 0) {
+                showCartLoader();
+                cartSubmit(item_key, item_id, qty);
             }
         });
 
+        $(document).on("click", "a.remove-from-cart[href*='cart/destroy']", function (e) {
+            e.preventDefault();
+            var href = $(this).attr("href");
+            showCartLoader();
+            window.location.href = href;
+        });
+        $(document).on("click", "a.clear-cart-btn, a[href*='cart/clear']", function (e) {
+            e.preventDefault();
+            var href = $(this).attr("href");
+            showCartLoader();
+            window.location.href = href;
+        });
+
         $(document).on("click", "#add_to_cart", function () {
+            var $btn = $(this);
+            if ($btn.hasClass('add-to-cart-loading')) return;
+            window._lastAddToCartBtn = $btn;
+            window._lastAddToCartBtnHtml = $btn.html();
+            $btn.addClass('add-to-cart-loading').prop('disabled', true);
             getData(1);
         });
         $(document).on("click", "#but_to_cart", function () {
             getData(1, 0, 0, 0, 1);
         });
         $(document).on("click", ".add_to_single_cart", function () {
-            getData(1, $(this).attr("data-target"));
+            var $btn = $(this);
+            if ($btn.hasClass('add-to-cart-loading')) return;
+            window._lastAddToCartBtn = $btn;
+            window._lastAddToCartBtnHtml = $btn.html();
+            $btn.addClass('add-to-cart-loading').prop('disabled', true);
+            getData(1, $btn.attr("data-target"));
         });
 
         function cartSubmit(item_key,item_id,cartQty,newOptionArray) {
@@ -987,23 +1018,46 @@ $(function ($) {
             let totalOptionPrice = parseFloat(optionPriceSum(options_prices));
 
 
-            let attribute_ids = $(".attribute_option :selected")
-                .map(function (i, el) {
-                    return $(el).attr("data-type");
-                })
-                .get();
+            // Collect attribute IDs and option IDs from all attribute types (dropdowns, color swatches, image selectors)
+            let attribute_ids = [];
+            let options_ids_array = [];
             
-                
-                if(optionIds != null){
-                  var  options_ids = optionIds;
-                }else{
-                    
-                    var options_ids = $(".attribute_option :selected")
-                    .map(function (i, el) {
-                        return $(el).attr("data-href");
-                    })
-                    .get();
+            // From dropdowns
+            $(".attribute_option :selected").each(function() {
+                let attrId = $(this).attr("data-type");
+                let optId = $(this).attr("data-href");
+                if (attrId && optId) {
+                    attribute_ids.push(attrId);
+                    options_ids_array.push(optId);
                 }
+            });
+            
+            // From color swatches
+            $(".color-swatch-btn.active").each(function() {
+                let attrId = $(this).attr("data-type");
+                let optId = $(this).attr("data-href");
+                if (attrId && optId) {
+                    attribute_ids.push(attrId);
+                    options_ids_array.push(optId);
+                }
+            });
+            
+            // From image selectors
+            $(".image-selector-btn.active").each(function() {
+                let attrId = $(this).attr("data-type");
+                let optId = $(this).attr("data-href");
+                if (attrId && optId) {
+                    attribute_ids.push(attrId);
+                    options_ids_array.push(optId);
+                }
+            });
+            
+            // Use provided optionIds if available, otherwise use collected ones
+            if(optionIds != null){
+                var options_ids = optionIds;
+            } else {
+                var options_ids = options_ids_array;
+            }
             
 
             let quantity;
@@ -1023,16 +1077,31 @@ $(function ($) {
 
             let currency_direction = $("#currency_direction").val();
 
-            let demoPrice = parseFloat($("#demo_price").val());
-            let subPrice = parseFloat(demoPrice + totalOptionPrice);
-            let mainPrice = subPrice * quantity;
-
-            mainPrice = number_format(mainPrice,2,decimal_separator,thousand_separator);
-
-            if (currency_direction == 0) {
-                $('#main_price').html(mainPrice + setCurrency);
-            } else {
-                $('#main_price').html(setCurrency + mainPrice);
+            /* Only update product page price when not in add-to-cart mode (status !== 1).
+               When Add to Cart is clicked we skip this so the displayed price does not change. */
+            if (status !== 1) {
+                let demoPrice = parseFloat($("#demo_price").val()) || 0;
+                let totalOpt = parseFloat(totalOptionPrice) || 0;
+                let subPrice = demoPrice + totalOpt;
+                let mainPrice = subPrice * quantity;
+                mainPrice = number_format(mainPrice, 2, decimal_separator, thousand_separator);
+                if (currency_direction == 0) {
+                    $('#main_price').html(mainPrice + setCurrency);
+                } else {
+                    $('#main_price').html(setCurrency + mainPrice);
+                }
+                /* Update old price (strikethrough) by quantity when present */
+                var $oldPriceEl = $("#old_price");
+                if ($oldPriceEl.length) {
+                    let prevPrice = parseFloat($("#previous_price").val()) || 0;
+                    let oldTotal = prevPrice * quantity;
+                    oldTotal = number_format(oldTotal, 2, decimal_separator, thousand_separator);
+                    if (currency_direction == 0) {
+                        $oldPriceEl.html(oldTotal + setCurrency);
+                    } else {
+                        $oldPriceEl.html(setCurrency + oldTotal);
+                    }
+                }
             }
 
             if (status == 1) {
@@ -1044,43 +1113,87 @@ $(function ($) {
                 processData: false,
                     url: addToCartUrl,
                     success: function (data) {
-                      
+                        var $btn = window._lastAddToCartBtn;
+                        if ($btn && $btn.length) {
+                            $btn.removeClass('add-to-cart-loading').prop('disabled', false);
+                        }
                         if(data.status == 'outStock'){
-                            dangerNotification(data.message);
+                            hideCartLoader();
+                            dangerNotification(data.message || 'Product is out of stock');
                         }
                         else if(data.status == 'alreadyInCart'){
-                            dangerNotification(data.message);
+                            hideCartLoader();
+                            dangerNotification(data.message || 'Product is already in your cart');
                         }
                         else{
                             $(".cart_count").text(data.qty);
-                            $(".cart_view_header").load(
-                                $("#header_cart_load").attr("data-target")
-                            );
-                            if (qty) {
-                                $("#view_cart_load").load(
-                                    $("#cart_view_load").attr("data-target")
-                                );
+                            $(".cart_count").addClass('cart-count-bump');
+                            setTimeout(function(){ $(".cart_count").removeClass('cart-count-bump'); }, 600);
+                            if ($("#header_cart_load").length && $("#header_cart_load").attr("data-target")) {
+                                $(".cart_view_header").load($("#header_cart_load").attr("data-target"));
+                            }
+                            if (qty && $("#cart_view_load").length && $("#cart_view_load").attr("data-target")) {
+                                $("#view_cart_load").load($("#cart_view_load").attr("data-target"), function () {
+                                    hideCartLoader();
+                                });
+                            } else if ($("#cart-loader-overlay").length) {
+                                hideCartLoader();
                             }
                             if (add_type == 1) {
                                 location.href = mainurl + '/checkout/billing/address';
                             } else {
-                                successNotification(data.message);
+                                successNotification(data.message || 'Product added to cart');
+                                if ($btn && $btn.length) {
+                                    $btn.addClass('add-to-cart-success').html('<i class="fas fa-check me-2"></i>Added!');
+                                    setTimeout(function(){
+                                        $btn.removeClass('add-to-cart-success').html(window._lastAddToCartBtnHtml || '<i class="fas fa-cart-plus me-2"></i>Add to Cart');
+                                        window._lastAddToCartBtn = null;
+                                        window._lastAddToCartBtnHtml = null;
+                                    }, 2000);
+                                }
                             }
                         }
-                   
-
+                    },
+                    error: function() {
+                        hideCartLoader();
+                        if (window._lastAddToCartBtn && window._lastAddToCartBtn.length) {
+                            window._lastAddToCartBtn.removeClass('add-to-cart-loading').prop('disabled', false);
+                            window._lastAddToCartBtn = null;
+                            window._lastAddToCartBtnHtml = null;
+                        }
+                        dangerNotification('Could not add product to cart. Please try again.');
                     },
                 });
             }
         }
 
         function optionPrice() {
-            let option_prices = $(".attribute_option :selected")
-                .map(function (i, el) {
-                    return $(el).attr("data-target");
-                })
-                .get();
-                
+            let option_prices = [];
+            
+            // From dropdowns
+            $(".attribute_option :selected").each(function() {
+                let price = $(this).attr("data-target");
+                if (price) {
+                    option_prices.push(price);
+                }
+            });
+            
+            // From color swatches
+            $(".color-swatch-btn.active").each(function() {
+                let price = $(this).attr("data-target");
+                if (price) {
+                    option_prices.push(price);
+                }
+            });
+            
+            // From image selectors
+            $(".image-selector-btn.active").each(function() {
+                let price = $(this).attr("data-target");
+                if (price) {
+                    option_prices.push(price);
+                }
+            });
+            
             return option_prices;
         }
 

@@ -91,16 +91,17 @@ class CatalogController extends Controller
       
 
         ->when($new, function ($query) {
-            return $query->orderby('id','desc');
+            // New Arrival: Show latest products by creation date
+            return $query->orderby('created_at','desc');
         })
         ->when($top, function ($query) {
-            return $query->whereIsType('top');
+            // Top Rated: Show products with most reviews first
+            return $query->withCount('reviews')
+                         ->orderby('reviews_count','desc')
+                         ->having('reviews_count', '>', 0);
         })
         ->when($best, function ($query) {
             return $query->whereIsType('best');
-        })
-        ->when($new, function ($query) {
-            return $query->whereIsType('new');
         })
 
         ->when($brand, function ($query, $brand) {
@@ -222,6 +223,29 @@ class CatalogController extends Controller
         ->get();
 
         return view('includes.search_suggest',compact('items'));
+    }
+
+    /**
+     * Display all categories page
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function categories()
+    {
+        $setting = Setting::first();
+        
+        // Get all active categories with product count ordered by serial
+        $categories = Category::whereStatus(1)
+            ->withCount(['items' => function($query) {
+                $query->where('status', 1);
+            }])
+            ->orderBy('serial', 'asc')
+            ->get();
+        
+        return view('front.catalog.categories', [
+            'categories' => $categories,
+            'setting' => $setting,
+        ]);
     }
 
 }

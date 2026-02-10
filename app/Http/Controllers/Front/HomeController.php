@@ -36,15 +36,33 @@ class HomeController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        // Get dummy products for best selling section (show latest active products)
+        // Get products for best selling section (admin-selected or latest fallback)
         $bestSellingProducts = Item::where('status', 1)
-            ->with(['category' => function($query) {
+            ->where(function ($query) {
+                // Prefer explicitly marked best selling products
+                $query->where('is_best_selling', 1)
+                      ->orWhereNull('is_best_selling');
+            })
+            ->with(['category' => function ($query) {
+                $query->withDefault();
+            }, 'galleries', 'reviews' => function ($query) {
+                $query->where('status', 'approved');
+            }])
+            ->orderByDesc('is_best_selling')
+            ->orderBy('id', 'desc')
+            ->take(12)
+            ->get();
+
+        // Additional curated section: Featured Products (admin selected)
+        $featuredGridProducts = Item::where('status', 1)
+            ->where('is_featured', 1)
+            ->with(['category' => function ($query) {
                 $query->withDefault();
             }, 'galleries', 'reviews' => function ($query) {
                 $query->where('status', 'approved');
             }])
             ->orderBy('id', 'desc')
-            ->take(10)
+            ->take(12)
             ->get();
 
         // Get latest approved reviews (more for scrollable list)
@@ -86,6 +104,7 @@ class HomeController extends Controller
         return view('front.home.index', [
             'featuredProducts' => $featuredProducts,
             'bestSellingProducts' => $bestSellingProducts,
+            'featuredGridProducts' => $featuredGridProducts,
             'latestReviews' => $latestReviews,
             'totalReviews' => $totalReviews,
             'averageRating' => $averageRating,

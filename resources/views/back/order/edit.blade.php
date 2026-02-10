@@ -47,6 +47,17 @@
                                                     <input type="text" name="transaction_number" class="form-control"
                                                         id="transaction_number" placeholder="{{ __('Enter Order ID') }}"
                                                         value="{{ $order->transaction_number }}" required>
+
+                                                    @if ($firstItemId)
+                                                        @php
+                                                            $firstItem = \App\Models\Item::find($firstItemId);
+                                                        @endphp
+                                                        @if ($firstItem)
+                                                            <small class="form-text text-muted mt-1">
+                                                                {{ __('SKU') }}: <strong>#{{ $firstItem->sku }}</strong>
+                                                            </small>
+                                                        @endif
+                                                    @endif
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
