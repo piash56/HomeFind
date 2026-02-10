@@ -40,25 +40,34 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
+        // Base query
+        $query = Order::latest('id');
 
-
+        // Filter by status type if provided
         if ($request->type) {
-            if ($request->start_date && $request->end_date) {
-                $datas = $start_date = Carbon::parse($request->start_date);
-                $end_date = Carbon::parse($request->end_date);
-                $datas = Order::latest('id')->whereOrderStatus($request->type)->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->get();
-            } else {
-                $datas = Order::latest('id')->whereOrderStatus($request->type)->get();
-            }
-        } else {
-            if ($request->start_date && $request->end_date) {
-                $datas = $start_date = Carbon::parse($request->start_date);
-                $end_date = Carbon::parse($request->end_date);
-                $datas = Order::latest('id')->whereDate('created_at', '>=', $start_date)->whereDate('created_at', '<=', $end_date)->get();
-            } else {
-                $datas = Order::latest('id')->get();
-            }
+            $query->whereOrderStatus($request->type);
         }
+
+        // Filter by date range if provided
+        if ($request->start_date && $request->end_date) {
+            $start_date = Carbon::parse($request->start_date);
+            $end_date   = Carbon::parse($request->end_date);
+            $query->whereDate('created_at', '>=', $start_date)
+                  ->whereDate('created_at', '<=', $end_date);
+        }
+
+        // Search by phone number (and optionally by transaction number)
+        if ($request->search) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                // billing_info / shipping_info are JSON, but we can safely search as text
+                $q->where('billing_info', 'like', '%' . $search . '%')
+                  ->orWhere('shipping_info', 'like', '%' . $search . '%')
+                  ->orWhere('transaction_number', 'like', '%' . $search . '%');
+            });
+        }
+
+        $datas = $query->get();
         return view('back.order.index', compact('datas'));
     }
 

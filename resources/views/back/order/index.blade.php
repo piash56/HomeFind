@@ -32,22 +32,33 @@
 
         <form action="{{route('back.order.index')}}" method="GET">
           <div class="row mb-4 justify-content-center">
-            <div class="col-md-6 col-sm-6 col-lg-4">
+            <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="form-group p-0">
                 <label for="start_date">{{ __('Start Date') }} *</label>
                 <input type="text" name="start_date" id="datepicker" class="form-control datepicker"
                     id="start_date"
                     placeholder="{{ __('Start Date') }}"
-                    value="">
+                    value="{{ request('start_date') }}">
                 </div>
             </div>
-            <div class="col-md-6 col-sm-6 col-lg-4">
+            <div class="col-md-6 col-sm-6 col-lg-3">
                 <div class="form-group  p-0">
                 <label for="end_date">{{ __('End Date') }} *</label>
                 <input type="text" name="end_date" id="datepicker1" class="form-control datepicker"
                     id="end_date"
                     placeholder="{{ __('End Date') }}"
-                    value="">
+                    value="{{ request('end_date') }}">
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-lg-3">
+                <div class="form-group p-0">
+                    <label for="search">{{ __('Search (Phone / Order ID)') }}</label>
+                    <input type="text"
+                           name="search"
+                           id="search"
+                           class="form-control"
+                           placeholder="{{ __('Enter phone number or order ID') }}"
+                           value="{{ request('search') }}">
                 </div>
             </div>
             <div class="col-lg-12 text-center mt-3">
