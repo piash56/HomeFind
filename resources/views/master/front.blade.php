@@ -1372,6 +1372,13 @@ body_theme4 @endif
         transform: translateY(-2px);
         color: #fff !important;
     }
+
+        /* Ensure old prices are always shown with line-through */
+        .product-card .product-price > del,
+        #main_div .product-price del,
+        .home-product-old-price del {
+            text-decoration: line-through !important;
+        }
     
     @media (max-width: 768px) {
         .site-footer {

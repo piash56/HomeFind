@@ -176,6 +176,9 @@ $(function ($) {
     function initProductSlider($slider) {
         if (!$slider.length) return;
         
+        // Allow overriding large-screen items count via data attribute
+        var lgItems = parseInt($slider.data('items-lg')) || 5;
+        
         // Destroy any existing instance first
         if ($slider.data('owlCarousel')) {
             $slider.trigger('destroy.owl.carousel');
@@ -213,12 +216,12 @@ $(function ($) {
                     slideBy: 1
                 },
                 1200: {
-                    items: 5,
+                    items: lgItems,
                     margin: 10,
                     slideBy: 1
                 },
                 1400: {
-                    items: 5,
+                    items: lgItems,
                     margin: 10,
                     slideBy: 1
                 }
@@ -301,6 +304,11 @@ $(function ($) {
     
     // Initialize all featured products sliders (including row-1 and row-2)
     $(".featured-products-slider").each(function() {
+        initProductSlider($(this));
+    });
+
+    // Initialize low stock products sliders (6 items on large screens)
+    $(".low-stock-products-slider").each(function() {
         initProductSlider($(this));
     });
 

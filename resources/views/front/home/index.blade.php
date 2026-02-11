@@ -101,7 +101,7 @@
                             <div class="d-flex justify-content-between align-items-start">
                                 <!-- Hot Deal Badge -->
                                 <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(78, 101, 255, 0.3);">
-                                    <i class="fas fa-fire me-1"></i>{{__('Stock Clearance')}}
+                                    <i class="fas fa-fire me-1"></i>{{__('Featured')}}
                                 </span>
                                 
                                 <!-- Discount Badge -->
@@ -118,10 +118,9 @@
                             <!-- Left Side: Featured/Thumbnail Image (50%) -->
                             <div class="featured-image-left" style="flex: 0 0 calc(50% - 4px); height: 204px; border-radius: 8px; overflow: hidden;">
                                 <a href="{{route('front.product', $item->slug)}}" class="d-block h-100 w-100">
-                                    <img 
-                                         class="lazy featured-product-image"
-                                         data-src="{{asset('storage/images/'.$item->thumbnail)}}" 
+                                    <img src="{{asset('storage/images/'.$item->thumbnail)}}" 
                                          alt="{{$item->name}}" 
+                                         class="featured-product-image" 
                                          style="width: 100%; height: 100%; object-fit: cover;">
                                 </a>
                             </div>
@@ -133,19 +132,17 @@
                             <div class="gallery-image-right" style="flex: 0 0 calc(50% - 4px); height: 204px; border-radius: 8px; overflow: hidden;">
                                 @if($firstGallery)
                                     <a href="{{route('front.product', $item->slug)}}" class="d-block h-100 w-100">
-                                        <img 
-                                             class="lazy gallery-product-image"
-                                             data-src="{{asset('storage/images/'.$firstGallery->photo)}}" 
+                                        <img src="{{asset('storage/images/'.$firstGallery->photo)}}" 
                                              alt="{{$item->name}}" 
+                                             class="gallery-product-image" 
                                              style="width: 100%; height: 100%; object-fit: cover;">
                                     </a>
                                 @else
                                     <!-- Fallback: Show thumbnail if no gallery image -->
                                     <a href="{{route('front.product', $item->slug)}}" class="d-block h-100 w-100">
-                                        <img 
-                                             class="lazy gallery-product-image"
-                                             data-src="{{asset('storage/images/'.$item->thumbnail)}}" 
+                                        <img src="{{asset('storage/images/'.$item->thumbnail)}}" 
                                              alt="{{$item->name}}" 
+                                             class="gallery-product-image" 
                                              style="width: 100%; height: 100%; object-fit: cover; opacity: 0.7;">
                                     </a>
                                 @endif
@@ -526,13 +523,13 @@
     </div>
 </section>
 
-<!-- Featured Products Grid Section (Admin Selected) -->
+<!-- Latest Products Grid Section -->
 <section id="featured-grid-section" class="featured-grid-section py-5" style="background: #f9fafb;">
     <div class="container">
         <div class="row mb-4">
             <div class="col-12 text-center">
-                <h2 class="section-title fw-bold mb-2" style="font-size: 2.5rem; color: #232323;">{{ __('Featured Products') }}</h2>
-                <p class="text-muted">{{ __('Special products selected by our store') }}</p>
+                <h2 class="section-title fw-bold mb-2" style="font-size: 2.5rem; color: #232323;">{{ __('Latest Products') }}</h2>
+                <p class="text-muted">{{ __('Newest products added to our store') }}</p>
                 <div class="title-divider mx-auto mb-4" style="width: 80px; height: 4px; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border-radius: 2px;"></div>
             </div>
         </div>
@@ -554,10 +551,10 @@
                             <!-- Badges Container -->
                             <div class="position-absolute top-0 start-0 w-100 p-3" style="z-index: 10;">
                                 <div class="d-flex justify-content-between align-items-start">
-                                    <!-- Featured Badge -->
+                                    <!-- Latest Badge -->
                                     @if ($item->is_stock())
                                         <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(78, 101, 255, 0.3);">
-                                            <i class="fas fa-star me-1"></i>{{ __('Featured') }}
+                                            <i class="fas fa-star me-1"></i>{{ __('Latest') }}
                                         </span>
                                     @else
                                         <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: #6c757d; border: none; border-radius: 20px;">
@@ -643,10 +640,10 @@
                                 <!-- Badges Container -->
                                 <div class="position-absolute top-0 start-0 w-100 p-3" style="z-index: 10;">
                                     <div class="d-flex justify-content-between align-items-start">
-                                        <!-- Featured Badge -->
+                                        <!-- Latest Badge -->
                                         @if ($item->is_stock())
                                             <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(78, 101, 255, 0.3);">
-                                                <i class="fas fa-star me-1"></i>{{ __('Featured') }}
+                                                <i class="fas fa-star me-1"></i>{{ __('Latest') }}
                                             </span>
                                         @else
                                             <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: #6c757d; border: none; border-radius: 20px;">
@@ -731,10 +728,10 @@
                             <!-- Badges Container -->
                             <div class="position-absolute top-0 start-0 w-100 p-3" style="z-index: 10;">
                                 <div class="d-flex justify-content-between align-items-start">
-                                    <!-- Featured Badge -->
+                                    <!-- Latest Badge -->
                                     @if ($item->is_stock())
                                         <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(78, 101, 255, 0.3);">
-                                            <i class="fas fa-star me-1"></i>{{ __('Featured') }}
+                                            <i class="fas fa-star me-1"></i>{{ __('Latest') }}
                                         </span>
                                     @else
                                         <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: #6c757d; border: none; border-radius: 20px;">
@@ -810,6 +807,11 @@
                 @endforeach
             </div>
         @endif
+        <div class="text-center mt-5">
+            <a href="{{route('front.products')}}" class="btn-lg px-4 py-3 fw-bold d-inline-flex align-items-center justify-content-center text-white" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border-radius: 10px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                <i class="fas fa-shopping-bag me-2"></i>{{__('View All Products')}} <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
         @else
             <div class="text-center py-5">
                 <div class="alert alert-info">
@@ -819,6 +821,301 @@
         @endif
     </div>
 </section>
+
+@if(isset($lowStockProducts) && $lowStockProducts && $lowStockProducts->count() > 0)
+<!-- Low Stock Products Section -->
+<section id="low-stock-section" class="best-selling-section py-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2 class="section-title fw-bold mb-2" style="font-size: 2.5rem; color: #232323;">{{ __('Low Stock Products') }}</h2>
+                <p class="text-muted">{{ __('Hurry up! These products are almost sold out.') }}</p>
+                <div class="title-divider mx-auto mb-4" style="width: 80px; height: 4px; background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%); border-radius: 2px;"></div>
+            </div>
+        </div>
+
+        @php
+            $lowStockCount = $lowStockProducts->count();
+            $lowStockShowTwoRows = $lowStockCount > 6;
+            $lowStockFirstRowProducts = $lowStockShowTwoRows ? $lowStockProducts->take(6) : $lowStockProducts;
+            $lowStockSecondRowProducts = $lowStockShowTwoRows ? $lowStockProducts->skip(6)->take(6) : collect();
+        @endphp
+
+        @if($lowStockShowTwoRows)
+            <!-- First Row -->
+            <div class="best-selling-slider low-stock-products-slider owl-carousel mb-4">
+                @foreach($lowStockFirstRowProducts as $item)
+                    <div class="item">
+                        <div class="product-card bg-white rounded-4 shadow-lg position-relative overflow-hidden h-100" style="border: 1px solid rgba(102, 126, 234, 0.1); min-height: 450px;">
+                            <!-- Badges Container -->
+                            <div class="position-absolute top-0 start-0 w-100 p-3" style="z-index: 10;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <!-- Low Stock Badge -->
+                                    @if ($item->is_stock())
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(255, 81, 47, 0.3);">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>{{ __('Low Stock') }}
+                                        </span>
+                                    @else
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: #6c757d; border: none; border-radius: 20px;">
+                                            {{ __('Out of Stock') }}
+                                        </span>
+                                    @endif
+
+                                    <!-- Discount Badge -->
+                                    @if($item->previous_price && $item->previous_price != 0)
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #ed213a 0%, #93291e 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(237, 33, 58, 0.3);">
+                                            -{{ PriceHelper::DiscountPercentage($item) }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Product Image -->
+                            <div class="product-image-wrapper position-relative mb-3" style="height: 220px; border-radius: 12px 12px 0 0; overflow: hidden; margin: -1px -1px 0 -1px; padding: 8px;">
+                                <a href="{{ route('front.product', $item->slug) }}" class="d-block h-100 w-100">
+                                    <img 
+                                         class="lazy featured-product-image"
+                                         data-src="{{ asset('storage/images/'.$item->thumbnail) }}"
+                                         alt="{{ $item->name }}"
+                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                </a>
+                            </div>
+
+                            <!-- Product Content -->
+                            <div class="px-4 pb-4" style="flex: 1; display: flex; flex-direction: column;">
+                                <!-- Product Name -->
+                                <h4 class="product-name mb-2" style="font-size: 20px; font-weight: 600;">
+                                    <a href="{{ route('front.product', $item->slug) }}" class="text-dark text-decoration-none" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 20px;">
+                                        {{ Str::limit($item->name, 60) }}
+                                    </a>
+                                </h4>
+
+                                <!-- Rating Stars -->
+                                <div class="rating-stars mb-2" style="font-size: 13px;">
+                                    {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
+                                </div>
+
+                                <!-- Prices -->
+                                <div class="home-product-price-row">
+                                    @if ($item->previous_price != 0)
+                                        <div class="home-product-old-price">
+                                            <del class="text-muted" style="font-size: 16px;">{{ PriceHelper::setPreviousPrice($item->previous_price) }}</del>
+                                        </div>
+                                    @endif
+                                    <div class="home-product-main-price">
+                                        <span class="fw-bold" style="font-size: 26px; background-color: #4E65FF;linear-gradient(135deg, #DD2476 0%, #FF512F 100%) -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                            {{ PriceHelper::grandCurrencyPrice($item) }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Order Now Button -->
+                                <div class="" style="margin-top: 10px;">
+                                    @if($item->is_stock())
+                                        <a href="{{ route('front.product', $item->slug) }}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                                            <i class="fas fa-shopping-cart me-2"></i>{{ __('Order Now') }}
+                                        </a>
+                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                            <i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}
+                                        </a>
+                                    @else
+                                        <button class="btn w-100 rounded-pill text-white" disabled style="background: #6c757d; border: none; padding: 11px 20px; font-size: 14px;">
+                                            {{ __('Out of Stock') }}
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            @if($lowStockSecondRowProducts->count() > 0)
+                <!-- Second Row -->
+                <div class="best-selling-slider low-stock-products-slider owl-carousel">
+                    @foreach($lowStockSecondRowProducts as $item)
+                        <div class="item">
+                            <div class="product-card bg-white rounded-4 shadow-lg position-relative overflow-hidden h-100" style="border: 1px solid rgba(102, 126, 234, 0.1); min-height: 450px;">
+                                <!-- Badges Container -->
+                                <div class="position-absolute top-0 start-0 w-100 p-3" style="z-index: 10;">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <!-- Low Stock Badge -->
+                                        @if ($item->is_stock())
+                                            <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(255, 81, 47, 0.3);">
+                                                <i class="fas fa-exclamation-triangle me-1"></i>{{ __('Low Stock') }}
+                                            </span>
+                                        @else
+                                            <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: #6c757d; border: none; border-radius: 20px;">
+                                                {{ __('Out of Stock') }}
+                                            </span>
+                                        @endif
+
+                                        <!-- Discount Badge -->
+                                        @if($item->previous_price && $item->previous_price != 0)
+                                            <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #ed213a 0%, #93291e 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(237, 33, 58, 0.3);">
+                                                -{{ PriceHelper::DiscountPercentage($item) }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <!-- Product Image -->
+                                <div class="product-image-wrapper position-relative mb-3" style="height: 220px; border-radius: 12px 12px 0 0; overflow: hidden; margin: -1px -1px 0 -1px; padding: 8px;">
+                                    <a href="{{ route('front.product', $item->slug) }}" class="d-block h-100 w-100">
+                                        <img 
+                                             class="lazy featured-product-image"
+                                             data-src="{{ asset('storage/images/'.$item->thumbnail) }}"
+                                             alt="{{ $item->name }}"
+                                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                    </a>
+                                </div>
+
+                                <!-- Product Content -->
+                                <div class="px-4 pb-4" style="flex: 1; display: flex; flex-direction: column;">
+                                    <!-- Product Name -->
+                                    <h4 class="product-name mb-2" style="font-size: 20px; font-weight: 600;">
+                                        <a href="{{ route('front.product', $item->slug) }}" class="text-dark text-decoration-none" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 20px;">
+                                            {{ Str::limit($item->name, 60) }}
+                                        </a>
+                                    </h4>
+
+                                    <!-- Rating Stars -->
+                                    <div class="rating-stars mb-2" style="font-size: 13px;">
+                                        {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
+                                    </div>
+
+                                    <!-- Prices -->
+                                    <div class="home-product-price-row">
+                                        @if ($item->previous_price != 0)
+                                            <div class="home-product-old-price">
+                                                <del class="text-muted" style="font-size: 16px;">{{ PriceHelper::setPreviousPrice($item->previous_price) }}</del>
+                                            </div>
+                                        @endif
+                                        <div class="home-product-main-price">
+                                            <span class="fw-bold" style="font-size: 26px; background-color: #4E65FF;linear-gradient(135deg, #DD2476 0%, #FF512F 100%) -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                                {{ PriceHelper::grandCurrencyPrice($item) }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Order Now Button -->
+                                    <div class="" style="margin-top: 10px;">
+                                        @if($item->is_stock())
+                                            <a href="{{ route('front.product', $item->slug) }}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                                                <i class="fas fa-shopping-cart me-2"></i>{{ __('Order Now') }}
+                                            </a>
+                                            <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                                <i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}
+                                            </a>
+                                        @else
+                                            <button class="btn w-100 rounded-pill text-white" disabled style="background: #6c757d; border: none; padding: 11px 20px; font-size: 14px;">
+                                                {{ __('Out of Stock') }}
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        @else
+            <!-- Single Row (6 or fewer products) -->
+            <div class="best-selling-slider low-stock-products-slider owl-carousel">
+                @foreach($lowStockProducts as $item)
+                    <div class="item">
+                        <div class="product-card bg-white rounded-4 shadow-lg position-relative overflow-hidden h-100" style="border: 1px solid rgba(102, 126, 234, 0.1); min-height: 450px;">
+                            <!-- Badges Container -->
+                            <div class="position-absolute top-0 start-0 w-100 p-3" style="z-index: 10;">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <!-- Low Stock Badge -->
+                                    @if ($item->is_stock())
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(255, 81, 47, 0.3);">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>{{ __('Low Stock') }}
+                                        </span>
+                                    @else
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: #6c757d; border: none; border-radius: 20px;">
+                                            {{ __('Out of Stock') }}
+                                        </span>
+                                    @endif
+
+                                    <!-- Discount Badge -->
+                                    @if($item->previous_price && $item->previous_price != 0)
+                                        <span class="badge px-3 py-2 text-white" style="font-size: 11px; font-weight: 600; background: linear-gradient(135deg, #ed213a 0%, #93291e 100%); border: none; border-radius: 20px; box-shadow: 0 2px 8px rgba(237, 33, 58, 0.3);">
+                                            -{{ PriceHelper::DiscountPercentage($item) }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Product Image -->
+                            <div class="product-image-wrapper position-relative mb-3" style="height: 220px; border-radius: 12px 12px 0 0; overflow: hidden; margin: -1px -1px 0 -1px; padding: 8px;">
+                                <a href="{{ route('front.product', $item->slug) }}" class="d-block h-100 w-100">
+                                    <img 
+                                         class="lazy featured-product-image"
+                                         data-src="{{ asset('storage/images/'.$item->thumbnail) }}"
+                                         alt="{{ $item->name }}"
+                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                </a>
+                            </div>
+
+                            <!-- Product Content -->
+                            <div class="px-4 pb-4" style="flex: 1; display: flex; flex-direction: column;">
+                                <!-- Product Name -->
+                                <h4 class="product-name mb-2" style="font-size: 20px; font-weight: 600;">
+                                    <a href="{{ route('front.product', $item->slug) }}" class="text-dark text-decoration-none" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 20px;">
+                                        {{ Str::limit($item->name, 60) }}
+                                    </a>
+                                </h4>
+
+                                <!-- Rating Stars -->
+                                <div class="rating-stars mb-2" style="font-size: 13px;">
+                                    {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
+                                </div>
+
+                                <!-- Prices -->
+                                <div class="home-product-price-row">
+                                    @if ($item->previous_price != 0)
+                                        <div class="home-product-old-price">
+                                            <del class="text-muted" style="font-size: 16px;">{{ PriceHelper::setPreviousPrice($item->previous_price) }}</del>
+                                        </div>
+                                    @endif
+                                    <div class="home-product-main-price">
+                                        <span class="fw-bold" style="font-size: 26px; background-color: #4E65FF;linear-gradient(135deg, #DD2476 0%, #FF512F 100%) -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                            {{ PriceHelper::grandCurrencyPrice($item) }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Order Now Button -->
+                                <div class="" style="margin-top: 10px;">
+                                    @if($item->is_stock())
+                                        <a href="{{ route('front.product', $item->slug) }}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                                            <i class="fas fa-shopping-cart me-2"></i>{{ __('Order Now') }}
+                                        </a>
+                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                            <i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}
+                                        </a>
+                                    @else
+                                        <button class="btn w-100 rounded-pill text-white" disabled style="background: #6c757d; border: none; padding: 11px 20px; font-size: 14px;">
+                                            {{ __('Out of Stock') }}
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+        <div class="text-center mt-5">
+            <a href="{{route('front.products')}}" class="btn-lg px-4 py-3 fw-bold d-inline-flex align-items-center justify-content-center text-white" style="background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border-radius: 10px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
+                <i class="fas fa-shopping-bag me-2"></i>{{__('View All Products')}} <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+@endif
 
 <!-- Reviews Section -->
 <section id="reviews-section" class="reviews-section py-5" style="background: #f8f9fa;">

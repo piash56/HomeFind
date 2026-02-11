@@ -863,28 +863,38 @@ button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"
                                 @endif
                             </div> --}}
 
-                            <div class="mt-4 p-d-f-area">
-                                
-
-                                <div class="d-flex align-items-center">
-                                    <span class="text-muted mr-1">{{ __('Share') }}: </span>
-                                    <div class="d-inline-block a2a_kit">
-                                        <a class="facebook  a2a_button_facebook" href="">
-                                            <span><i class="fab fa-facebook-f"></i></span>
-                                        </a>
-                                        <a class="twitter  a2a_button_twitter" href="">
-                                            <span><i class="fab fa-twitter"></i></span>
-                                        </a>
-                                        <a class="linkedin  a2a_button_linkedin" href="">
-                                            <span><i class="fab fa-linkedin-in"></i></span>
-                                        </a>
-                                        <a class="pinterest   a2a_button_pinterest" href="">
-                                            <span><i class="fab fa-pinterest"></i></span>
-                                        </a>
+                            <div class="p-d-f-area">
+                                {{-- Social share (reusing footer social styles) --}}
+                                <div class="card">
+                                    <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                        <span class="text-muted me-2">{{ __('Share') }}:</span>
+                                        <div class="footer-social-links d-flex gap-2 flex-wrap">
+                                            @php
+                                                $links = json_decode($setting->social_link, true)['links'] ?? [];
+                                                $icons = json_decode($setting->social_link, true)['icons'] ?? [];
+                                            @endphp
+                                            @if(!empty($links))
+                                                @foreach ($links as $link_key => $link)
+                                                    @if(!empty($link) && isset($icons[$link_key]))
+                                                        <a href="{{ $link }}" target="_blank" rel="noopener noreferrer">
+                                                            <i class="{{ $icons[$link_key] }}" style="font-size: 18px;"></i>
+                                                        </a>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </div>
                                     </div>
-                                    <script async src="https://static.addtoany.com/menu/page.js"></script>
                                 </div>
 
+                                {{-- Product SKU card --}}
+                                @if($item->item_type == 'normal' && $item->sku)
+                                    <div class="card">
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <span class="text-muted">{{ __('SKU: ') }}</span>
+                                            <span class="fw-bold">#{{ $item->sku }}</span>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -892,16 +902,11 @@ button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"
             </div>
             <div class=" padding-top-3x mb-3" id="details">
                 <div class="col-lg-12">
-                    <ul class="nav nav-tabs" role="tablist">
+                    <ul class="nav nav-tabs product-detail-tabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <a class="nav-link active" id="description-tab" data-bs-toggle="tab"
                                 data-bs-target="#description" type="button" role="tab" aria-controls="description"
                                 aria-selected="true">{{ __('Descriptions') }}</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" id="specification-tab" data-bs-toggle="tab"
-                                data-bs-target="#specification" type="button" role="tab"
-                                aria-controls="specification" aria-selected="false">{{ __('Specifications') }}</a>
                         </li>
                     </ul>
                     <div class="tab-content card">
@@ -909,38 +914,32 @@ button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"
                             aria-labelledby="description-tab"">
                             {!! $item->details !!}
                         </div>
-                        <div class="tab-pane fade show" id="specification" role="tabpanel"
-                            aria-labelledby="specification-tab">
-                            <div class="comparison-table">
-                                <table class="table table-bordered">
-                                    <thead class="bg-secondary">
-                                    </thead>
-                                    <tbody>
-                                        <tr class="bg-secondary">
-                                            <th class="text-uppercase">{{ __('Specifications') }}</th>
-                                            <td><span class="text-medium">{{ __('Descriptions') }}</span></td>
-                                        </tr>
-                                        @if ($sec_name)
-                                            @foreach (array_combine($sec_name, $sec_details) as $sname => $sdetail)
-                                                <tr>
-                                                    <th>{{ $sname }}</th>
-                                                    <td>{{ $sdetail }}</td>
-                                                </tr>
-                                            @endforeach
-                                        @else
-                                            <tr class="text-center">
-                                                <td colspan="2">{{ __('No Specifications') }}</td>
-                                            </tr>
-                                        @endif
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <style>
+    /* Product details tabs: gradient background on active tab */
+    .product-detail-tabs .nav-link {
+        border-radius: 20px 20px 0 0;
+        padding: 0.75rem 1.5rem;
+        margin-right: 4px;
+        color: #495057;
+        font-weight: 500;
+        border: none;
+    }
+
+    .product-detail-tabs .nav-link.active {
+        background: linear-gradient(135deg, #4E65FF 0%, #92EFFD 100%) !important;
+        color: #fff !important;
+    }
+
+    .product-detail-tabs .nav-link:hover {
+        color: #4E65FF;
+    }
+    </style>
 
 
     <!-- Reviews-->

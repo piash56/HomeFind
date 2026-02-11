@@ -41,7 +41,7 @@ class HomeController extends Controller
             ->where(function ($query) {
                 // Prefer explicitly marked best selling products
                 $query->where('is_best_selling', 1)
-                      ->orWhereNull('is_best_selling');
+                    ->orWhereNull('is_best_selling');
             })
             ->with(['category' => function ($query) {
                 $query->withDefault();
@@ -53,14 +53,28 @@ class HomeController extends Controller
             ->take(12)
             ->get();
 
-        // Additional curated section: Featured Products (admin selected)
+        // Additional section: Latest Products (used in \"Featured Products\" grid on home)
+        // Show latest 6 active products, regardless of is_featured flag
         $featuredGridProducts = Item::where('status', 1)
-            ->where('is_featured', 1)
             ->with(['category' => function ($query) {
                 $query->withDefault();
             }, 'galleries', 'reviews' => function ($query) {
                 $query->where('status', 'approved');
             }])
+            ->orderBy('id', 'desc')
+            ->take(6)
+            ->get();
+
+        // Low stock products section: 12 products with lowest stock (only normal items, stock > 0)
+        $lowStockProducts = Item::where('status', 1)
+            ->where('item_type', 'normal')
+            ->where('stock', '>', 0)
+            ->with(['category' => function ($query) {
+                $query->withDefault();
+            }, 'galleries', 'reviews' => function ($query) {
+                $query->where('status', 'approved');
+            }])
+            ->orderBy('stock', 'asc')
             ->orderBy('id', 'desc')
             ->take(12)
             ->get();
@@ -73,12 +87,12 @@ class HomeController extends Controller
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
-        
+
         // Calculate overall rating statistics
         $allApprovedReviews = Review::where('status', 'approved')->get();
         $totalReviews = $allApprovedReviews->count();
         $averageRating = $totalReviews > 0 ? round($allApprovedReviews->avg('rating'), 1) : 0;
-        
+
         // Calculate star distribution
         $starDistribution = [
             5 => $allApprovedReviews->where('rating', 5)->count(),
@@ -87,7 +101,7 @@ class HomeController extends Controller
             2 => $allApprovedReviews->where('rating', 2)->count(),
             1 => $allApprovedReviews->where('rating', 1)->count(),
         ];
-        
+
         // Calculate percentages
         foreach ($starDistribution as $stars => $count) {
             $starDistribution[$stars] = [
@@ -105,6 +119,7 @@ class HomeController extends Controller
             'featuredProducts' => $featuredProducts,
             'bestSellingProducts' => $bestSellingProducts,
             'featuredGridProducts' => $featuredGridProducts,
+            'lowStockProducts' => $lowStockProducts,
             'latestReviews' => $latestReviews,
             'totalReviews' => $totalReviews,
             'averageRating' => $averageRating,
