@@ -38,8 +38,7 @@
         <title>{{ $setting->title }} -@yield('title')</title>
     @endif
 
-    <!-- SEO Meta Tags-->
-    @yield('meta')
+    <!-- SEO Meta Tags: default site-level (product/custom pages override via @yield('meta') which comes after) -->
     <meta name="author" content="GeniusDevs">
     <meta name="distribution" content="web">
     <meta name="description" content="{{ $setting->meta_description }}">
@@ -53,7 +52,7 @@
         $ogDescription = !empty($setting->meta_description) ? trim($setting->meta_description) : '';
     @endphp
     
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Facebook (default – product page overrides below via @yield('meta')) -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="{{ $ogTitle }}">
@@ -65,13 +64,14 @@
     <meta property="og:image:height" content="627" />
     <meta property="og:site_name" content="{{ $setting->title }}">
     
-    <!-- Twitter Card -->
+    <!-- Twitter Card (default – product page overrides below via @yield('meta')) -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ url()->current() }}">
     <meta name="twitter:title" content="{{ $ogTitle }}">
     <meta name="twitter:description" content="{{ $ogDescription }}">
     <meta name="twitter:image" content="{{ asset('storage/images/' . $setting->meta_image) }}">
     
+    @yield('meta')
 
     <!-- Mobile Specific Meta Tag-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
