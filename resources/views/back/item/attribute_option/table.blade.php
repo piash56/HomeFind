@@ -14,7 +14,19 @@
             {{ $data->attribute }}
         </td>
         <td>
-            {{ $data->price == 0 ? __('Free') : PriceHelper::adminCurrencyPrice($data->price) }}
+            @if($data->previous_price > 0 && $data->price > 0)
+                {{-- Has both old and new price = REPLACEMENT mode --}}
+                <span class="badge badge-primary badge-sm mb-1">{{ __('Replace') }}</span><br>
+                <small><del class="text-muted">{{ $curr->sign }}{{ PriceHelper::setPrice($data->previous_price) }}</del></small><br>
+                <strong>{{ $curr->sign }}{{ PriceHelper::setPrice($data->price) }}</strong>
+            @elseif($data->price > 0)
+                {{-- Only has new price = ADDITION mode --}}
+                <span class="badge badge-success badge-sm mb-1">{{ __('Add') }}</span><br>
+                <strong>+{{ $curr->sign }}{{ PriceHelper::setPrice($data->price) }}</strong>
+            @else
+                {{-- No price = Use main product price --}}
+                <span class="badge badge-secondary badge-sm">{{ __('Main Price') }}</span>
+            @endif
         </td>
         <td class="{{$data->stock < 10 && $data->stock != 'unlimited' ? 'bg-danger text-white'  :''}} ">
             @if ($data->stock == '0')

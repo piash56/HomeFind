@@ -40,7 +40,7 @@ class AttributeOptionController extends Controller
             'curr' => Currency::where('is_default', 1)->first(),
             'datas' => $item->join('attributes', 'attributes.item_id', '=', 'items.id')
                 ->join('attribute_options', 'attribute_options.attribute_id', '=', 'attributes.id')
-                ->select('attribute_options.id', 'attribute_options.attribute_id', 'attribute_options.name', 'attribute_options.keyword', 'attribute_options.stock', 'attribute_options.price', 'attribute_options.image', 'attribute_options.color_code', 'attribute_options.gallery_image_id', DB::raw('attributes.name as attribute'))
+                ->select('attribute_options.id', 'attribute_options.attribute_id', 'attribute_options.name', 'attribute_options.keyword', 'attribute_options.stock', 'attribute_options.price', 'attribute_options.previous_price', 'attribute_options.image', 'attribute_options.color_code', 'attribute_options.gallery_image_id', DB::raw('attributes.name as attribute'))
                 ->where('items.id', '=', $item->id)
                 ->latest('attribute_options.id')
                 ->get()
@@ -74,6 +74,7 @@ class AttributeOptionController extends Controller
         $input = $request->all();
         $curr = Currency::where('is_default', 1)->first();
         $input['price'] = $request->price / $curr->value;
+        $input['previous_price'] = $request->previous_price ? ($request->previous_price / $curr->value) : 0;
 
         // Handle image upload
         if ($file = $request->file('image')) {
@@ -82,9 +83,6 @@ class AttributeOptionController extends Controller
 
         // Handle color code (can be empty)
         $input['color_code'] = $request->color_code ? $request->color_code : null;
-
-        // Handle gallery_image_id (can be empty)
-        $input['gallery_image_id'] = $request->gallery_image_id ? $request->gallery_image_id : null;
 
         AttributeOption::create($input);
 
@@ -122,6 +120,7 @@ class AttributeOptionController extends Controller
         $input = $request->all();
         $curr = Currency::where('is_default', 1)->first();
         $input['price'] = $request->price / $curr->value;
+        $input['previous_price'] = $request->previous_price ? ($request->previous_price / $curr->value) : 0;
 
         // Handle image upload
         if ($file = $request->file('image')) {
@@ -130,9 +129,6 @@ class AttributeOptionController extends Controller
 
         // Handle color code (can be empty)
         $input['color_code'] = $request->color_code ? $request->color_code : null;
-
-        // Handle gallery_image_id (can be empty)
-        $input['gallery_image_id'] = $request->gallery_image_id ? $request->gallery_image_id : null;
 
         $option->update($input);
 

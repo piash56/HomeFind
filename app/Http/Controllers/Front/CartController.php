@@ -36,7 +36,8 @@ class CartController extends Controller
             return;
         }
         foreach ($cart as $key => $item) {
-            if (!isset($item['previous_price']) || $item['previous_price'] === null) {
+            // Only enrich if previous_price is not set AND there are no options (plain product)
+            if ((!isset($item['previous_price']) || $item['previous_price'] === null) && empty($item['options_id'])) {
                 $itemId = explode('-', $key, 2)[0];
                 $product = Item::where('id', $itemId)->select('previous_price')->first();
                 if ($product) {

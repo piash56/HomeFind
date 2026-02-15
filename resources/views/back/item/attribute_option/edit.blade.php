@@ -59,24 +59,51 @@ placeholder="{{ __('Enter Stock') }}" value="{{ $option->stock }}" >
                                             </label>
 </div>
 
-                                    <div class="form-group">
-                                        <label for="price">{{ __('Price') }} *</label>
-                                        <small>({{ __('Set 0 to make it free') }})</small>
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend">
-                                                <span
-                                                    class="input-group-text">{{ $curr->sign }}</span>
+                                    <div class="alert alert-info">
+                                        <strong>{{ __('Price Behavior:') }}</strong>
+                                        <ul class="mb-0 mt-2">
+                                            <li><strong>{{ __('If both Old & New Price are set:') }}</strong> {{ __('This variation will REPLACE the main product price entirely') }}</li>
+                                            <li><strong>{{ __('If only New Price is set (Old = 0):') }}</strong> {{ __('New Price will be ADDED to the main product price') }}</li>
+                                            <li><strong>{{ __('If both are 0:') }}</strong> {{ __('Will use the main product price only') }}</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="previous_price">{{ __('Old Price') }}</label>
+                                                <small class="d-block text-muted">({{ __('Optional: Set 0 if no old price') }})</small>
+                                                <div class="input-group mb-3">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">{{ $curr->sign }}</span>
+                                                    </div>
+                                                    <input type="text" id="previous_price"
+                                                        name="previous_price" class="form-control"
+                                                        placeholder="{{ __('Enter Old Price') }}"
+                                                        value="{{ PriceHelper::setPrice($option->previous_price ?? 0) }}" >
+                                                </div>
                                             </div>
-                                            <input type="text" id="price"
-                                                name="price" class="form-control"
-                                                placeholder="{{ __('Enter Price') }}"
-                                                value="{{ PriceHelper::setPrice($option->price) }}" >
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="price">{{ __('New Price') }} *</label>
+                                                <small class="d-block text-muted">({{ __('Set 0 to use main product price only') }})</small>
+                                                <div class="input-group mb-3">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">{{ $curr->sign }}</span>
+                                                    </div>
+                                                    <input type="text" id="price"
+                                                        name="price" class="form-control"
+                                                        placeholder="{{ __('Enter New Price') }}"
+                                                        value="{{ PriceHelper::setPrice($option->price) }}" >
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="image">{{ __('Attribute Image') }}</label>
-                                        <small class="d-block mb-2 text-muted">{{ __('Optional: Upload an image for this attribute option') }}</small>
+                                        <label for="image">{{ __('Variation Image') }}</label>
+                                        <small class="d-block mb-2 text-muted">{{ __('Upload an image for this variation. This will be shown when the variation is selected.') }}</small>
                                         @if($option->image)
                                             <div class="mb-2">
                                                 <img src="{{ asset('storage/images/' . $option->image) }}" alt="{{ $option->name }}" style="max-width: 100px; max-height: 100px; border: 1px solid #ddd; padding: 5px; border-radius: 4px;">
@@ -88,7 +115,7 @@ placeholder="{{ __('Enter Stock') }}" value="{{ $option->stock }}" >
                                                 <label class="custom-file-label" for="image">{{ $option->image ? __('Change Image') : __('Choose Image') }}</label>
                                             </div>
                                         </div>
-                                        <small class="form-text text-muted">{{ __('Recommended: 200x200px, max 2MB') }}</small>
+                                        <small class="form-text text-muted">{{ __('Recommended: 800x800px, max 2MB') }}</small>
                                     </div>
 
                                     <div class="form-group">
@@ -101,56 +128,6 @@ placeholder="{{ __('Enter Stock') }}" value="{{ $option->stock }}" >
                                                 <span class="input-group-text" id="color_preview" style="width: 50px; background-color: {{ $option->color_code ?: '#FFFFFF' }};"></span>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="gallery_image_id">{{ __('Gallery Image') }}</label>
-                                        <small class="d-block mb-2 text-muted">{{ __('Optional: Select a gallery image to show when this option is selected') }}</small>
-                                        <div class="position-relative">
-                                            <select name="gallery_image_id" class="form-control custom-gallery-select" id="gallery_image_id" style="padding-left: 50px;">
-                                                <option value="">{{ __('Select Gallery Image') }}</option>
-                                                @foreach($galleries as $gallery)
-                                                    <option value="{{ $gallery->id }}" 
-                                                        data-image="{{ asset('storage/images/' . $gallery->photo) }}"
-                                                        {{ ($option->gallery_image_id == $gallery->id) ? 'selected' : '' }}>
-                                                        {{ __('Gallery Image') }} #{{ $gallery->id }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <div id="gallery_select_preview" class="position-absolute" style="left: 10px; top: 50%; transform: translateY(-50%); width: 35px; height: 35px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
-                                                @if($option->gallery_image_id)
-                                                    @php
-                                                        $selectedGallery = $galleries->firstWhere('id', $option->gallery_image_id);
-                                                    @endphp
-                                                    @if($selectedGallery)
-                                                        <img src="{{ asset('storage/images/' . $selectedGallery->photo) }}" 
-                                                             alt="Preview" 
-                                                             style="width: 100%; height: 100%; object-fit: cover;">
-                                                    @else
-                                                        <i class="fas fa-image text-muted" style="font-size: 14px;"></i>
-                                                    @endif
-                                                @else
-                                                    <i class="fas fa-image text-muted" style="font-size: 14px;"></i>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div id="gallery_image_preview" class="mt-2" style="min-height: 60px;">
-                                            @if($option->gallery_image_id)
-                                                @php
-                                                    $selectedGallery = $galleries->firstWhere('id', $option->gallery_image_id);
-                                                @endphp
-                                                @if($selectedGallery)
-                                                    <img src="{{ asset('storage/images/' . $selectedGallery->photo) }}" 
-                                                         alt="Gallery Image" 
-                                                         style="max-width: 100px; max-height: 100px; border: 1px solid #ddd; padding: 5px; border-radius: 4px;">
-                                                @endif
-                                            @endif
-                                        </div>
-                                        @if(count($galleries) > 0)
-                                            <small class="form-text text-muted">{{ __('Selected gallery image will replace the product featured image when this attribute is chosen') }}</small>
-                                        @else
-                                            <small class="form-text text-warning">{{ __('No gallery images available. Please add gallery images to the product first.') }}</small>
-                                        @endif
                                     </div>
 
                                     <input type="hidden" id="attr_keyword" name="keyword" value="{{ $option->keyword }}">
@@ -204,31 +181,6 @@ placeholder="{{ __('Enter Stock') }}" value="{{ $option->stock }}" >
         if ($('#unlimited').is(':checked')) {
             $('#stock').prop('readonly', true);
         }
-
-        // Gallery image preview
-        $('#gallery_image_id').on('change', function() {
-            var selectedOption = $(this).find(':selected');
-            var imageUrl = selectedOption.data('image');
-            var previewDiv = $('#gallery_image_preview');
-            var selectPreview = $('#gallery_select_preview');
-            
-            // Update preview below dropdown
-            previewDiv.empty();
-            if (imageUrl && selectedOption.val() !== '') {
-                previewDiv.html('<img src="' + imageUrl + '" alt="Gallery Image" style="max-width: 100px; max-height: 100px; border: 1px solid #ddd; padding: 5px; border-radius: 4px;">');
-            }
-            
-            // Update thumbnail in select dropdown
-            selectPreview.empty();
-            if (imageUrl && selectedOption.val() !== '') {
-                selectPreview.html('<img src="' + imageUrl + '" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">');
-            } else {
-                selectPreview.html('<i class="fas fa-image text-muted" style="font-size: 14px;"></i>');
-            }
-        });
-
-        // Initialize preview on page load
-        $('#gallery_image_id').trigger('change');
     });
 </script>
 @endsection

@@ -209,7 +209,8 @@ class PriceHelper
         $total = 0;
 
         foreach ($cart as $key => $item) {
-            $total += ($item['main_price'] + $item['attribute_price']) * $item['qty'];
+            // Use main_price directly as it already includes the final calculated price
+            $total += $item['main_price'] * $item['qty'];
             $cart_total = $total;
             if (Item::where('id', $key)->exists()) {
                 $item = Item::findOrFail($key);
@@ -255,11 +256,11 @@ class PriceHelper
         $total_tax = 0;
         $cart_total = 0;
         $total = 0;
-        $option_price = 0;
+
         foreach ($cart as $key => $item) {
+            // Use main_price directly as it already includes the final calculated price
             $total += $item['main_price'] * $item['qty'];
-            $option_price += $item['attribute_price'];
-            $cart_total = $total + $option_price;
+            $cart_total = $total;
             if (Item::where('id', $key)->exists()) {
                 $item = Item::findOrFail($key);
                 if (isset($item)) {
@@ -299,7 +300,8 @@ class PriceHelper
         $total = 0;
 
         foreach ($cartt as $key => $cart) {
-            $itemTotal = ($cart['main_price'] + $cart['attribute_price']) * $cart['qty'];
+            // Use main_price directly as it already includes the final calculated price
+            $itemTotal = $cart['main_price'] * $cart['qty'];
             $total += $itemTotal;
         }
 

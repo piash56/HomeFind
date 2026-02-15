@@ -30,7 +30,7 @@ class HomeController extends Controller
                     ->orWhere('is_type', 'feature')
                     ->orWhere('is_type', 'flash_deal');
             })
-            ->with(['category', 'galleries', 'reviews' => function ($query) {
+            ->with(['category', 'attributes', 'galleries', 'reviews' => function ($query) {
                 $query->where('status', 'approved');
             }])
             ->orderBy('id', 'desc')
@@ -45,7 +45,7 @@ class HomeController extends Controller
             })
             ->with(['category' => function ($query) {
                 $query->withDefault();
-            }, 'galleries', 'reviews' => function ($query) {
+            }, 'attributes', 'galleries', 'reviews' => function ($query) {
                 $query->where('status', 'approved');
             }])
             ->orderByDesc('is_best_selling')
@@ -58,7 +58,7 @@ class HomeController extends Controller
         $featuredGridProducts = Item::where('status', 1)
             ->with(['category' => function ($query) {
                 $query->withDefault();
-            }, 'galleries', 'reviews' => function ($query) {
+            }, 'attributes', 'galleries', 'reviews' => function ($query) {
                 $query->where('status', 'approved');
             }])
             ->orderBy('id', 'desc')
@@ -71,7 +71,7 @@ class HomeController extends Controller
             ->where('stock', '>', 0)
             ->with(['category' => function ($query) {
                 $query->withDefault();
-            }, 'galleries', 'reviews' => function ($query) {
+            }, 'attributes', 'galleries', 'reviews' => function ($query) {
                 $query->where('status', 'approved');
             }])
             ->orderBy('stock', 'asc')

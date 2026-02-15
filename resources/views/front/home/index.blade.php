@@ -198,7 +198,7 @@
                                 <a href="{{route('front.product', $item->slug)}}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style=" border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                                     <i class="fas fa-shopping-cart me-2"></i>{{__('Order Now')}}
                                 </a>
-                                <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" data-has-variations="{{ $item->attributes->count() > 0 ? '1' : '0' }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
                                     <i class="fas fa-cart-plus me-2"></i>{{__('Add to Cart')}}
                                 </a>
                                 @else
@@ -317,7 +317,7 @@
                             <a href="{{route('front.product', $item->slug)}}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                                 <i class="fas fa-shopping-cart me-2"></i>{{__('Order Now')}}
                             </a>
-                            <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                            <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" data-has-variations="{{ $item->attributes->count() > 0 ? '1' : '0' }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
                                 <i class="fas fa-cart-plus me-2"></i>{{__('Add to Cart')}}
                             </a>
                             @else
@@ -403,7 +403,7 @@
                                         <a href="{{route('front.product', $item->slug)}}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                                             <i class="fas fa-shopping-cart me-2"></i>{{__('Order Now')}}
                                         </a>
-                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" data-has-variations="{{ $item->attributes->count() > 0 ? '1' : '0' }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
                                             <i class="fas fa-cart-plus me-2"></i>{{__('Add to Cart')}}
                                         </a>
                                         @else
@@ -489,7 +489,7 @@
                                     <a href="{{route('front.product', $item->slug)}}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                                         <i class="fas fa-shopping-cart me-2"></i>{{__('Order Now')}}
                                     </a>
-                                    <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                    <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" data-has-variations="{{ $item->attributes->count() > 0 ? '1' : '0' }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
                                         <i class="fas fa-cart-plus me-2"></i>{{__('Add to Cart')}}
                                     </a>
                                     @else
@@ -616,7 +616,7 @@
                                         <a href="{{ route('front.product', $item->slug) }}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                                             <i class="fas fa-shopping-cart me-2"></i>{{ __('Order Now') }}
                                         </a>
-                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" data-has-variations="{{ $item->attributes->count() > 0 ? '1' : '0' }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
                                             <i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}
                                         </a>
                                     @else
@@ -704,7 +704,7 @@
                                             <a href="{{ route('front.product', $item->slug) }}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                                                 <i class="fas fa-shopping-cart me-2"></i>{{ __('Order Now') }}
                                             </a>
-                                            <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                            <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" data-has-variations="{{ $item->attributes->count() > 0 ? '1' : '0' }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
                                                 <i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}
                                             </a>
                                         @else
@@ -792,7 +792,7 @@
                                         <a href="{{ route('front.product', $item->slug) }}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                                             <i class="fas fa-shopping-cart me-2"></i>{{ __('Order Now') }}
                                         </a>
-                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" data-has-variations="{{ $item->attributes->count() > 0 ? '1' : '0' }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
                                             <i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}
                                         </a>
                                     @else
@@ -915,7 +915,7 @@
                                         <a href="{{ route('front.product', $item->slug) }}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                                             <i class="fas fa-shopping-cart me-2"></i>{{ __('Order Now') }}
                                         </a>
-                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" data-has-variations="{{ $item->attributes->count() > 0 ? '1' : '0' }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
                                             <i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}
                                         </a>
                                     @else
@@ -1004,7 +1004,7 @@
                                             <a href="{{ route('front.product', $item->slug) }}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                                                 <i class="fas fa-shopping-cart me-2"></i>{{ __('Order Now') }}
                                             </a>
-                                            <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                            <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" data-has-variations="{{ $item->attributes->count() > 0 ? '1' : '0' }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
                                                 <i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}
                                             </a>
                                         @else
@@ -1093,7 +1093,7 @@
                                         <a href="{{ route('front.product', $item->slug) }}" class="order-now-btn-home w-100 fw-bold text-white d-flex align-items-center justify-content-center mb-2" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;">
                                             <i class="fas fa-shopping-cart me-2"></i>{{ __('Order Now') }}
                                         </a>
-                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
+                                        <a href="javascript:;" class="add_to_single_cart w-100 fw-bold d-flex align-items-center justify-content-center" data-target="{{ $item->id }}" data-has-variations="{{ $item->attributes->count() > 0 ? '1' : '0' }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;">
                                             <i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}
                                         </a>
                                     @else

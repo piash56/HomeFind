@@ -53,7 +53,8 @@ class FrontendController extends Controller
         if ($item->related_products) {
             $relatedProductIds = json_decode($item->related_products, true);
             if (!empty($relatedProductIds)) {
-                $related_products = Item::whereIn('id', $relatedProductIds)
+                $related_products = Item::with('attributes')
+                    ->whereIn('id', $relatedProductIds)
                     ->where('id', '!=', $item->id)
                     ->whereStatus(1)
                     ->take(8)
@@ -63,7 +64,8 @@ class FrontendController extends Controller
 
         // Fallback to category-based if no related products selected
         if (empty($related_products)) {
-            $related_products = Item::where('category_id', $item->category_id)
+            $related_products = Item::with('attributes')
+                ->where('category_id', $item->category_id)
                 ->where('id', '!=', $item->id)
                 ->whereStatus(1)
                 ->take(8)

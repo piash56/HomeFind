@@ -59,6 +59,29 @@
     visibility: hidden !important;
 }
 
+/* Variation area error state - red border when user clicks Buy Now/Add to Cart without selecting */
+.variation-area-error {
+    border: 2px solid #dc3545 !important;
+    border-radius: 8px;
+    padding: 12px;
+    background-color: rgba(220, 53, 69, 0.05);
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+/* Red border on each variation option (colour/image/dropdown) so customers see what to select - eye catching */
+#product-variation-area button.color-swatch-btn.variation-option-error,
+#product-variation-area button.image-selector-btn.variation-option-error {
+    border: 2px solid #dc3545 !important;
+    border-radius: 4px !important;
+    box-shadow: 0 0 0 2px #dc3545, 0 0 12px rgba(220, 53, 69, 0.5) !important;
+    outline: 2px solid #dc3545 !important;
+    outline-offset: 1px;
+}
+#product-variation-area select.attribute_option.variation-option-error {
+    border: 2px solid #dc3545 !important;
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.3) !important;
+}
+
 /* Order Now button - checkout style */
 #order_now_btn {
     background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%);
@@ -315,11 +338,6 @@ button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"
     }
 }
 
-/* Hide the first thumbnail (featured image) from gallery */
-.product-thumbnails .owl-thumbs .owl-thumb-item:first-child {
-    display: none !important;
-}
-
 /* Delivery Options Styling */
 .delivery-options-container {
     margin-top: 10px;
@@ -557,22 +575,27 @@ button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"
                     <div class="div w-100">
                         <input type="hidden" id="item_id" value="{{ $item->id }}">
                         <input type="hidden" id="demo_price"
-                            value="{{ PriceHelper::setConvertPrice($item->discount_price) }}">
-                        <input type="hidden" id="previous_price" value="{{ $item->previous_price != 0 ? PriceHelper::setConvertPrice($item->previous_price) : 0 }}">
+                            value="{{ $item->discount_price }}">
+                        <input type="hidden" id="previous_price" value="{{ $item->previous_price ?? 0 }}">
+                        <input type="hidden" id="base-price" value="{{ $item->discount_price }}">
                         <input type="hidden" value="{{ PriceHelper::setCurrencySign() }}" id="set_currency">
+                        <input type="hidden" value="{{ PriceHelper::setCurrencySign() }}" id="currency-sign">
                         <input type="hidden" value="{{ PriceHelper::setCurrencyValue() }}" id="set_currency_val">
                         <input type="hidden" value="{{ $setting->currency_direction }}" id="currency_direction">
+                        <input type="hidden" value="{{ $setting->currency_direction }}" id="currency-direction">
                         <h4 class="mb-2" style="font-size: 30px !important; text-transform: capitalize !important;">{{ $item->name }}</h4>
                         <div class="mb-3">
                             <div class="rating-stars d-inline-block gmr-3">
                                 {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
                             </div>
-                            @if ($item->is_stock())
-                                <span class="text-success  d-inline-block">{{ __('In Stock') }} <b>({{ $item->stock }}
-                                        @lang('items'))</b></span>
-                            @else
-                                <span class="text-danger  d-inline-block">{{ __('Out of stock') }}</span>
-                            @endif
+                            <span id="stock-display" class="d-inline-block">
+                                @if ($item->is_stock())
+                                    <span class="text-success">{{ __('In Stock') }} <b>(<span id="stock-count">{{ $item->stock }}</span>
+                                            @lang('items'))</b></span>
+                                @else
+                                    <span class="text-danger">{{ __('Out of stock') }}</span>
+                                @endif
+                            </span>
                         </div>
 
 
@@ -590,17 +613,16 @@ button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"
                         
                         <span class="h3 d-block price-area">
                             @if (!$hasBulkPricingPreview)
-                                @if ($item->previous_price != 0)
-                                    <small class="d-inline-block"><del id="old_price">{{ PriceHelper::setPreviousPrice($item->previous_price) }}</del></small>
-                                @endif
-                                <span id="main_price" class="main-price" style="color: #4E65FF !important;">{{ PriceHelper::grandCurrencyPrice($item) }}</span>
+                                <span id="main_price" class="main-price" style="color: #4E65FF !important;">
+                                    {{ PriceHelper::grandCurrencyPrice($item) }}
+                                </span>
                             @else
                                 <span class="text-muted" style="font-size: 1.2rem;">{{ __('দাম শুরু') }}</span>
                                 <span id="main_price" class="main-price" style="color: #4E65FF !important;">{{ PriceHelper::grandCurrencyPrice($item) }}</span>
                                 <span class="text-muted" style="font-size: 1.2rem;">{{ __('থেকে') }}</span>
                             @endif
                         </span>
-                        <div class="row margin-top-1x">
+                        <div class="row margin-top-1x" id="product-variation-area">
                             @foreach ($attributes as $attribute)
                                 @if ($attribute->options->count() != 0)
                                     @php
@@ -615,94 +637,107 @@ button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"
                                             @if($displayType == 'color')
                                                 {{-- Color Swatches Display --}}
                                                 <div class="color-swatches-container" data-attribute-id="{{ $attribute->id }}">
-                                                    @foreach($availableOptions as $option)
+                                                    @foreach($attribute->options as $option)
                                                         @if($option->color_code)
                                                             <button type="button" 
-                                                                    class="color-swatch-btn attribute-option-btn {{ $loop->first ? 'active' : '' }}"
+                                                                    class="color-swatch-btn attribute-option-btn"
                                                                     data-option-id="{{ $option->id }}"
                                                                     data-type="{{ $attribute->id }}"
                                                         data-href="{{ $option->id }}"
-                                                                    data-target="{{ $option->price }}"
+                                                                    data-target="{{ PriceHelper::setConvertPrice($option->price) }}"
+                                                                    data-previous-price="{{ PriceHelper::setConvertPrice($option->previous_price ?? 0) }}"
+                                                                    data-stock="{{ $option->stock }}"
                                                                     data-image="{{ $option->image ? asset('storage/images/' . $option->image) : '' }}"
                                                                     data-color-code="{{ $option->color_code }}"
                                                                     data-gallery-image-id="{{ $option->gallery_image_id ?: '' }}"
                                                                     data-gallery-image="{{ $option->galleryImage && $option->galleryImage->photo ? asset('storage/images/' . $option->galleryImage->photo) : '' }}"
                                                                     data-option-name="{{ $option->name }}"
-                                                                    title="{{ $option->name }}"
-                                                                    style="width: 40px; height: 40px; border: 2px solid {{ $loop->first ? '#007bff' : '#ddd' }}; border-radius: 4px; background-color: {{ $option->color_code }}; margin-right: 8px; margin-bottom: 8px; cursor: pointer; display: inline-block;">
-                                                            <input type="hidden" name="attribute_option_{{ $attribute->id }}" value="{{ $loop->first ? $option->id : '' }}" class="attribute_option_hidden">
+                                                                    title="{{ $option->name }} ({{ $option->stock > 0 ? $option->stock . ' in stock' : 'Out of stock' }})"
+                                                                    style="width: 40px; height: 40px; border: 2px solid #ddd; border-radius: 4px; background-color: {{ $option->color_code }}; margin-right: 8px; margin-bottom: 8px; cursor: {{ $option->stock > 0 ? 'pointer' : 'not-allowed' }}; display: inline-block; opacity: {{ $option->stock > 0 ? '1' : '0.5' }}; position: relative;"
+                                                                    {{ $option->stock <= 0 ? 'disabled' : '' }}>
+                                                                @if($option->stock <= 0)
+                                                                    <span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-45deg); width: 100%; height: 2px; background-color: #ff0000;"></span>
+                                                                @endif
+                                                            <input type="hidden" name="attribute_option_{{ $attribute->id }}" value="" class="attribute_option_hidden">
                                                             </button>
                                                         @endif
                                                     @endforeach
                                                 </div>
                                                 <div class="selected-color-name mt-2" id="selected-color-{{ $attribute->id }}">
-                                                    @if($firstOption && $firstOption->color_code)
-                                                        <small class="text-muted">{{ $firstOption->name }}</small>
-                                                    @endif
+                                                    {{-- Selected color name will appear here when user selects --}}
                                                 </div>
                                             
                                             @elseif($displayType == 'image')
                                                 {{-- Image Selector Display --}}
                                                 <div class="image-selector-container" data-attribute-id="{{ $attribute->id }}">
-                                                    @foreach($availableOptions as $option)
+                                                    @foreach($attribute->options as $option)
                                                         @if($option->image)
                                                             <button type="button" 
-                                                                    class="image-selector-btn attribute-option-btn {{ $loop->first ? 'active' : '' }}"
+                                                                    class="image-selector-btn attribute-option-btn"
                                                                     data-option-id="{{ $option->id }}"
                                                                     data-type="{{ $attribute->id }}"
                                                                     data-href="{{ $option->id }}"
-                                                                    data-target="{{ $option->price }}"
+                                                                    data-target="{{ PriceHelper::setConvertPrice($option->price) }}"
+                                                                    data-previous-price="{{ PriceHelper::setConvertPrice($option->previous_price ?? 0) }}"
+                                                                    data-stock="{{ $option->stock }}"
                                                                     data-image="{{ asset('storage/images/' . $option->image) }}"
                                                                     data-color-code="{{ $option->color_code ?: '' }}"
                                                                     data-gallery-image-id="{{ $option->gallery_image_id ?: '' }}"
                                                                     data-gallery-image="{{ $option->galleryImage && $option->galleryImage->photo ? asset('storage/images/' . $option->galleryImage->photo) : '' }}"
                                                                     data-option-name="{{ $option->name }}"
-                                                                    title="{{ $option->name }}"
-                                                                    style="width: 60px; height: 60px; border: 2px solid {{ $loop->first ? '#007bff' : '#ddd' }}; border-radius: 4px; padding: 2px; margin-right: 8px; margin-bottom: 8px; cursor: pointer; display: inline-block; background: #fff;">
+                                                                    title="{{ $option->name }} ({{ $option->stock > 0 ? $option->stock . ' in stock' : 'Out of stock' }})"
+                                                                    style="width: 60px; height: 60px; border: 2px solid #ddd; border-radius: 4px; padding: 2px; margin-right: 8px; margin-bottom: 8px; cursor: {{ $option->stock > 0 ? 'pointer' : 'not-allowed' }}; display: inline-block; background: #fff; opacity: {{ $option->stock > 0 ? '1' : '0.5' }}; position: relative;"
+                                                                    {{ $option->stock <= 0 ? 'disabled' : '' }}>
                                                                 <img src="{{ asset('storage/images/' . $option->image) }}" 
                                                                      alt="{{ $option->name }}" 
                                                                      style="width: 100%; height: 100%; object-fit: cover; border-radius: 2px;">
-                                                                <input type="hidden" name="attribute_option_{{ $attribute->id }}" value="{{ $loop->first ? $option->id : '' }}" class="attribute_option_hidden">
+                                                                @if($option->stock <= 0)
+                                                                    <span style="position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%) rotate(-5deg); background-color: rgba(255, 0, 0, 0.8); color: white; text-align: center; font-size: 10px; font-weight: bold; padding: 2px;">OUT</span>
+                                                                @endif
+                                                                <input type="hidden" name="attribute_option_{{ $attribute->id }}" value="" class="attribute_option_hidden">
                                                             </button>
                                                         @endif
                                                     @endforeach
                                                 </div>
                                                 <div class="selected-image-name mt-2" id="selected-image-{{ $attribute->id }}">
-                                                    @if($firstOption && $firstOption->image)
-                                                        <small class="text-muted">{{ $firstOption->name }}</small>
-                                                    @endif
+                                                    {{-- Selected image name will appear here when user selects --}}
                                                 </div>
                                             
                                             @else
                                                 {{-- Name Dropdown Display (Default) --}}
                                                 <select class="form-control attribute_option" id="{{ $attribute->name }}" data-attribute-id="{{ $attribute->id }}">
-                                                    @foreach ($availableOptions as $option)
+                                                    <option value="" data-type="{{ $attribute->id }}" data-href="" data-target="0" data-previous-price="0" data-stock="" selected>{{ __('Select') }} {{ $attribute->name }}</option>
+                                                    @foreach ($attribute->options as $index => $option)
                                                         <option value="{{ $option->name }}" 
                                                             data-type="{{ $attribute->id }}"
                                                             data-href="{{ $option->id }}"
-                                                            data-target="{{ $option->price }}"
+                                                            data-target="{{ PriceHelper::setConvertPrice($option->price) }}"
+                                                            data-previous-price="{{ PriceHelper::setConvertPrice($option->previous_price ?? 0) }}"
+                                                            data-stock="{{ $option->stock }}"
                                                             data-image="{{ $option->image ? asset('storage/images/' . $option->image) : '' }}"
                                                             data-color-code="{{ $option->color_code ?: '' }}"
                                                             data-gallery-image-id="{{ $option->gallery_image_id ?: '' }}"
-                                                            data-gallery-image="{{ $option->galleryImage && $option->galleryImage->photo ? asset('storage/images/' . $option->galleryImage->photo) : '' }}">
-                                                            {{ $option->name }}
+                                                            data-gallery-image="{{ $option->galleryImage && $option->galleryImage->photo ? asset('storage/images/' . $option->galleryImage->photo) : '' }}"
+                                                            {{ $option->stock <= 0 ? 'disabled' : '' }}>
+                                                            {{ $option->name }} {{ $option->stock > 0 ? '(' . $option->stock . ' in stock)' : '(Out of stock)' }}
                                                         </option>
                                                 @endforeach
                                             </select>
                                                 <div class="attribute-option-preview mt-2" id="preview-{{ $attribute->id }}" style="min-height: 40px;">
-                                                    @if($firstOption)
-                                                        @if($firstOption->image)
-                                                            <img src="{{ asset('storage/images/' . $firstOption->image) }}" alt="{{ $firstOption->name }}" style="max-width: 40px; max-height: 40px; border: 1px solid #ddd; border-radius: 4px; padding: 2px;">
-                                                        @elseif($firstOption->color_code)
-                                                            <span style="display: inline-block; width: 40px; height: 40px; background-color: {{ $firstOption->color_code }}; border: 1px solid #ddd; border-radius: 4px;"></span>
-                                                        @endif
-                                                    @endif
+                                                    {{-- Option preview will appear here when user selects --}}
                                                 </div>
                                             @endif
                                         </div>
                                     </div>
                                 @endif
                             @endforeach
+                            @if($item->attributes->count() > 0)
+                            <div class="col-12">
+                                <div id="variation-required-message" class="alert alert-danger mt-2 mb-0 d-none" role="alert">
+                                    <i class="fas fa-exclamation-circle me-2"></i>{{ __('Please select a variation to continue.') }}
+                                </div>
+                            </div>
+                            @endif
                         </div>
                         <p class="text-muted cta-text">{{ $setting->cta_text ?? 'For order call us or chat on WhatsApp' }}</p>
                         {{-- Contact Section --}}
@@ -1171,7 +1206,7 @@ button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"
                                         <div class="product-buttons d-flex flex-wrap gap-2 align-items-center">
                                             @if ($related->is_stock())
                                                 <a href="{{ route('front.product', $related->slug) }}" class="order-now-btn-home fw-bold text-white d-flex align-items-center justify-content-center" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 15px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;"><i class="fas fa-shopping-cart me-2"></i>{{ __('Buy Now') }}</a>
-                                                <a href="javascript:;" class="add_to_single_cart fw-bold d-flex align-items-center justify-content-center" data-target="{{ $related->id }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;"><i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}</a>
+                                                <a href="javascript:;" class="add_to_single_cart fw-bold d-flex align-items-center justify-content-center" data-target="{{ $related->id }}" data-has-variations="{{ $related->attributes->count() > 0 ? '1' : '0' }}" style="border-radius: 10px; border: 2px solid #4E65FF; color: #4E65FF; padding: 10px 20px; font-size: 15px; transition: all 0.3s ease; text-decoration: none;"><i class="fas fa-cart-plus me-2"></i>{{ __('Add to Cart') }}</a>
                                             @else
                                                 <a href="{{ route('front.product', $related->slug) }}" class="order-now-btn-home fw-bold text-white d-flex align-items-center justify-content-center" style="border-radius: 10px; background: linear-gradient(135deg, #FF512F 0%, #DD2476 100%); border: none; padding: 10px 20px; font-size: 15px; box-shadow: 0 4px 15px rgba(255, 81, 47, 0.3); transition: all 0.3s ease; text-decoration: none;"><i class="fas fa-shopping-cart me-2"></i>{{ __('Buy Now') }}</a>
                                             @endif
@@ -1311,9 +1346,6 @@ button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"
                         </table>
                         
                         <!-- Hidden price data for JavaScript -->
-                        <input type="hidden" id="base-price" value="{{ $item->discount_price }}">
-                        <input type="hidden" id="currency-sign" value="{{ PriceHelper::setCurrencySign() }}">
-                        <input type="hidden" id="currency-direction" value="{{ $setting->currency_direction }}">
                         <input type="hidden" id="has-bulk-pricing" value="{{ $hasBulkPricingCheckout ? '1' : '0' }}">
                         
                     </section>
@@ -1452,6 +1484,37 @@ button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"
 $(document).ready(function() {
     // Flag to track if user has interacted with attributes
     var userHasInteractedWithAttributes = false;
+    // Product has variations (attributes) - require selection before Buy Now / Add to Cart
+    var productAttributeCount = {{ $item->attributes->count() }};
+    
+    // Expose for myscript.js variation validation
+    window.productPageHasVariations = productAttributeCount > 0;
+    window.productPageAllVariationsSelected = function() {
+        if (productAttributeCount === 0) return true;
+        var selectedCount = 0;
+        $('.attribute_option').each(function() {
+            var optId = $(this).find(':selected').attr('data-href');
+            if (optId) selectedCount++;
+        });
+        $('.color-swatch-btn.active').each(function() {
+            if ($(this).data('href') || $(this).data('option-id')) selectedCount++;
+        });
+        $('.image-selector-btn.active').each(function() {
+            if ($(this).data('href') || $(this).data('option-id')) selectedCount++;
+        });
+        return selectedCount === productAttributeCount;
+    };
+    window.productPageVariationError = function() {
+        $('#variation-required-message').removeClass('d-none');
+        $('#product-variation-area').addClass('variation-area-error');
+        var $opts = $('#product-variation-area .color-swatch-btn, #product-variation-area .image-selector-btn, #product-variation-area .attribute_option');
+        $opts.addClass('variation-option-error');
+        $opts.css({'border': '2px solid #dc3545', 'box-shadow': '0 0 0 2px #dc3545'});
+        $('html, body').animate({ scrollTop: $('#product-variation-area').offset().top - 100 }, 400);
+        if (window._lastAddToCartBtn && window._lastAddToCartBtnHtml) {
+            window._lastAddToCartBtn.removeClass('add-to-cart-loading').prop('disabled', false).html(window._lastAddToCartBtnHtml);
+        }
+    };
     // Function to get total attribute price (raw prices, no currency conversion)
     function getTotalAttributePrice() {
         var totalAttributePrice = 0;
@@ -1478,6 +1541,32 @@ $(document).ready(function() {
         return totalAttributePrice;
     }
     
+    // Function to get total attribute previous price (raw prices, no currency conversion)
+    function getTotalAttributePreviousPrice() {
+        var totalAttributePreviousPrice = 0;
+        
+        // Get previous prices from dropdowns
+        $('.attribute_option').each(function() {
+            var selectedOption = $(this).find(':selected');
+            var optionPreviousPrice = parseFloat(selectedOption.attr('data-previous-price')) || 0;
+            totalAttributePreviousPrice += optionPreviousPrice;
+        });
+        
+        // Get previous prices from color swatches
+        $('.color-swatch-btn.active').each(function() {
+            var optionPreviousPrice = parseFloat($(this).attr('data-previous-price')) || 0;
+            totalAttributePreviousPrice += optionPreviousPrice;
+        });
+        
+        // Get previous prices from image selectors
+        $('.image-selector-btn.active').each(function() {
+            var optionPreviousPrice = parseFloat($(this).attr('data-previous-price')) || 0;
+            totalAttributePreviousPrice += optionPreviousPrice;
+        });
+        
+        return totalAttributePreviousPrice;
+    }
+    
     // Function to get delivery fee
     function getDeliveryFee() {
         var deliveryFee = 0;
@@ -1495,21 +1584,93 @@ $(document).ready(function() {
         return deliveryFee;
     }
     
+    // Function to check if variations have their own complete price (old + new)
+    function hasVariationWithOwnPrice() {
+        var hasOwnPrice = false;
+        
+        // Check dropdowns
+        $('.attribute_option :selected').each(function() {
+            var prevPrice = parseFloat($(this).attr('data-previous-price')) || 0;
+            var price = parseFloat($(this).attr('data-target')) || 0;
+            if (prevPrice > 0 && price > 0) {
+                hasOwnPrice = true;
+                return false; // break
+            }
+        });
+        
+        if (!hasOwnPrice) {
+            // Check color swatches
+            $('.color-swatch-btn.active').each(function() {
+                var prevPrice = parseFloat($(this).attr('data-previous-price')) || 0;
+                var price = parseFloat($(this).attr('data-target')) || 0;
+                if (prevPrice > 0 && price > 0) {
+                    hasOwnPrice = true;
+                    return false; // break
+                }
+            });
+        }
+        
+        if (!hasOwnPrice) {
+            // Check image selectors
+            $('.image-selector-btn.active').each(function() {
+                var prevPrice = parseFloat($(this).attr('data-previous-price')) || 0;
+                var price = parseFloat($(this).attr('data-target')) || 0;
+                if (prevPrice > 0 && price > 0) {
+                    hasOwnPrice = true;
+                    return false; // break
+                }
+            });
+        }
+        
+        return hasOwnPrice;
+    }
+    
+    // Function to format number with thousand separators
+    function formatPrice(number) {
+        // Round to nearest integer for whole numbers
+        if (number % 1 === 0) {
+            number = Math.round(number);
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        } else {
+            // For decimals, use 2 decimal places
+            return number.toFixed(2);
+        }
+    }
+    
     // Function to update order summary
     function updateOrderSummary() {
         var quantity = parseInt($('.cart-amount').val()) || 1;
         var basePrice = parseFloat($('#base-price').val());
+        var basePreviousPrice = parseFloat($('#previous_price').val());
         var attributePrice = getTotalAttributePrice(); // Get raw attribute prices
+        var attributePreviousPrice = getTotalAttributePreviousPrice(); // Get raw attribute previous prices
         var currencySign = $('#currency-sign').val();
         var currencyDirection = parseInt($('#currency-direction').val());
         
         // Check if bulk pricing is active
-        var subtotal;
+        var subtotal, previousTotal;
         if (window.bulkPricingSelection && window.bulkPricingSelection.totalPrice) {
             subtotal = window.bulkPricingSelection.totalPrice;
             quantity = window.bulkPricingSelection.quantity;
+            previousTotal = null; // Don't show previous price for bulk pricing
         } else {
-            subtotal = (basePrice + attributePrice) * quantity;
+            // Check if variation has its own complete price (old + new)
+            var variationHasOwnPrice = hasVariationWithOwnPrice();
+            
+            if (variationHasOwnPrice) {
+                // Use ONLY variation prices (replace main product prices)
+                subtotal = attributePrice * quantity;
+                previousTotal = attributePreviousPrice * quantity;
+            } else {
+                // Use base prices + additional variation prices (add to main product prices)
+                subtotal = (basePrice + attributePrice) * quantity;
+                // Calculate previous price if exists
+                if (attributePreviousPrice > 0 || basePreviousPrice > 0) {
+                    previousTotal = (basePreviousPrice + attributePreviousPrice) * quantity;
+                } else {
+                    previousTotal = null;
+                }
+            }
         }
         
         // Get delivery fee
@@ -1517,25 +1678,34 @@ $(document).ready(function() {
         var total = subtotal + deliveryFee;
         
         // Format price based on currency direction with proper decimal handling
-        var formattedSubtotal, formattedTotal, formattedDeliveryFee;
-        var decimalPlaces = (subtotal % 1 === 0) ? 0 : 2; // Use 0 decimals for whole numbers
+        var formattedSubtotal, formattedTotal, formattedDeliveryFee, formattedPreviousPrice;
         
         if (currencyDirection == 1) {
-            formattedSubtotal = currencySign + subtotal.toFixed(decimalPlaces);
-            formattedDeliveryFee = currencySign + deliveryFee.toFixed(decimalPlaces);
-            formattedTotal = currencySign + total.toFixed(decimalPlaces);
+            formattedSubtotal = currencySign + formatPrice(subtotal);
+            formattedDeliveryFee = currencySign + formatPrice(deliveryFee);
+            formattedTotal = currencySign + formatPrice(total);
+            if (previousTotal !== null && previousTotal > 0) {
+                formattedPreviousPrice = currencySign + formatPrice(previousTotal);
+            }
         } else {
-            formattedSubtotal = subtotal.toFixed(decimalPlaces) + currencySign;
-            formattedDeliveryFee = deliveryFee.toFixed(decimalPlaces) + currencySign;
-            formattedTotal = total.toFixed(decimalPlaces) + currencySign;
+            formattedSubtotal = formatPrice(subtotal) + currencySign;
+            formattedDeliveryFee = formatPrice(deliveryFee) + currencySign;
+            formattedTotal = formatPrice(total) + currencySign;
+            if (previousTotal !== null && previousTotal > 0) {
+                formattedPreviousPrice = formatPrice(previousTotal) + currencySign;
+            }
         }
         
         $('#cart-subtotal').text(formattedSubtotal);
         $('#delivery-fee-display').text(formattedDeliveryFee);
         $('#order-total').text(formattedTotal);
         
-        // Also update the main product price display
-        $('#main_price').text(formattedSubtotal);
+        // Update the main product price display with old and new prices
+        if (previousTotal !== null && previousTotal > 0 && previousTotal > subtotal) {
+            $('#main_price').html('<small class="d-inline-block"><del id="old_price">' + formattedPreviousPrice + '</del></small> ' + formattedSubtotal);
+        } else {
+            $('#main_price').text(formattedSubtotal);
+        }
         
     }
     
@@ -1581,9 +1751,33 @@ $(document).ready(function() {
         var galleryImageId = selectedElement.data('gallery-image-id');
         var optionName = selectedElement.data('option-name') || selectedElement.text();
         var optionId = selectedElement.data('href') || selectedElement.data('option-id');
+        var optionStock = selectedElement.data('stock');
         
         // Update hidden input for form submission
         $('input[name="attribute_option_' + attributeId + '"]').val(optionId);
+        
+        // Update stock display
+        updateStockDisplay();
+        $('#variation-required-message').addClass('d-none');
+        $('#product-variation-area').removeClass('variation-area-error');
+        var $opts = $('#product-variation-area .color-swatch-btn, #product-variation-area .image-selector-btn, #product-variation-area .attribute_option');
+        $opts.removeClass('variation-option-error');
+        $('#product-variation-area .color-swatch-btn').css({'border': '2px solid #ddd', 'box-shadow': ''}).filter('.active').css('border-color', '#007bff');
+        $('#product-variation-area .image-selector-btn').css({'border': '2px solid #ddd', 'box-shadow': ''}).filter('.active').css('border-color', '#007bff');
+        $('#product-variation-area .attribute_option').css({'border': '', 'box-shadow': ''});
+        
+        // Update main product image if variation has an image
+        if (optionImage) {
+            $('#main-product-image').attr('src', optionImage);
+            $('#main-product-image-item img').attr('src', optionImage);
+        } else {
+            // Revert to featured image if no variation image
+            var featuredImage = $('#main-product-image').data('featured-image');
+            if (featuredImage) {
+                $('#main-product-image').attr('src', featuredImage);
+                $('#main-product-image-item img').attr('src', featuredImage);
+            }
+        }
         
         // Update preview/name display based on display type
         var attributeContainer = $('[data-attribute-id="' + attributeId + '"]').closest('.form-group');
@@ -1607,10 +1801,67 @@ $(document).ready(function() {
             }
         }
         
-        // Change featured image if gallery image is selected (only if user has interacted)
-        updateProductFeaturedImage(!isInitialLoad);
+        // Featured image should always be displayed - no variation image switching
+        // updateProductFeaturedImage is disabled to prevent variation-based image changes
         
         updateOrderSummary();
+    }
+    
+    // Function to update stock display based on selected variations
+    function updateStockDisplay() {
+        var currentStock = null;
+        
+        // Check all selected attribute options to get the minimum stock
+        var allOptions = [];
+        
+        // Get from dropdowns
+        $('.attribute_option :selected').each(function() {
+            var stock = parseInt($(this).data('stock'));
+            if (!isNaN(stock)) {
+                allOptions.push(stock);
+            }
+        });
+        
+        // Get from color swatches
+        $('.color-swatch-btn.active').each(function() {
+            var stock = parseInt($(this).data('stock'));
+            if (!isNaN(stock)) {
+                allOptions.push(stock);
+            }
+        });
+        
+        // Get from image selectors
+        $('.image-selector-btn.active').each(function() {
+            var stock = parseInt($(this).data('stock'));
+            if (!isNaN(stock)) {
+                allOptions.push(stock);
+            }
+        });
+        
+        // When product has variations, require all attributes to be selected (keep buttons enabled so click shows message)
+        if (productAttributeCount > 0 && allOptions.length !== productAttributeCount) {
+            currentStock = null;
+            $('#stock-display').html('<span class="text-muted">{{ __("Select variation above") }}</span>');
+            // Do NOT disable buttons - so user can click and we show red border + message
+        }
+        // Get the minimum stock from all selected options
+        else if (allOptions.length > 0) {
+            currentStock = Math.min(...allOptions);
+        }
+        
+        // Update the stock display
+        if (currentStock !== null) {
+            $('#current_stock').val(currentStock);
+            if (currentStock > 0) {
+                $('#stock-display').html('<span class="text-success">{{ __("In Stock") }} <b>(<span id="stock-count">' + currentStock + '</span> @lang("items"))</b></span>');
+                // Enable buy buttons
+                $('#but_to_cart, #add_to_cart').prop('disabled', false).removeClass('disabled');
+            } else {
+                $('#stock-display').html('<span class="text-danger">{{ __("Out of stock") }}</span>');
+                // Disable buy buttons
+                $('#but_to_cart, #add_to_cart').prop('disabled', true).addClass('disabled');
+            }
+        }
     }
     
     // Function to update product featured image based on all selected attributes
@@ -1967,15 +2218,30 @@ $(document).ready(function() {
         e.stopPropagation();
         e.stopImmediatePropagation();
         
-        // Reset sync flag to allow updates
-        isSyncingFromGallery = false;
-        
-        // Mark that user has interacted
-        userHasInteractedWithAttributes = true;
-        
         var selectedOption = $(this).find(':selected');
         var attributeId = $(this).data('attribute-id');
-        handleAttributeOptionSelection(selectedOption, attributeId, false); // false = not initial load
+        
+        // Check if "Select" option was chosen (empty value)
+        if (selectedOption.val() === '' || !selectedOption.data('href')) {
+            // Revert to featured image
+            var featuredImage = $('#main-product-image').data('featured-image');
+            if (featuredImage) {
+                $('#main-product-image').attr('src', featuredImage);
+                $('#main-product-image-item img').attr('src', featuredImage);
+            }
+            // Clear hidden input
+            $('input[name="attribute_option_' + attributeId + '"]').val('');
+            $('#variation-required-message').addClass('d-none');
+            $('#product-variation-area').removeClass('variation-area-error');
+            $('#product-variation-area .color-swatch-btn, #product-variation-area .image-selector-btn').removeClass('variation-option-error').css({'border': '2px solid #ddd', 'box-shadow': ''});
+            $('#product-variation-area .color-swatch-btn.active, #product-variation-area .image-selector-btn.active').css('border-color', '#007bff');
+            $('#product-variation-area .attribute_option').removeClass('variation-option-error').css({'border': '', 'box-shadow': ''});
+            updateStockDisplay();
+            updateOrderSummary();
+            return false;
+        }
+        
+        handleAttributeOptionSelection(selectedOption, attributeId, false);
         return false;
     });
     
@@ -1984,21 +2250,47 @@ $(document).ready(function() {
         e.preventDefault();
         e.stopPropagation();
         
-        // Reset sync flag to allow updates
-        isSyncingFromGallery = false;
+        // Check if this option is disabled (out of stock)
+        if ($(this).prop('disabled') || $(this).attr('disabled')) {
+            return false;
+        }
         
-        // Mark that user has interacted
-        userHasInteractedWithAttributes = true;
+        var stock = parseInt($(this).data('stock'));
+        if (!isNaN(stock) && stock <= 0) {
+            return false;
+        }
         
         var attributeId = $(this).data('type');
+        var isAlreadyActive = $(this).hasClass('active');
         
         // Remove active class from all buttons in this attribute group
         $('.color-swatch-btn[data-type="' + attributeId + '"]').removeClass('active').css('border-color', '#ddd');
         
-        // Add active class to clicked button
-        $(this).addClass('active').css('border-color', '#007bff');
+        // If clicking the same active button, deselect it and revert to featured image
+        if (isAlreadyActive) {
+            // Revert to featured image
+            var featuredImage = $('#main-product-image').data('featured-image');
+            if (featuredImage) {
+                $('#main-product-image').attr('src', featuredImage);
+                $('#main-product-image-item img').attr('src', featuredImage);
+            }
+            // Clear hidden input
+            $('input[name="attribute_option_' + attributeId + '"]').val('');
+            // Clear selected name
+            $('#selected-color-' + attributeId).html('');
+            $('#variation-required-message').addClass('d-none');
+            $('#product-variation-area').removeClass('variation-area-error');
+            $('#product-variation-area .color-swatch-btn, #product-variation-area .image-selector-btn').removeClass('variation-option-error').css({'border': '2px solid #ddd', 'box-shadow': ''});
+            $('#product-variation-area .color-swatch-btn.active, #product-variation-area .image-selector-btn.active').css('border-color', '#007bff');
+            $('#product-variation-area .attribute_option').removeClass('variation-option-error').css({'border': '', 'box-shadow': ''});
+            updateStockDisplay();
+            updateOrderSummary();
+        } else {
+            // Add active class to clicked button
+            $(this).addClass('active').css('border-color', '#007bff');
+            handleAttributeOptionSelection($(this), attributeId, false);
+        }
         
-        handleAttributeOptionSelection($(this), attributeId, false); // false = not initial load
         return false;
     });
     
@@ -2007,160 +2299,96 @@ $(document).ready(function() {
         e.preventDefault();
         e.stopPropagation();
         
-        // Reset sync flag to allow updates
-        isSyncingFromGallery = false;
+        // Check if this option is disabled (out of stock)
+        if ($(this).prop('disabled') || $(this).attr('disabled')) {
+            return false;
+        }
         
-        // Mark that user has interacted
-        userHasInteractedWithAttributes = true;
+        var stock = parseInt($(this).data('stock'));
+        if (!isNaN(stock) && stock <= 0) {
+            return false;
+        }
         
         var attributeId = $(this).data('type');
+        var isAlreadyActive = $(this).hasClass('active');
         
         // Remove active class from all buttons in this attribute group
         $('.image-selector-btn[data-type="' + attributeId + '"]').removeClass('active').css('border-color', '#ddd');
         
-        // Add active class to clicked button
-        $(this).addClass('active').css('border-color', '#007bff');
+        // If clicking the same active button, deselect it and revert to featured image
+        if (isAlreadyActive) {
+            // Revert to featured image
+            var featuredImage = $('#main-product-image').data('featured-image');
+            if (featuredImage) {
+                $('#main-product-image').attr('src', featuredImage);
+                $('#main-product-image-item img').attr('src', featuredImage);
+            }
+            // Clear hidden input
+            $('input[name="attribute_option_' + attributeId + '"]').val('');
+            // Clear selected name
+            $('#selected-image-' + attributeId).html('');
+            $('#variation-required-message').addClass('d-none');
+            $('#product-variation-area').removeClass('variation-area-error');
+            $('#product-variation-area .color-swatch-btn, #product-variation-area .image-selector-btn').removeClass('variation-option-error').css({'border': '2px solid #ddd', 'box-shadow': ''});
+            $('#product-variation-area .color-swatch-btn.active, #product-variation-area .image-selector-btn.active').css('border-color', '#007bff');
+            $('#product-variation-area .attribute_option').removeClass('variation-option-error').css({'border': '', 'box-shadow': ''});
+            updateStockDisplay();
+            updateOrderSummary();
+        } else {
+            // Add active class to clicked button
+            $(this).addClass('active').css('border-color', '#007bff');
+            handleAttributeOptionSelection($(this), attributeId, false);
+        }
         
-        handleAttributeOptionSelection($(this), attributeId, false); // false = not initial load
         return false;
     });
     
-    // Initialize attribute selections on page load
-    // Initialize color swatches - trigger first active button (but don't update featured image)
-    $('.color-swatch-btn.active').each(function() {
-        var attributeId = $(this).data('type');
-        handleAttributeOptionSelection($(this), attributeId, true); // true = isInitialLoad
-    });
+    // On initial page load - no variation selected, show main product data
+    // Gallery always shows featured image first, then gallery images
+    // No variation-based gallery switching
+    updateOrderSummary();
+    updateStockDisplay();
     
-    // Initialize image selectors - trigger first active button (but don't update featured image)
-    $('.image-selector-btn.active').each(function() {
-        var attributeId = $(this).data('type');
-        handleAttributeOptionSelection($(this), attributeId, true); // true = isInitialLoad
-    });
-    
-    // Initialize dropdowns - manually call handler for initial load (don't trigger change event)
-    $('.attribute_option').each(function() {
-        var select = $(this);
-        var selectedOption = select.find(':selected');
-        var attributeId = select.data('attribute-id');
-        // Call handler directly with isInitialLoad = true to avoid triggering change event
-        if (selectedOption.length) {
-            handleAttributeOptionSelection(selectedOption, attributeId, true); // true = isInitialLoad
-        }
-    });
-    
-    // Ensure featured image is displayed on initial load (don't use attribute images)
-    updateProductFeaturedImage(false);
-    
-    // Handle gallery thumbnail clicks - sync with attribute options
+    // Handle gallery thumbnail clicks - just navigate carousel, don't sync variations
     $(document).on('click', '.owl-thumb-item:visible', function(e) {
         e.preventDefault();
         e.stopPropagation();
         
-        // Get the thumbnail index within visible thumbnails (excluding hidden featured image)
+        // Get the thumbnail index within visible thumbnails
         var visibleThumbnails = $('.owl-thumb-item:visible');
         var thumbIndex = visibleThumbnails.index($(this));
         
-        // Get all carousel items (main image + gallery images)
-        // Thumbnail index 0 = carousel item index 1 (since first item is featured image, not in thumbnails)
-        var allItems = $('.product-details-slider .item');
-        var itemIndex = thumbIndex + 1; // Add 1 because first item is featured image
-        var galleryItem = allItems.eq(itemIndex);
-        var galleryId = galleryItem.data('gallery-id');
+        // If first thumbnail (featured image) is clicked, show featured image in main view
+        if (thumbIndex === 0) {
+            var featuredImage = $('#main-product-image').data('featured-image');
+            if (featuredImage) {
+                $('#main-product-image').attr('src', featuredImage);
+                $('#main-product-image-item img').attr('src', featuredImage);
+            }
+        }
+        
+        // Navigate to the corresponding carousel item
+        var carousel = $('#product-gallery-slider').data('owlCarousel');
+        if (carousel) {
+            carousel.to(thumbIndex, 300);
+        }
         
         // Update active thumbnail
-        $('.owl-thumb-item:visible').removeClass('active');
+        visibleThumbnails.removeClass('active');
         $(this).addClass('active');
-        
-        if (galleryId) {
-            // Sync attribute options based on gallery image
-            syncAttributeOptionsFromGallery(galleryId);
-            
-            // Navigate carousel to show this image
-            var carousel = $('#product-gallery-slider').data('owlCarousel');
-            if (carousel) {
-                carousel.to(itemIndex, 300);
-            }
-        }
     });
     
-    // Sync gallery thumbnails when carousel is initialized
+    // Gallery carousel initialized - show all thumbnails including featured image
     $('#product-gallery-slider').on('initialized.owl.carousel', function() {
-        // Hide the first thumbnail (featured image) from gallery - multiple methods to ensure it works
-        $('.owl-thumb-item').first().hide().css('display', 'none');
-        $('.product-thumbnails .owl-thumbs .owl-thumb-item:first-child').hide().css('display', 'none');
-        
-        setTimeout(function() {
-            // Double check and hide again after a short delay
-            $('.owl-thumb-item').first().hide().css('display', 'none');
-            syncGalleryThumbnails();
-        }, 100);
+        // All thumbnails are visible - featured image first, then gallery images
+        $('.owl-thumb-item').first().addClass('active');
     });
     
-    // Also sync after a delay to ensure everything is ready
-    setTimeout(function() {
-        if ($('#product-gallery-slider').data('owlCarousel')) {
-            // Ensure first thumbnail is hidden
-            $('.owl-thumb-item').first().hide().css('display', 'none');
-            $('.product-thumbnails .owl-thumbs .owl-thumb-item:first-child').hide().css('display', 'none');
-            syncGalleryThumbnails();
-        }
-    }, 500);
-    
-    // Additional check after page load
-    $(window).on('load', function() {
-        setTimeout(function() {
-            $('.owl-thumb-item').first().hide().css('display', 'none');
-            $('.product-thumbnails .owl-thumbs .owl-thumb-item:first-child').hide().css('display', 'none');
-        }, 100);
-    });
-    
-    // Use MutationObserver to watch for thumbnail creation and hide first one immediately
-    if (typeof MutationObserver !== 'undefined') {
-        var thumbObserver = new MutationObserver(function(mutations) {
-            var firstThumb = $('.owl-thumb-item').first();
-            if (firstThumb.length && firstThumb.is(':visible')) {
-                firstThumb.hide().css('display', 'none');
-            }
-        });
-        
-        // Observe the thumbnails container
-        var thumbsContainer = document.querySelector('.product-thumbnails .owl-thumbs');
-        if (thumbsContainer) {
-            thumbObserver.observe(thumbsContainer, {
-                childList: true,
-                subtree: true
-            });
-        }
-    }
-    
-    // Sync gallery thumbnails when carousel slide changes
+    // Update active thumbnail when carousel changes
     $('#product-gallery-slider').on('changed.owl.carousel', function(event) {
-        // Prevent syncing if we're already syncing from gallery click
-        if (isSyncingFromGallery) return;
-        
-        // Get the actual DOM index, not the carousel's internal index (which accounts for loop)
         var currentIndex = event.item.index;
-        var allItems = $('.product-details-slider .item');
-        var galleryItem = allItems.eq(currentIndex);
-        var galleryId = galleryItem.data('gallery-id');
-        
-        // Update active thumbnail
-        // If currentIndex is 0 (featured image), don't highlight any thumbnail
-        // If currentIndex > 0, highlight thumbnail at index (currentIndex - 1)
-        $('.owl-thumb-item:visible').removeClass('active');
-        if (currentIndex > 0) {
-            var visibleThumbnails = $('.owl-thumb-item:visible');
-            var thumbIndex = currentIndex - 1; // Subtract 1 because first item is featured image
-            if (visibleThumbnails.length > thumbIndex && thumbIndex >= 0) {
-                visibleThumbnails.eq(thumbIndex).addClass('active');
-            }
-        }
-        
-        // Sync attribute options if gallery image has matching attribute
-        if (galleryId) {
-            syncAttributeOptionsFromGallery(galleryId);
-        }
+        $('.owl-thumb-item').removeClass('active');
+        $('.owl-thumb-item').eq(currentIndex).addClass('active');
     });
     
     // Function to remove validation errors
@@ -2303,11 +2531,17 @@ $(document).ready(function() {
     });
     @endif
     
-    // Handle Buy Now button click (scroll to checkout section)
+    // Handle Buy Now button click (scroll to checkout section only when variation selected)
     $(document).on("click", "#but_to_cart", function(e) {
         e.preventDefault();
         e.stopPropagation();
         e.stopImmediatePropagation();
+        
+        // If product has variations and user hasn't selected all, show red message and do NOT scroll
+        if (window.productPageHasVariations && typeof window.productPageAllVariationsSelected === 'function' && !window.productPageAllVariationsSelected()) {
+            if (typeof window.productPageVariationError === 'function') window.productPageVariationError();
+            return false;
+        }
         
         // Clear bulk pricing selection and reset message to default
         window.bulkPricingSelection = null;

@@ -419,8 +419,8 @@
 
                     @foreach ($cart as $key => $item)
                         @php
-                            
-                            $cartTotal += ($item['main_price'] + $total + $item['attribute_price']) * $item['qty'];
+                            // Use main_price directly as it already includes the final calculated price
+                            $cartTotal += $item['main_price'] * $item['qty'];
                         @endphp
                         <tr>
                             <td data-label="{{ __('Product') }}">
@@ -437,9 +437,9 @@
                                                     <span class="d-block">
                                                         <em>{{ $item['attribute']['names'][$optionkey] ?? '' }}:</em>
                                                         {{ $option_name }}
-                                                        @if(!empty($item['attribute']['option_price'][$optionkey]))
+                                                        {{-- @if(!empty($item['attribute']['option_price'][$optionkey]))
                                                             <span class="text-muted">({{ PriceHelper::setCurrencyPrice($item['attribute']['option_price'][$optionkey]) }})</span>
-                                                        @endif
+                                                        @endif --}}
                                                     </span>
                                                 @endforeach
                                             </div>

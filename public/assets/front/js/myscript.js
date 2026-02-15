@@ -979,17 +979,49 @@ $(function ($) {
         $(document).on("click", "#add_to_cart", function () {
             var $btn = $(this);
             if ($btn.hasClass('add-to-cart-loading')) return;
+            if (window.productPageHasVariations && typeof window.productPageAllVariationsSelected === 'function' && !window.productPageAllVariationsSelected()) {
+                if (typeof window.productPageVariationError === 'function') window.productPageVariationError();
+                return;
+            }
             window._lastAddToCartBtn = $btn;
             window._lastAddToCartBtnHtml = $btn.html();
             $btn.addClass('add-to-cart-loading').prop('disabled', true);
             getData(1);
         });
         $(document).on("click", "#but_to_cart", function () {
+            if (window.productPageHasVariations && typeof window.productPageAllVariationsSelected === 'function' && !window.productPageAllVariationsSelected()) {
+                if (typeof window.productPageVariationError === 'function') window.productPageVariationError();
+                return;
+            }
             getData(1, 0, 0, 0, 1);
         });
-        $(document).on("click", ".add_to_single_cart", function () {
+        $(document).on("click", ".add_to_single_cart", function (e) {
             var $btn = $(this);
             if ($btn.hasClass('add-to-cart-loading')) return;
+            // Product page main Add to Cart (#add_to_cart has this class too) - require variation if product has variations
+            if ($btn.attr('id') === 'add_to_cart' && window.productPageHasVariations && typeof window.productPageAllVariationsSelected === 'function' && !window.productPageAllVariationsSelected()) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                if (typeof window.productPageVariationError === 'function') window.productPageVariationError();
+                return false;
+            }
+            // Product cards (e.g. আপনি পছন্দ করতে পারেন, home page): product has variations - show toast, do NOT add to cart
+            var hasVariations = parseInt($btn.attr("data-has-variations") || $btn.data("hasVariations") || 0, 10) === 1;
+            if (hasVariations) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                if (typeof iziToast !== 'undefined') {
+                    iziToast.warning({
+                        title: '',
+                        message: 'Please select a variation or click Order Now to add this product to cart.',
+                        position: 'topRight',
+                        timeout: 5000
+                    });
+                } else {
+                    alert('Please select a variation or click Order Now to add this product to cart.');
+                }
+                return false;
+            }
             window._lastAddToCartBtn = $btn;
             window._lastAddToCartBtnHtml = $btn.html();
             $btn.addClass('add-to-cart-loading').prop('disabled', true);

@@ -137,17 +137,7 @@
                                         <td class="px-0">
                                             @if(isset($item['attribute']['option_name']) && $item['attribute']['option_name'])
                                             @foreach ($item['attribute']['option_name'] as $optionkey => $option_name)
-                                            <span class="d-block"><b>{{$item['attribute']['names'][$optionkey] ?? 'Option'}}:</b> {{$option_name}}
-                                                @if(isset($item['attribute']['option_price'][$optionkey]) && $item['attribute']['option_price'][$optionkey] > 0)
-                                                <span class="text-muted">
-                                                    (@if ($setting->currency_direction == 1)
-                                                    {{$order->currency_sign}}{{round($item['attribute']['option_price'][$optionkey],2)}}
-                                                    @else
-                                                    {{round($item['attribute']['option_price'][$optionkey],2)}}{{$order->currency_sign}}
-                                                    @endif)
-                                                </span>
-                                                @endif
-                                            </span>
+                                            <span class="d-block"><b>{{$item['attribute']['names'][$optionkey] ?? 'Option'}}:</b> {{$option_name}}</span>
                                             @endforeach
                                             @else
                                             --

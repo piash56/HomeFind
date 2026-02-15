@@ -50,7 +50,8 @@ class CheckoutController extends Controller
         $total = 0;
 
         foreach ($cart as $key => $item) {
-            $total += ($item['main_price'] + $item['attribute_price']) * $item['qty'];
+            // Use main_price directly as it already includes the final calculated price
+            $total += $item['main_price'] * $item['qty'];
             $cart_total = $total;
             $item = Item::findOrFail($key);
             // Tax disabled
@@ -114,7 +115,8 @@ class CheckoutController extends Controller
 
         foreach ($cart as $key => $item) {
 
-            $total += ($item['main_price'] + $item['attribute_price']) * $item['qty'];
+            // Use main_price directly as it already includes the final calculated price
+            $total += $item['main_price'] * $item['qty'];
             $cart_total = $total;
             $item = Item::findOrFail($key);
             // Tax disabled
@@ -177,7 +179,8 @@ class CheckoutController extends Controller
             // Calculate cart total
             $cart_total = 0;
             foreach ($cart as $key => $item) {
-                $cart_total += ($item['main_price'] + $item['attribute_price']) * $item['qty'];
+                // Use main_price directly as it already includes the final calculated price
+                $cart_total += $item['main_price'] * $item['qty'];
             }
 
             // Apply discount if coupon exists
@@ -335,8 +338,8 @@ class CheckoutController extends Controller
                 $name = $cartItem['name'] ?? '';
                 $qty = $cartItem['qty'] ?? 1;
                 $mainPrice = $cartItem['main_price'] ?? 0;
-                $attrPrice = $cartItem['attribute_price'] ?? 0;
-                $unitRaw = $mainPrice + $attrPrice;
+                // Use main_price directly as it already includes the final calculated price
+                $unitRaw = $mainPrice;
                 $lineRaw = $unitRaw * $qty;
                 $subTotal += $lineRaw;
 
@@ -461,7 +464,8 @@ class CheckoutController extends Controller
 
         foreach ($cart as $key => $item) {
 
-            $total += ($item['main_price'] + $item['attribute_price']) * $item['qty'];
+            // Use main_price directly as it already includes the final calculated price
+            $total += $item['main_price'] * $item['qty'];
             $cart_total = $total;
             $item = Item::findOrFail($key);
             // Tax disabled
@@ -525,7 +529,8 @@ class CheckoutController extends Controller
 
         foreach ($cart as $key => $item) {
 
-            $total += ($item['main_price'] + $item['attribute_price']) * $item['qty'];
+            // Use main_price directly as it already includes the final calculated price
+            $total += $item['main_price'] * $item['qty'];
             $cart_total = $total;
             $item = Item::findOrFail($key);
             // Tax disabled
@@ -1009,7 +1014,8 @@ class CheckoutController extends Controller
         $total = 0;
         foreach ($cart as $key => $item) {
 
-            $total += ($item['main_price'] + $item['attribute_price']) * $item['qty'];
+            // Use main_price directly as it already includes the final calculated price
+            $total += $item['main_price'] * $item['qty'];
             $cart_total = $total;
             $item = Item::findOrFail($key);
             // Tax disabled
@@ -1073,7 +1079,8 @@ class CheckoutController extends Controller
         $total = 0;
         foreach ($cart as $key => $item) {
 
-            $total += ($item['main_price'] + $item['attribute_price']) * $item['qty'];
+            // Use main_price directly as it already includes the final calculated price
+            $total += $item['main_price'] * $item['qty'];
             $cart_total = $total;
             $item = Item::findOrFail($key);
             // Tax disabled
