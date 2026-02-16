@@ -5,7 +5,12 @@
         <img src="{{ $data->thumbnail ? asset('storage/images/'.$data->thumbnail) : asset('storage/images/placeholder.png') }}" alt="Image Not Found">
     </td>
     <td>
-        {{ $data->name }}
+        <div>{{ $data->name }}</div>
+        @if(!empty($data->sku))
+            <small class="text-muted d-block">{{ __('SKU') }}: #{{ $data->sku }}</small>
+            {{-- keep SKU searchable even if styling changes --}}
+            <span class="d-none">{{ $data->sku }}</span>
+        @endif
     </td>
     <td>
         {{ PriceHelper::adminCurrencyPrice($data->discount_price) }}
