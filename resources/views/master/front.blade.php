@@ -38,7 +38,6 @@
         <title>{{ $setting->title }} -@yield('title')</title>
     @endif
 
-    <!-- SEO Meta Tags: default site-level. Product/custom pages override these via @yield('meta') below. -->
     <meta name="author" content="GeniusDevs">
     <meta name="distribution" content="web">
     <meta name="description" content="{{ $setting->meta_description }}">
@@ -52,7 +51,6 @@
         $ogDescription = !empty($setting->meta_description) ? trim($setting->meta_description) : '';
     @endphp
     
-    <!-- Open Graph / Facebook: default. Product page overrides via @yield('meta') below. -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="{{ $ogTitle }}">
@@ -64,7 +62,6 @@
     <meta property="og:image:height" content="627" />
     <meta property="og:site_name" content="{{ $setting->title }}">
     
-    <!-- Twitter Card: default. Product page overrides via @yield('meta') below. -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="{{ url()->current() }}">
     <meta name="twitter:title" content="{{ $ogTitle }}">
