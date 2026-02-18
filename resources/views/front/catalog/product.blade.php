@@ -588,14 +588,14 @@ button.btn-outline-primary[data-toggle="modal"][data-target="#all-reviews-modal"
                             <div class="rating-stars d-inline-block gmr-3">
                                 {!! Helper::renderStarRating($item->reviews->avg('rating')) !!}
                             </div>
-                            <span id="stock-display" class="d-inline-block">
+                            {{-- <span id="stock-display" class="d-inline-block">
                                 @if ($item->is_stock())
                                     <span class="text-success">{{ __('In Stock') }} <b>(<span id="stock-count">{{ $item->stock }}</span>
                                             @lang('items'))</b></span>
                                 @else
                                     <span class="text-danger">{{ __('Out of stock') }}</span>
                                 @endif
-                            </span>
+                            </span> --}}
                         </div>
 
 
@@ -1766,17 +1766,46 @@ $(document).ready(function() {
         $('#product-variation-area .image-selector-btn').css({'border': '2px solid #ddd', 'box-shadow': ''}).filter('.active').css('border-color', '#007bff');
         $('#product-variation-area .attribute_option').css({'border': '', 'box-shadow': ''});
         
+        // Set flag to prevent carousel from overriding variation image
+        isUpdatingFromVariation = true;
+        
         // Update main product image if variation has an image
+        var imageToSet = null;
         if (optionImage) {
-            $('#main-product-image').attr('src', optionImage);
-            $('#main-product-image-item img').attr('src', optionImage);
+            imageToSet = optionImage;
         } else {
             // Revert to featured image if no variation image
             var featuredImage = $('#main-product-image').data('featured-image');
             if (featuredImage) {
-                $('#main-product-image').attr('src', featuredImage);
-                $('#main-product-image-item img').attr('src', featuredImage);
+                imageToSet = featuredImage;
             }
+        }
+        
+        // Update both standalone image and carousel slide 0 image BEFORE navigating
+        if (imageToSet) {
+            $('#main-product-image').attr('src', imageToSet);
+            $('#main-product-image-item img').attr('src', imageToSet);
+        }
+
+        // If user previously navigated to a gallery slide, bring them back to the featured slide
+        // so the newly selected variation image is actually visible.
+        // Use OwlCarousel2 trigger API (more reliable than .data('owlCarousel') in some builds).
+        var $slider = $('#product-gallery-slider');
+        if ($slider.length) {
+            setTimeout(function() {
+                $slider.trigger('to.owl.carousel', [0, 300, true]);
+                var visibleThumbnails = $('.owl-thumb-item:visible');
+                if (visibleThumbnails.length) {
+                    visibleThumbnails.removeClass('active');
+                    visibleThumbnails.eq(0).addClass('active');
+                }
+                // Reset flag after transition
+                setTimeout(function() {
+                    isUpdatingFromVariation = false;
+                }, 350);
+            }, 0);
+        } else {
+            isUpdatingFromVariation = false;
         }
         
         // Update preview/name display based on display type
@@ -2146,6 +2175,8 @@ $(document).ready(function() {
     
     // Flag to prevent recursive syncing
     var isSyncingFromGallery = false;
+    // Flag to prevent carousel changed event from overriding variation images
+    var isUpdatingFromVariation = false;
     
     // Function to sync attribute options when gallery thumbnail is clicked
     function syncAttributeOptionsFromGallery(galleryId) {
@@ -2359,7 +2390,8 @@ $(document).ready(function() {
         var thumbIndex = visibleThumbnails.index($(this));
         
         // If first thumbnail (featured image) is clicked, show featured image in main view
-        if (thumbIndex === 0) {
+        // But only if not currently updating from a variation (to avoid overriding variation image)
+        if (thumbIndex === 0 && !isUpdatingFromVariation) {
             var featuredImage = $('#main-product-image').data('featured-image');
             if (featuredImage) {
                 $('#main-product-image').attr('src', featuredImage);
@@ -2389,6 +2421,17 @@ $(document).ready(function() {
         var currentIndex = event.item.index;
         $('.owl-thumb-item').removeClass('active');
         $('.owl-thumb-item').eq(currentIndex).addClass('active');
+        
+        // If we're updating from a variation, don't let carousel override the variation image
+        // Only update image if user manually navigated carousel (not from variation selection)
+        if (!isUpdatingFromVariation && currentIndex === 0) {
+            // User manually navigated to slide 0 - show featured image
+            var featuredImage = $('#main-product-image').data('featured-image');
+            if (featuredImage) {
+                $('#main-product-image').attr('src', featuredImage);
+                $('#main-product-image-item img').attr('src', featuredImage);
+            }
+        }
     });
     
     // Function to remove validation errors
