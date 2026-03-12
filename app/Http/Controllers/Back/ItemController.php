@@ -149,11 +149,8 @@ class ItemController extends Controller
     {
         $this->repository->update($item, $request);
 
-        if ($request->is_button == 0) {
-            return redirect()->route('back.item.index')->withSuccess(__('Product Updated Successfully.'));
-        } else {
-            return redirect()->back()->withSuccess(__('Product Updated Successfully.'));
-        }
+        // Always stay on the same edit page and show success message
+        return redirect()->back()->withSuccess(__('Product Updated Successfully.'));
     }
 
     /**
