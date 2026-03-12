@@ -56,6 +56,18 @@ class ItemRepository
             $input['tags'] = str_replace(["value", "{", "}", "[", "]", ":", "\""], '', $request->tags);
         }
 
+        // Handle separate delivery settings explicitly so unchecked checkbox correctly disables it
+        if ($request->has('has_separate_delivery') && $request->has_separate_delivery == 1) {
+            $input['has_separate_delivery'] = 1;
+            $input['inside_dhaka_delivery_fee'] = $request->input('inside_dhaka_delivery_fee', 70);
+            $input['outside_dhaka_delivery_fee'] = $request->input('outside_dhaka_delivery_fee', 130);
+        } else {
+            $input['has_separate_delivery'] = 0;
+            // Optionally reset fees to defaults when disabled; keeps data consistent
+            $input['inside_dhaka_delivery_fee'] = 70;
+            $input['outside_dhaka_delivery_fee'] = 130;
+        }
+
         if ($request->has('is_specification')) {
             $input['specification_name'] = json_encode($input['specification_name']);
             $input['specification_description'] = json_encode($input['specification_description']);
@@ -176,6 +188,18 @@ class ItemRepository
 
         if ($request->has('tags')) {
             $input['tags'] = str_replace(["value", "{", "}", "[", "]", ":", "\""], '', $request->tags);
+        }
+
+        // Handle separate delivery settings explicitly so disabling actually turns it off
+        if ($request->has('has_separate_delivery') && $request->has_separate_delivery == 1) {
+            $input['has_separate_delivery'] = 1;
+            $input['inside_dhaka_delivery_fee'] = $request->input('inside_dhaka_delivery_fee', 70);
+            $input['outside_dhaka_delivery_fee'] = $request->input('outside_dhaka_delivery_fee', 130);
+        } else {
+            $input['has_separate_delivery'] = 0;
+            // Keep fees at sensible defaults when separate delivery is disabled
+            $input['inside_dhaka_delivery_fee'] = 70;
+            $input['outside_dhaka_delivery_fee'] = 130;
         }
 
         if ($request->has('is_specification')) {
@@ -364,11 +388,25 @@ class ItemRepository
             $quantities = $request->bulk_quantity;
             $prices = $request->bulk_price;
 
-            for ($i = 0; $i < count($quantities); $i++) {
-                if (!empty($quantities[$i]) && !empty($prices[$i])) {
+            $maxCount = max(count($quantities), count($prices));
+
+            for ($i = 0; $i < $maxCount; $i++) {
+                if (!isset($quantities[$i]) || !isset($prices[$i])) {
+                    continue;
+                }
+
+                $qtyRaw = trim((string)$quantities[$i]);
+                $priceRaw = trim((string)$prices[$i]);
+
+                // Skip completely empty rows but accept zero values as valid
+                if ($qtyRaw === '' && $priceRaw === '') {
+                    continue;
+                }
+
+                if ($qtyRaw !== '' && $priceRaw !== '') {
                     $bulkPricingData[] = [
-                        'quantity' => (int)$quantities[$i],
-                        'price' => (float)$prices[$i]
+                        'quantity' => (int)$qtyRaw,
+                        'price' => (float)$priceRaw
                     ];
                 }
             }
