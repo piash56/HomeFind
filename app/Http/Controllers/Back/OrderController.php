@@ -328,12 +328,12 @@ class OrderController extends Controller
         $order = Order::find($id);
         if ($field == 'payment_status') {
             if ($order['payment_status'] == 'Paid') {
-                return redirect()->route('back.order.index')->withErrors(__('Order is already paid.'));
+                return redirect()->back()->withErrors(__('Order is already paid.'));
             }
         }
         if ($field == 'order_status') {
             if ($order['order_status'] == 'Delivered') {
-                return redirect()->route('back.order.index')->withErrors(__('Order is already Delivered.'));
+                return redirect()->back()->withErrors(__('Order is already Delivered.'));
             }
         }
 
@@ -362,7 +362,8 @@ class OrderController extends Controller
             $this->sendOrderConfirmationSms($order, $deliveryFeeNumeric);
         }
 
-        return redirect()->route('back.order.index')->withSuccess(__('Status Updated Successfully.'));
+        // Stay on the same page (pending, in progress, etc.) where the action was taken
+        return redirect()->back()->withSuccess(__('Status Updated Successfully.'));
     }
 
     /**
